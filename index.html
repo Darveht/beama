@@ -108,27 +108,31 @@
     </div>
 
     <!-- Pantalla de inicio -->
-
-                <div class="auth-options">
-                    <button class="google-btn" onclick="loginWithGoogle()">
-                        <i class="fab fa-google"></i>
-                        Continuar con Google
-                    </button>
-                    <button class="demo-btn" onclick="accessDirectly()" style="background: #28a745; margin-top: 10px;">
-                        <i class="fas fa-play"></i>
-                        Acceso Directo (Demo)
-                    </button>
-                </div>
-
     <div id="homeScreen" class="screen">
-        <div class="header-duolingo">
-            <div class="streak-indicator">
-                <i class="fas fa-fire streak-icon"></i>
-                <span class="streak-count" id="streak">0</span>
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-calculator"></i>
+                <h1>BeMaa</h1>
             </div>
-            <div class="gems-indicator">
-                <i class="fas fa-gem gems-icon"></i>
-                <span class="gems-count" id="gems">100</span>
+            <div class="user-info">
+                <span id="userName">Usuario</span>
+                <button class="logout-btn" onclick="logoutUser()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+            <div class="user-stats">
+                <div class="stat">
+                    <i class="fas fa-fire"></i>
+                    <span id="streak">0</span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-gem"></i>
+                    <span id="gems">100</span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-heart"></i>
+                    <span id="lives">5</span>
+                </div>
             </div>
         </div>
 
@@ -142,18 +146,6 @@
                                 <div class="bear-ear right"></div>
                             </div>
                             <div class="bear-face">
-
-                <div class="auth-options">
-                    <button class="google-btn" onclick="loginWithGoogle()">
-                        <i class="fab fa-google"></i>
-                        Registrarse con Google
-                    </button>
-                    <button class="demo-btn" onclick="accessDirectly()" style="background: #28a745; margin-top: 10px;">
-                        <i class="fas fa-play"></i>
-                        Probar Demo
-                    </button>
-                </div>
-
                                 <div class="bear-eyes">
                                     <div class="bear-eye left">
                                         <div class="pupil"></div>
@@ -179,8 +171,26 @@
             </div>
         </div>
 
-        <div class="lessons-grid" id="lessonsGrid">
-            <!-- Lecciones generadas dinámicamente -->
+        <div class="main-content">
+            <button class="start-btn" onclick="showLessons()">
+                <i class="fas fa-play"></i>
+                Comenzar
+            </button>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="showProfile()">
+                    <i class="fas fa-user"></i>
+                    Perfil
+                </button>
+                <button class="action-btn" onclick="showShop()">
+                    <i class="fas fa-store"></i>
+                    Tienda
+                </button>
+                <button class="action-btn" onclick="showStats()">
+                    <i class="fas fa-chart-bar"></i>
+                    Estadísticas
+                </button>
+            </div>
         </div>
     </div>
 
@@ -399,12 +409,74 @@
 
     <!-- Pantalla de Perfil -->
     <div id="profileScreen" class="screen">
+        <div class="header">
+            <button class="back-btn" onclick="showHome()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Mi Perfil</h2>
+            <button class="settings-btn" onclick="showSettings()">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+
         <div class="profile-container">
-            <div class="profile-header">
-                <button class="profile-back-btn" onclick="showHome()">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <div class="profile-avatar-section">
+            <div class="profile-section">
+                <h3><i class="fas fa-user"></i> Información Personal</h3>
+                <div class="profile-info">
+                    <div class="info-item">
+                        <label>Nombre:</label>
+                        <input type="text" id="profileName" placeholder="Tu nombre">
+                        <button class="edit-btn" onclick="editProfileName()">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="info-item">
+                        <label>Correo:</label>
+                        <input type="email" id="profileEmail" placeholder="tu@email.com">
+                        <button class="edit-btn" onclick="editProfileEmail()">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="info-item">
+                        <label>Edad:</label>
+                        <select id="profileAge">
+                            <option value="kid">6-12 años</option>
+                            <option value="teen">13-17 años</option>
+                            <option value="adult">18+ años</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3><i class="fas fa-chart-line"></i> Estadísticas</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-number" id="profileStreak">0</div>
+                        <div class="stat-label">Racha</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💎</div>
+                        <div class="stat-number" id="profileGems">0</div>
+                        <div class="stat-label">Gemas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-number" id="profileLevel">1</div>
+                        <div class="stat-label">Nivel</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-number" id="profileAccuracy">0%</div>
+                        <div class="stat-label">Precisión</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3><i class="fas fa-paw"></i> Mi Mascota</h3>
+                <div class="mascot-preview">
                     <div class="mascot-3d" id="mascot3d">
                         <div class="bear-3d">
                             <div class="bear-head" id="bearHead">
@@ -434,111 +506,10 @@
                             </div>
                         </div>
                     </div>
-                    <button class="customize-avatar-btn" onclick="showMascotCustomization()">
+                    <button class="customize-btn" onclick="showMascotCustomization()">
                         <i class="fas fa-paint-brush"></i>
                         Personalizar Avatar
                     </button>
-                </div>
-                <div class="profile-name" id="profileNameDisplay">Usuario</div>
-                <div class="profile-level">Nivel <span id="profileLevelDisplay">1</span></div>
-            </div>
-
-            <div class="profile-content">
-                <div class="profile-tabs">
-                    <button class="profile-tab active" onclick="switchProfileTab('stats')">Estadísticas</button>
-                    <button class="profile-tab" onclick="switchProfileTab('info')">Información</button>
-                    <button class="profile-tab" onclick="switchProfileTab('achievements')">Logros</button>
-                    <button class="profile-tab" onclick="switchProfileTab('settings')">Ajustes</button>
-                </div>
-
-                <!-- Tab Estadísticas -->
-                <div class="profile-tab-content active" id="statsTab">
-                    <div class="stats-grid-full">
-                        <div class="stat-card-full">
-                            <div class="stat-icon-full">🔥</div>
-                            <div class="stat-number-full" id="profileStreak">0</div>
-                            <div class="stat-label-full">Racha</div>
-                        </div>
-                        <div class="stat-card-full">
-                            <div class="stat-icon-full">💎</div>
-                            <div class="stat-number-full" id="profileGems">0</div>
-                            <div class="stat-label-full">Gemas</div>
-                        </div>
-                        <div class="stat-card-full">
-                            <div class="stat-icon-full">🏆</div>
-                            <div class="stat-number-full" id="profileLevel">1</div>
-                            <div class="stat-label-full">Nivel</div>
-                        </div>
-                        <div class="stat-card-full">
-                            <div class="stat-icon-full">✅</div>
-                            <div class="stat-number-full" id="profileAccuracy">0%</div>
-                            <div class="stat-label-full">Precisión</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab Información -->
-                <div class="profile-tab-content" id="infoTab">
-                    <div class="info-section">
-                        <h4>Información Personal</h4>
-                        <div class="info-item-full">
-                            <span class="info-label-full">Nombre:</span>
-                            <span class="info-value-full" id="profileName">Usuario</span>
-                        </div>
-                        <div class="info-item-full">
-                            <span class="info-label-full">Correo:</span>
-                            <span class="info-value-full" id="profileEmail">email@ejemplo.com</span>
-                        </div>
-                        <div class="info-item-full">
-                            <span class="info-label-full">Edad:</span>
-                            <span class="info-value-full" id="profileAge">6-12 años</span>
-                        </div>
-                        <button class="edit-profile-btn" onclick="editProfile()">
-                            <i class="fas fa-edit"></i>
-                            Editar Información
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab Logros -->
-                <div class="profile-tab-content" id="achievementsTab">
-                    <div class="achievements-grid" id="achievementsGrid">
-                        <!-- Logros generados dinámicamente -->
-                    </div>
-                </div>
-
-                <!-- Tab Configuraciones -->
-                <div class="profile-tab-content" id="settingsTab">
-                    <div class="settings-list">
-                        <div class="settings-item-full" onclick="showSettings()">
-                            <div class="settings-item-left">
-                                <i class="fas fa-cog settings-item-icon"></i>
-                                <span class="settings-item-text">Configuraciones</span>
-                            </div>
-                            <i class="fas fa-chevron-right settings-item-arrow"></i>
-                        </div>
-                        <div class="settings-item-full" onclick="showHelp()">
-                            <div class="settings-item-left">
-                                <i class="fas fa-question-circle settings-item-icon"></i>
-                                <span class="settings-item-text">Ayuda</span>
-                            </div>
-                            <i class="fas fa-chevron-right settings-item-arrow"></i>
-                        </div>
-                        <div class="settings-item-full" onclick="showAbout()">
-                            <div class="settings-item-left">
-                                <i class="fas fa-info-circle settings-item-icon"></i>
-                                <span class="settings-item-text">Acerca de</span>
-                            </div>
-                            <i class="fas fa-chevron-right settings-item-arrow"></i>
-                        </div>
-                        <div class="settings-item-full" onclick="logoutUser()">
-                            <div class="settings-item-left">
-                                <i class="fas fa-sign-out-alt settings-item-icon"></i>
-                                <span class="settings-item-text">Cerrar Sesión</span>
-                            </div>
-                            <i class="fas fa-chevron-right settings-item-arrow"></i>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -953,48 +924,6 @@
                         Cerrar Sesión
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Navegación Bottom Tab -->
-    <div class="bottom-navigation" id="bottomNav">
-        <div class="nav-item active" onclick="navigateToHome()">
-            <i class="fas fa-home nav-icon"></i>
-            <span class="nav-label">Inicio</span>
-        </div>
-        <div class="nav-item" onclick="showShop()">
-            <i class="fas fa-store nav-icon"></i>
-            <span class="nav-label">Tienda</span>
-        </div>
-        <div class="nav-item" onclick="toggleProfileMenu()">
-            <i class="fas fa-ellipsis-h nav-icon"></i>
-            <span class="nav-label">Más</span>
-        </div>
-    </div>
-
-    <!-- Menú de perfil -->
-    <div class="profile-menu" id="profileMenu">
-        <div class="profile-menu-content">
-            <div class="profile-menu-item" onclick="showProfile()">
-                <i class="fas fa-user profile-menu-icon"></i>
-                <span class="profile-menu-text">Mi Perfil</span>
-            </div>
-            <div class="profile-menu-item" onclick="showStats()">
-                <i class="fas fa-chart-bar profile-menu-icon"></i>
-                <span class="profile-menu-text">Estadísticas</span>
-            </div>
-            <div class="profile-menu-item" onclick="showSettings()">
-                <i class="fas fa-cog profile-menu-icon"></i>
-                <span class="profile-menu-text">Configuraciones</span>
-            </div>
-            <div class="profile-menu-item" onclick="showHelp()">
-                <i class="fas fa-question-circle profile-menu-icon"></i>
-                <span class="profile-menu-text">Ayuda</span>
-            </div>
-            <div class="profile-menu-item" onclick="logoutUser()">
-                <i class="fas fa-sign-out-alt profile-menu-icon"></i>
-                <span class="profile-menu-text">Cerrar Sesión</span>
             </div>
         </div>
     </div>
