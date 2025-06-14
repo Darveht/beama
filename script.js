@@ -453,6 +453,8 @@ async function registerUser() {
     }
     
     try {
+        updateMascotMessage('Creando tu cuenta...');
+        
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
@@ -471,7 +473,7 @@ async function registerUser() {
             weakAreas: [],
             strengths: [],
             mascotCustomization: {
-                bodyColor: '#8B4513',
+                bodyColor: '#D2691E',
                 eyeStyle: 'normal',
                 mouthStyle: 'happy',
                 accessories: {
@@ -494,7 +496,14 @@ async function registerUser() {
             }
         });
         
-        updateMascotMessage(`¡Bienvenido ${name}! ¡Tu aventura matemática comienza ahora! 🎉`);
+        updateMascotMessage(`¡Cuenta creada exitosamente! Bienvenido ${name}! 🎉`);
+        
+        // Limpiar formulario
+        document.getElementById('registerName').value = '';
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        document.getElementById('userAge').value = '';
         
     } catch (error) {
         console.error('Error en registro:', error);
@@ -519,19 +528,47 @@ async function registerUser() {
 }
 
 async function loginUser() {
-    const email = document.getElementById('loginEmail').value;
+    const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     
     if (!email || !password) {
-        alert('Por favor completa todos los campos');
+        updateMascotMessage('Por favor completa todos los campos para iniciar sesión.');
         return;
     }
     
     try {
+        updateMascotMessage('Iniciando sesión...');
+        
         await auth.signInWithEmailAndPassword(email, password);
+        
+        updateMascotMessage('¡Sesión iniciada correctamente!');
+        
+        // Limpiar formulario
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+        
     } catch (error) {
         console.error('Error en login:', error);
-        alert('Error al iniciar sesión: ' + error.message);
+        
+        let errorMessage = 'Error al iniciar sesión.';
+        switch (error.code) {
+            case 'auth/user-not-found':
+                errorMessage = 'No existe una cuenta con este correo. ¿Quieres registrarte?';
+                break;
+            case 'auth/wrong-password':
+                errorMessage = 'Contraseña incorrecta. Verifica e intenta de nuevo.';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = 'El correo electrónico no es válido.';
+                break;
+            case 'auth/user-disabled':
+                errorMessage = 'Esta cuenta ha sido deshabilitada.';
+                break;
+            default:
+                errorMessage = 'Error al iniciar sesión: ' + error.message;
+        }
+        
+        updateMascotMessage(errorMessage);
     }
 }
 
@@ -704,35 +741,34 @@ auth.onAuthStateChanged(async (user) => {
                 }
             }
             
-            // Solo cambiar de pantalla si estamos en intro o auth
-            if (gameState.currentScreen === 'intro' || gameState.currentScreen === 'auth') {
-                showHome();
-            }
             updateUserStats();
             
-            // Mostrar mensaje de bienvenida solo una vez después del intro
-            if (!hasShownWelcomeMessage && gameState.currentScreen === 'home') {
-                setTimeout(() => {
-                    updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
-                    hasShownWelcomeMessage = true;
-                }, 1000);
-            }
+            // Cambiar a pantalla de inicio después de autenticación exitosa
+            setTimeout(() => {
+                if (gameState.currentScreen === 'auth') {
+                    showHome();
+                    if (!hasShownWelcomeMessage) {
+                        setTimeout(() => {
+                            updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
+                            hasShownWelcomeMessage = true;
+                        }, 1000);
+                    }
+                }
+            }, 500);
             
         } catch (error) {
             console.error('Error en autenticación:', error);
             gameState.isAuthenticated = false;
             gameState.currentUser = null;
-            if (gameState.currentScreen !== 'intro') {
-                showAuthScreen();
-            }
+            updateMascotMessage('Error al iniciar sesión. Por favor intenta de nuevo.');
         }
         
     } else {
         gameState.isAuthenticated = false;
         gameState.currentUser = null;
-        hasShownWelcomeMessage = false; // Resetear mensaje de bienvenida
+        hasShownWelcomeMessage = false;
         
-        // Solo redirigir si no estamos en intro
+        // Solo mostrar auth si no estamos en intro
         if (gameState.currentScreen !== 'intro') {
             showAuthScreen();
         }
@@ -741,14 +777,21 @@ auth.onAuthStateChanged(async (user) => {
 
 // Funciones de navegación
 function showIntro() {
+    console.log('Mostrando intro');
     hideAllScreens();
     document.getElementById('introScreen').classList.add('active');
     gameState.currentScreen = 'intro';
     
     // Secuencia de animaciones
     setTimeout(() => {
-        showAuthScreen();
-    }, 6000); // 6 segundos de intro
+        console.log('Intro terminado, verificando autenticación');
+        // Verificar si ya hay un usuario autenticado
+        if (gameState.isAuthenticated && gameState.currentUser) {
+            showHome();
+        } else {
+            showAuthScreen();
+        }
+    }, 4000); // Reducido a 4 segundos
 }
 
 function showAuthScreen() {
@@ -759,19 +802,27 @@ function showAuthScreen() {
 
 function showHome() {
     if (!gameState.isAuthenticated) {
+        console.log('Usuario no autenticado, mostrando pantalla de auth');
         showAuthScreen();
         return;
     }
     
+    console.log('Mostrando pantalla de inicio');
     hideAllScreens();
     document.getElementById('homeScreen').classList.add('active');
     gameState.currentScreen = 'home';
     
+    // Aplicar personalización de mascota
+    setTimeout(() => {
+        applyMascotCustomization('main');
+        updateUserStats();
+    }, 100);
+    
     // Solo mostrar mensaje si no se ha mostrado antes o si es navegación manual
-    if (!hasShownWelcomeMessage) {
+    if (!hasShownWelcomeMessage && gameState.user && gameState.user.name) {
         updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
         hasShownWelcomeMessage = true;
-    } else {
+    } else if (gameState.user && gameState.user.name) {
         // Mensaje más corto para navegación posterior
         updateMascotMessage(`¡Hola ${gameState.user.name}! ¿Qué quieres hacer hoy?`, 'mascotSpeech');
     }
@@ -1540,6 +1591,80 @@ function showMascotCustomization() {
     loadMascotCustomization();
     applyMascotCustomization('mobile');
     updateMascotMessage('¡Hagamos que tu avatar sea único! Puedes cambiar colores, ojos, boca y más.');
+    
+    // Inicializar funcionalidad de arrastrar después de un pequeño delay
+    setTimeout(() => {
+        initializeDragFunctionality();
+    }, 100);
+}
+
+// Funcionalidad de arrastrar para la barra de personalización
+let isDragging = false;
+let startY = 0;
+let currentTransform = 0;
+
+function initializeDragFunctionality() {
+    const customizationControls = document.querySelector('.customization-controls');
+    const dragHandle = document.querySelector('.drag-handle');
+    
+    if (!customizationControls || !dragHandle) return;
+    
+    // Mouse events
+    dragHandle.addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', endDrag);
+    
+    // Touch events para móvil
+    dragHandle.addEventListener('touchstart', startDrag, { passive: false });
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', endDrag);
+    
+    function startDrag(e) {
+        isDragging = true;
+        startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+        dragHandle.style.cursor = 'grabbing';
+        e.preventDefault();
+    }
+    
+    function drag(e) {
+        if (!isDragging) return;
+        
+        const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+        const deltaY = currentY - startY;
+        
+        // Limitar el movimiento
+        const maxUp = -window.innerHeight * 0.2; // Máximo hacia arriba
+        const maxDown = window.innerHeight * 0.1; // Máximo hacia abajo
+        
+        currentTransform = Math.min(maxDown, Math.max(maxUp, deltaY));
+        
+        customizationControls.style.transform = `translateY(${currentTransform}px)`;
+        e.preventDefault();
+    }
+    
+    function endDrag() {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        dragHandle.style.cursor = 'grab';
+        
+        // Snap a posiciones específicas
+        if (currentTransform > window.innerHeight * 0.05) {
+            // Minimizar
+            customizationControls.style.transform = 'translateY(calc(55vh - 80px))';
+            customizationControls.style.height = '80px';
+        } else if (currentTransform < -window.innerHeight * 0.1) {
+            // Maximizar
+            customizationControls.style.transform = 'translateY(-10vh)';
+            customizationControls.style.height = '75vh';
+        } else {
+            // Posición normal
+            customizationControls.style.transform = 'translateY(0)';
+            customizationControls.style.height = '55vh';
+        }
+        
+        currentTransform = 0;
+    }
 }
 
 // Funciones para la nueva interfaz de personalización
