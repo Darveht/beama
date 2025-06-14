@@ -1769,12 +1769,13 @@ function getSmartRecommendations() {
 
 // Estado de personalización de mascota
 const mascotCustomization = {
-    bodyColor: '#8B4513',
+    bodyColor: '#D2691E',
     eyeStyle: 'normal',
     eyeColor: '#000000',
     mouthStyle: 'happy',
     noseStyle: 'normal',
     noseColor: '#2c2c2c',
+    background: 'none',
     accessories: {
         hat: false,
         glasses: false,
@@ -1926,13 +1927,69 @@ function switchTab(tabName) {
         'ojos': 'ojosPanel',
         'boca': 'bocaPanel',
         'nariz': 'narizPanel',
-        'accesorios': 'accesoriosPanel'
+        'accesorios': 'accesoriosPanel',
+        'fondos': 'fondosPanel'
     };
     
     const panelId = panelMap[tabName];
     if (panelId) {
         document.getElementById(panelId).classList.add('active');
     }
+}
+
+function changeBackground(backgroundType) {
+    mascotCustomization.background = backgroundType;
+    
+    const backgroundPreview = document.getElementById('backgroundPreview');
+    const previewSection = document.querySelector('.mascot-preview-section');
+    
+    if (backgroundPreview && previewSection) {
+        switch(backgroundType) {
+            case 'forest':
+                previewSection.style.background = 'linear-gradient(135deg, #2d5016 0%, #3e7b20 100%)';
+                break;
+            case 'ocean':
+                previewSection.style.background = 'linear-gradient(135deg, #006994 0%, #0077be 100%)';
+                break;
+            case 'desert':
+                previewSection.style.background = 'linear-gradient(135deg, #daa520 0%, #f4a460 100%)';
+                break;
+            case 'mountain':
+                previewSection.style.background = 'linear-gradient(135deg, #708090 0%, #a9a9a9 100%)';
+                break;
+            case 'space':
+                previewSection.style.background = 'linear-gradient(135deg, #191970 0%, #4b0082 100%)';
+                break;
+            case 'sunset':
+                previewSection.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%)';
+                break;
+            case 'winter':
+                previewSection.style.background = 'linear-gradient(135deg, #b0e0e6 0%, #ffffff 100%)';
+                break;
+            default: // 'none'
+                previewSection.style.background = 'linear-gradient(135deg, #58cc02 0%, #89e219 100%)';
+                break;
+        }
+    }
+    
+    // Actualizar selección visual
+    document.querySelectorAll('#fondosPanel .option-card').forEach(option => {
+        option.classList.remove('selected');
+    });
+    event.target.closest('.option-card').classList.add('selected');
+    
+    const messages = {
+        'none': '¡El fondo clásico me encanta!',
+        'forest': '¡Me siento como en casa en el bosque!',
+        'ocean': '¡El océano es tan relajante!',
+        'desert': '¡Qué aventura en el desierto!',
+        'mountain': '¡Las montañas son majestuosas!',
+        'space': '¡Explorando el universo!',
+        'sunset': '¡Qué hermoso atardecer!',
+        'winter': '¡Me encanta la nieve!'
+    };
+    
+    updateMascotMessage(messages[backgroundType] || '¡Nuevo fondo genial!');
 }
 
 function changeBodyColor(color) {
@@ -2043,11 +2100,18 @@ function resetCustomization() {
     mascotCustomization.eyeStyle = 'normal';
     mascotCustomization.mouthStyle = 'happy';
     mascotCustomization.noseStyle = 'normal';
+    mascotCustomization.background = 'none';
     
     // Resetear accesorios
     Object.keys(mascotCustomization.accessories).forEach(accessory => {
         mascotCustomization.accessories[accessory] = false;
     });
+    
+    // Resetear fondo
+    const previewSection = document.querySelector('.mascot-preview-section');
+    if (previewSection) {
+        previewSection.style.background = 'linear-gradient(135deg, #58cc02 0%, #89e219 100%)';
+    }
     
     // Aplicar cambios
     applyMascotCustomization('preview');
@@ -2062,6 +2126,7 @@ function resetCustomization() {
     document.querySelector('#ojosPanel .option-card')?.classList.add('selected');
     document.querySelector('#bocaPanel .option-card')?.classList.add('selected');
     document.querySelector('#narizPanel .option-card')?.classList.add('selected');
+    document.querySelector('#fondosPanel .option-card')?.classList.add('selected');
     
     updateMascotMessage('¡He vuelto a mi aspecto original!');
 }
@@ -2138,6 +2203,25 @@ function loadMascotCustomization() {
     if (gameState.user && gameState.user.mascotCustomization) {
         Object.assign(mascotCustomization, gameState.user.mascotCustomization);
     }
+    
+    // Cargar fondo si existe
+    if (mascotCustomization.background && mascotCustomization.background !== 'none') {
+        const backgroundMap = {
+            'forest': 'linear-gradient(135deg, #2d5016 0%, #3e7b20 100%)',
+            'ocean': 'linear-gradient(135deg, #006994 0%, #0077be 100%)',
+            'desert': 'linear-gradient(135deg, #daa520 0%, #f4a460 100%)',
+            'mountain': 'linear-gradient(135deg, #708090 0%, #a9a9a9 100%)',
+            'space': 'linear-gradient(135deg, #191970 0%, #4b0082 100%)',
+            'sunset': 'linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%)',
+            'winter': 'linear-gradient(135deg, #b0e0e6 0%, #ffffff 100%)'
+        };
+        
+        const previewSection = document.querySelector('.mascot-preview-section');
+        if (previewSection && backgroundMap[mascotCustomization.background]) {
+            previewSection.style.background = backgroundMap[mascotCustomization.background];
+        }
+    }
+    
     applyMascotCustomization('preview');
     
     // Marcar las opciones seleccionadas en la UI
@@ -2159,6 +2243,14 @@ function loadMascotCustomization() {
                 }
             }
         });
+        
+        // Marcar fondo seleccionado
+        if (mascotCustomization.background) {
+            const backgroundCard = document.querySelector(`[onclick="changeBackground('${mascotCustomization.background}')"]`);
+            if (backgroundCard) {
+                backgroundCard.classList.add('selected');
+            }
+        }
     }, 100);
 }
 
