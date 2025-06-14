@@ -13,9 +13,18 @@ const firebaseConfig = {
 };
 
 // Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const database = firebase.database();
+let auth, database;
+try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    database = firebase.database();
+    console.log('Firebase inicializado correctamente');
+} catch (error) {
+    console.error('Error inicializando Firebase:', error);
+    // Modo sin conexión para desarrollo local
+    auth = null;
+    database = null;
+}
 
 // Estado del juego
 const gameState = {
@@ -437,6 +446,8 @@ async function registerUser() {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const age = document.getElementById('userAge').value;
     
+    console.log('Intentando registrar usuario:', { name, email, age });
+    
     if (!name || !email || !password || !age) {
         updateMascotMessage('Por favor completa todos los campos para crear tu cuenta.');
         return;
@@ -449,6 +460,63 @@ async function registerUser() {
     
     if (password.length < 6) {
         updateMascotMessage('La contraseña debe tener al menos 6 caracteres para ser segura.');
+        return;
+    }
+    
+    // Modo sin Firebase para desarrollo local
+    if (!auth || !database) {
+        console.log('Modo sin Firebase - Creando usuario local');
+        // Crear usuario local para desarrollo
+        const localUser = {
+            uid: 'local_' + Date.now(),
+            name: name,
+            email: email,
+            age: age,
+            level: 1,
+            streak: 0,
+            gems: 100,
+            lives: 5,
+            totalCorrect: 0,
+            totalQuestions: 0,
+            weakAreas: [],
+            strengths: [],
+            mascotCustomization: {
+                bodyColor: '#D2691E',
+                eyeStyle: 'normal',
+                mouthStyle: 'happy',
+                noseStyle: 'normal',
+                accessories: {
+                    hat: false,
+                    glasses: false,
+                    bowtie: false,
+                    scarf: false,
+                    earrings: false,
+                    chain: false,
+                    cap: false,
+                    headband: false
+                }
+            },
+            settings: {
+                language: 'es',
+                soundEffects: true,
+                backgroundMusic: false,
+                volume: 50,
+                adaptiveDifficulty: true,
+                dailyReminders: false,
+                vibration: false,
+                shareProgress: false,
+                errorAnalysis: true
+            }
+        };
+        
+        gameState.isAuthenticated = true;
+        gameState.currentUser = { uid: localUser.uid, email: localUser.email };
+        gameState.user = localUser;
+        
+        updateMascotMessage(`¡Bienvenido ${name}! ¡Tu aventura matemática comienza ahora! 🎉`);
+        setTimeout(() => {
+            showHome();
+        }, 2000);
         return;
     }
     
@@ -471,14 +539,19 @@ async function registerUser() {
             weakAreas: [],
             strengths: [],
             mascotCustomization: {
-                bodyColor: '#8B4513',
+                bodyColor: '#D2691E',
                 eyeStyle: 'normal',
                 mouthStyle: 'happy',
+                noseStyle: 'normal',
                 accessories: {
                     hat: false,
                     glasses: false,
                     bowtie: false,
-                    scarf: false
+                    scarf: false,
+                    earrings: false,
+                    chain: false,
+                    cap: false,
+                    headband: false
                 }
             },
             settings: {
@@ -522,16 +595,92 @@ async function loginUser() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
+    console.log('Intentando login:', { email });
+    
     if (!email || !password) {
-        alert('Por favor completa todos los campos');
+        updateMascotMessage('Por favor completa todos los campos');
+        return;
+    }
+    
+    // Modo sin Firebase para desarrollo local
+    if (!auth || !database) {
+        console.log('Modo sin Firebase - Login local');
+        // Simular login exitoso para desarrollo
+        const localUser = {
+            uid: 'local_demo',
+            name: 'Usuario Demo',
+            email: email,
+            age: 'kid',
+            level: 1,
+            streak: 0,
+            gems: 100,
+            lives: 5,
+            totalCorrect: 0,
+            totalQuestions: 0,
+            weakAreas: [],
+            strengths: [],
+            mascotCustomization: {
+                bodyColor: '#D2691E',
+                eyeStyle: 'normal',
+                mouthStyle: 'happy',
+                noseStyle: 'normal',
+                accessories: {
+                    hat: false,
+                    glasses: false,
+                    bowtie: false,
+                    scarf: false,
+                    earrings: false,
+                    chain: false,
+                    cap: false,
+                    headband: false
+                }
+            },
+            settings: {
+                language: 'es',
+                soundEffects: true,
+                backgroundMusic: false,
+                volume: 50,
+                adaptiveDifficulty: true,
+                dailyReminders: false,
+                vibration: false,
+                shareProgress: false,
+                errorAnalysis: true
+            }
+        };
+        
+        gameState.isAuthenticated = true;
+        gameState.currentUser = { uid: localUser.uid, email: localUser.email };
+        gameState.user = localUser;
+        
+        updateMascotMessage(`¡Hola de nuevo! ¡Bienvenido a BeMaa!`);
+        setTimeout(() => {
+            showHome();
+        }, 2000);
         return;
     }
     
     try {
         await auth.signInWithEmailAndPassword(email, password);
+        updateMascotMessage('¡Bienvenido de vuelta!');
     } catch (error) {
         console.error('Error en login:', error);
-        alert('Error al iniciar sesión: ' + error.message);
+        
+        let errorMessage = 'Error al iniciar sesión.';
+        switch (error.code) {
+            case 'auth/user-not-found':
+                errorMessage = 'No existe una cuenta con este correo. ¿Quieres registrarte?';
+                break;
+            case 'auth/wrong-password':
+                errorMessage = 'Contraseña incorrecta. Intenta de nuevo.';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = 'El correo electrónico no es válido.';
+                break;
+            default:
+                errorMessage = 'Error al iniciar sesión: ' + error.message;
+        }
+        
+        updateMascotMessage(errorMessage);
     }
 }
 
@@ -636,21 +785,22 @@ async function logoutUser() {
 let hasShownWelcomeMessage = false;
 
 // Listener de cambios de autenticación
-auth.onAuthStateChanged(async (user) => {
-    console.log('Estado de autenticación cambió:', user ? 'Usuario conectado' : 'Usuario desconectado');
-    
-    if (user) {
-        try {
-            gameState.isAuthenticated = true;
-            gameState.currentUser = user;
-            
-            // Verificar que el usuario esté realmente autenticado
-            const token = await user.getIdToken(true);
-            if (!token) {
-                console.error('No se pudo obtener token de usuario');
-                await auth.signOut();
-                return;
-            }
+if (auth) {
+    auth.onAuthStateChanged(async (user) => {
+        console.log('Estado de autenticación cambió:', user ? 'Usuario conectado' : 'Usuario desconectado');
+        
+        if (user) {
+            try {
+                gameState.isAuthenticated = true;
+                gameState.currentUser = user;
+                
+                // Verificar que el usuario esté realmente autenticado
+                const token = await user.getIdToken(true);
+                if (!token) {
+                    console.error('No se pudo obtener token de usuario');
+                    await auth.signOut();
+                    return;
+                }
             
             // Cargar datos del usuario
             const userRef = database.ref('users/' + user.uid);
@@ -737,7 +887,10 @@ auth.onAuthStateChanged(async (user) => {
             showAuthScreen();
         }
     }
-});
+    });
+} else {
+    console.log('Firebase no disponible - usando modo de desarrollo local');
+}
 
 // Funciones de navegación
 function showIntro() {
@@ -1549,6 +1702,59 @@ function showSettings() {
     loadSettings();
     closeProfileMenu();
     updateMascotMessage('Aquí puedes ajustar la aplicación a tu gusto.');
+}
+
+// Botón de acceso directo para desarrollo
+function accessDirectly() {
+    console.log('Acceso directo activado');
+    const localUser = {
+        uid: 'demo_user',
+        name: 'Usuario Demo',
+        email: 'demo@bemaa.com',
+        age: 'kid',
+        level: 1,
+        streak: 0,
+        gems: 100,
+        lives: 5,
+        totalCorrect: 0,
+        totalQuestions: 0,
+        weakAreas: [],
+        strengths: [],
+        mascotCustomization: {
+            bodyColor: '#D2691E',
+            eyeStyle: 'normal',
+            mouthStyle: 'happy',
+            noseStyle: 'normal',
+            accessories: {
+                hat: false,
+                glasses: false,
+                bowtie: false,
+                scarf: false,
+                earrings: false,
+                chain: false,
+                cap: false,
+                headband: false
+            }
+        },
+        settings: {
+            language: 'es',
+            soundEffects: true,
+            backgroundMusic: false,
+            volume: 50,
+            adaptiveDifficulty: true,
+            dailyReminders: false,
+            vibration: false,
+            shareProgress: false,
+            errorAnalysis: true
+        }
+    };
+    
+    gameState.isAuthenticated = true;
+    gameState.currentUser = { uid: localUser.uid, email: localUser.email };
+    gameState.user = localUser;
+    
+    showHome();
+    updateMascotMessage('¡Acceso directo activado! ¡Bienvenido a BeMaa!');
 }
 
 // Inicialización
