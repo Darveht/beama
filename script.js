@@ -1823,14 +1823,17 @@ function showMascotCustomization() {
     hideAllScreens();
     document.getElementById('mascotCustomizationScreen').classList.add('active');
     gameState.currentScreen = 'mascotCustomization';
-    loadMascotCustomization();
-    applyMascotCustomization('mobile');
-    updateMascotMessage('¡Hagamos que tu avatar sea único! Puedes cambiar colores, ojos, boca y más.');
     
-    // Inicializar funcionalidad de arrastrar después de un pequeño delay
+    // Cargar personalización y aplicar al preview
+    loadMascotCustomization();
+    
+    // Pequeño delay para asegurar que el DOM esté listo
     setTimeout(() => {
+        applyMascotCustomization('preview');
         initializeDragFunctionality();
-    }, 100);
+    }, 150);
+    
+    updateMascotMessage('¡Hagamos que tu avatar sea único! Puedes cambiar colores, ojos, boca y más.');
 }
 
 // Funcionalidad de arrastrar para la barra de personalización
