@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeMaa - Aprende Matemáticas</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <!-- Pantalla de Intro -->
+    <div id="introScreen" class="screen active">
+        <div class="intro-container">
+            <div class="intro-stage">
+                <div class="bear-character" id="introBear">
+                    <div class="bear-eyes"></div>
+                    <div class="bear-nose"></div>
+                    <div class="bear-mouth"></div>
+                </div>
+                <div class="lightning-bolt" id="lightningBolt"></div>
+                <div class="intro-logo" id="introLogo">
+                    <div class="logo-text">BeMaa</div>
+                    <div class="logo-subtitle">Matemáticas Divertidas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Autenticación -->
+    <div id="authScreen" class="screen">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <div class="mascot-face auth-mascot">🐻</div>
+                <h1>BeMaa</h1>
+                <p>Tu compañero matemático</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Registrarse</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
+                    <i class="fas fa-envelope form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                    <i class="fas fa-lock form-icon"></i>
+                </div>
+                <button class="auth-btn" onclick="loginUser()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar Sesión
+                </button>
+                <div class="auth-options">
+                    <button class="google-btn" onclick="loginWithGoogle()">
+                        <i class="fab fa-google"></i>
+                        Continuar con Google
+                    </button>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <input type="text" id="registerName" placeholder="Nombre completo" required>
+                    <i class="fas fa-user form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="registerEmail" placeholder="Correo electrónico" required>
+                    <i class="fas fa-envelope form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
+                    <i class="fas fa-lock form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirmPassword" placeholder="Confirmar contraseña" required>
+                    <i class="fas fa-lock form-icon"></i>
+                </div>
+                <div class="age-selector">
+                    <label>Edad:</label>
+                    <select id="userAge">
+                        <option value="">Selecciona tu edad</option>
+                        <option value="kid">6-12 años</option>
+                        <option value="teen">13-17 años</option>
+                        <option value="adult">18+ años</option>
+                    </select>
+                </div>
+                <button class="auth-btn" onclick="registerUser()">
+                    <i class="fas fa-user-plus"></i>
+                    Crear Cuenta
+                </button>
+                <div class="auth-options">
+                    <button class="google-btn" onclick="loginWithGoogle()">
+                        <i class="fab fa-google"></i>
+                        Registrarse con Google
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de inicio -->
+    <div id="homeScreen" class="screen">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-calculator"></i>
+                <h1>BeMaa</h1>
+            </div>
+            <div class="user-info">
+                <span id="userName">Usuario</span>
+                <button class="logout-btn" onclick="logoutUser()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+            <div class="user-stats">
+                <div class="stat">
+                    <i class="fas fa-fire"></i>
+                    <span id="streak">0</span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-gem"></i>
+                    <span id="gems">100</span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-heart"></i>
+                    <span id="lives">5</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mascot-container">
+            <div class="mascot" id="mascot">
+                <div class="mascot-3d mascot-3d-inline" id="mascot3dHome">
+                    <div class="bear-3d" id="bearHome">
+                        <div class="bear-head">
+                            <div class="bear-ears">
+                                <div class="bear-ear left"></div>
+                                <div class="bear-ear right"></div>
+                            </div>
+                            <div class="bear-face">
+                                <div class="bear-eyes">
+                                    <div class="bear-eye left">
+                                        <div class="pupil"></div>
+                                    </div>
+                                    <div class="bear-eye right">
+                                        <div class="pupil"></div>
+                                    </div>
+                                </div>
+                                <div class="bear-nose"></div>
+                                <div class="bear-mouth" id="bearMouthHome"></div>
+                            </div>
+                        </div>
+                        <div class="bear-body">
+                            <div class="bear-arms">
+                                <div class="bear-arm left"></div>
+                                <div class="bear-arm right"></div>
+                            </div>
+                            <div class="bear-belly"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mascot-speech" id="mascotSpeech">¡Hola! Soy BeMaa, ¿listo para una aventura matemática?</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <button class="start-btn" onclick="showLessons()">
+                <i class="fas fa-play"></i>
+                Comenzar
+            </button>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="showProfile()">
+                    <i class="fas fa-user"></i>
+                    Perfil
+                </button>
+                <button class="action-btn" onclick="showShop()">
+                    <i class="fas fa-store"></i>
+                    Tienda
+                </button>
+                <button class="action-btn" onclick="showStats()">
+                    <i class="fas fa-chart-bar"></i>
+                    Estadísticas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de lecciones -->
+    <div id="lessonsScreen" class="screen">
+        <div class="header">
+            <button class="back-btn" onclick="showHome()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Selecciona un tema</h2>
+        </div>
+
+        <div class="mascot-container">
+            <div class="mascot" id="mascotLessons">
+                <div class="mascot-3d mascot-3d-inline">
+                    <div class="bear-3d" id="bearLessons">
+                        <div class="bear-head">
+                            <div class="bear-ears">
+                                <div class="bear-ear left"></div>
+                                <div class="bear-ear right"></div>
+                            </div>
+                            <div class="bear-face">
+                                <div class="bear-eyes">
+                                    <div class="bear-eye left">
+                                        <div class="pupil"></div>
+                                    </div>
+                                    <div class="bear-eye right">
+                                        <div class="pupil"></div>
+                                    </div>
+                                </div>
+                                <div class="bear-nose"></div>
+                                <div class="bear-mouth" id="bearMouthLessons"></div>
+                            </div>
+                        </div>
+                        <div class="bear-body">
+                            <div class="bear-arms">
+                                <div class="bear-arm left"></div>
+                                <div class="bear-arm right"></div>
+                            </div>
+                            <div class="bear-belly"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mascot-speech" id="mascotSpeechLessons">¿Qué tema quieres practicar hoy?</div>
+            </div>
+        </div>
+
+        <div class="lessons-grid" id="lessonsGrid">
+            <!-- Lecciones generadas dinámicamente -->
+        </div>
+
+        <div class="game-modes">
+            <h3>Modos de juego</h3>
+            <button class="mode-btn" onclick="startMode('normal')">
+                <i class="fas fa-graduation-cap"></i>
+                Modo Normal
+            </button>
+            <button class="mode-btn" onclick="startMode('challenge')">
+                <i class="fas fa-stopwatch"></i>
+                Modo Desafío
+            </button>
+            <button class="mode-btn" onclick="startMode('survival')">
+                <i class="fas fa-heart-broken"></i>
+                Modo Supervivencia
+            </button>
+        </div>
+    </div>
+
+    <!-- Pantalla de juego -->
+    <div id="gameScreen" class="screen">
+        <div class="game-header">
+            <button class="back-btn" onclick="showLessons()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="lives-display">
+                <span id="livesCount">5</span>
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+
+        <div class="mascot-container">
+            <div class="mascot" id="mascotGame">
+                <div class="mascot-3d mascot-3d-inline">
+                    <div class="bear-3d" id="bearGame">
+                        <div class="bear-head">
+                            <div class="bear-ears">
+                                <div class="bear-ear left"></div>
+                                <div class="bear-ear right"></div>
+                            </div>
+                            <div class="bear-face">
+                                <div class="bear-eyes">
+                                    <div class="bear-eye left">
+                                        <div class="pupil"></div>
+                                    </div>
+                                    <div class="bear-eye right">
+                                        <div class="pupil"></div>
+                                    </div>
+                                </div>
+                                <div class="bear-nose"></div>
+                                <div class="bear-mouth" id="bearMouthGame"></div>
+                            </div>
+                        </div>
+                        <div class="bear-body">
+                            <div class="bear-arms">
+                                <div class="bear-arm left"></div>
+                                <div class="bear-arm right"></div>
+                            </div>
+                            <div class="bear-belly"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mascot-speech" id="mascotSpeechGame">¡Vamos a resolver este problema!</div>
+            </div>
+        </div>
+
+        <div class="question-container">
+            <div class="question-number">Pregunta <span id="questionNum">1</span> de <span id="totalQuestions">10</span></div>
+            <div class="question-text" id="questionText"></div>
+            <div class="question-image" id="questionImage"></div>
+        </div>
+
+        <div class="answers-container" id="answersContainer">
+            <!-- Respuestas generadas dinámicamente -->
+        </div>
+
+        <div class="game-controls">
+            <button class="help-btn" onclick="showCalculator()">
+                <i class="fas fa-calculator"></i>
+                Calculadora
+            </button>
+            <button class="hint-btn" onclick="showHint()">
+                <i class="fas fa-lightbulb"></i>
+                Pista
+            </button>
+            <button class="explain-btn" onclick="showExplanation()">
+                <i class="fas fa-question-circle"></i>
+                Explicar
+            </button>
+        </div>
+    </div>
+
+    <!-- Calculadora Virtual -->
+    <div id="calculatorModal" class="modal">
+        <div class="modal-content calculator">
+            <div class="modal-header">
+                <h3>Calculadora Virtual</h3>
+                <button class="close-btn" onclick="closeCalculator()">&times;</button>
+            </div>
+            <div class="calculator-display" id="calcDisplay">0</div>
+            <div class="calculator-buttons">
+                <button onclick="clearCalc()">C</button>
+                <button onclick="calcOperation('/')">/</button>
+                <button onclick="calcOperation('*')">×</button>
+                <button onclick="calcDelete()">←</button>
+                <button onclick="calcNumber(7)">7</button>
+                <button onclick="calcNumber(8)">8</button>
+                <button onclick="calcNumber(9)">9</button>
+                <button onclick="calcOperation('-')">-</button>
+                <button onclick="calcNumber(4)">4</button>
+                <button onclick="calcNumber(5)">5</button>
+                <button onclick="calcNumber(6)">6</button>
+                <button onclick="calcOperation('+')">+</button>
+                <button onclick="calcNumber(1)">1</button>
+                <button onclick="calcNumber(2)">2</button>
+                <button onclick="calcNumber(3)">3</button>
+                <button onclick="calcEquals()" class="calc-equals" rowspan="2">=</button>
+                <button onclick="calcNumber(0)" class="calc-zero">0</button>
+                <button onclick="calcDecimal()">.</button>
+            </div>
+            <div class="calc-steps" id="calcSteps">
+                <h4>Pasos de la operación:</h4>
+                <div id="stepsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de resultados -->
+    <div id="resultsScreen" class="screen">
+        <div class="results-container">
+            <div class="mascot celebration" id="resultMascot">🐻</div>
+            <h2 id="resultTitle">¡Excelente trabajo!</h2>
+            <div class="score-display">
+                <div class="score-item">
+                    <span class="score-label">Puntuación:</span>
+                    <span class="score-value" id="finalScore">0</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">Precisión:</span>
+                    <span class="score-value" id="accuracy">0%</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">Gemas ganadas:</span>
+                    <span class="score-value" id="gemsEarned">0</span>
+                </div>
+            </div>
+
+            <div class="achievements" id="achievements">
+                <!-- Logros ganados -->
+            </div>
+
+            <div class="result-actions">
+                <button class="action-btn" onclick="showLessons()">
+                    <i class="fas fa-repeat"></i>
+                    Repetir
+                </button>
+                <button class="action-btn" onclick="showHome()">
+                    <i class="fas fa-home"></i>
+                    Inicio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Perfil -->
+    <div id="profileScreen" class="screen">
+        <div class="header">
+            <button class="back-btn" onclick="showHome()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Mi Perfil</h2>
+            <button class="settings-btn" onclick="showSettings()">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+
+        <div class="profile-container">
+            <div class="profile-section">
+                <h3><i class="fas fa-user"></i> Información Personal</h3>
+                <div class="profile-info">
+                    <div class="info-item">
+                        <label>Nombre:</label>
+                        <input type="text" id="profileName" placeholder="Tu nombre">
+                        <button class="edit-btn" onclick="editProfileName()">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="info-item">
+                        <label>Correo:</label>
+                        <input type="email" id="profileEmail" placeholder="tu@email.com">
+                        <button class="edit-btn" onclick="editProfileEmail()">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="info-item">
+                        <label>Edad:</label>
+                        <select id="profileAge">
+                            <option value="kid">6-12 años</option>
+                            <option value="teen">13-17 años</option>
+                            <option value="adult">18+ años</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3><i class="fas fa-chart-line"></i> Estadísticas</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-number" id="profileStreak">0</div>
+                        <div class="stat-label">Racha</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💎</div>
+                        <div class="stat-number" id="profileGems">0</div>
+                        <div class="stat-label">Gemas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-number" id="profileLevel">1</div>
+                        <div class="stat-label">Nivel</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-number" id="profileAccuracy">0%</div>
+                        <div class="stat-label">Precisión</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3><i class="fas fa-paw"></i> Mi Mascota</h3>
+                <div class="mascot-preview">
+                    <div class="mascot-3d" id="mascot3d">
+                        <div class="bear-3d">
+                            <div class="bear-head" id="bearHead">
+                                <div class="bear-ears">
+                                    <div class="bear-ear left" id="bearEarLeft"></div>
+                                    <div class="bear-ear right" id="bearEarRight"></div>
+                                </div>
+                                <div class="bear-face">
+                                    <div class="bear-eyes">
+                                        <div class="bear-eye left" id="bearEyeLeft">
+                                            <div class="pupil"></div>
+                                        </div>
+                                        <div class="bear-eye right" id="bearEyeRight">
+                                            <div class="pupil"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bear-nose" id="bearNose"></div>
+                                    <div class="bear-mouth" id="bearMouth"></div>
+                                </div>
+                            </div>
+                            <div class="bear-body" id="bearBody">
+                                <div class="bear-arms">
+                                    <div class="bear-arm left"></div>
+                                    <div class="bear-arm right"></div>
+                                </div>
+                                <div class="bear-belly" id="bearBelly"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="customize-btn" onclick="showMascotCustomization()">
+                        <i class="fas fa-paint-brush"></i>
+                        Personalizar Mascota
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Personalización de Mascota -->
+    <div id="mascotCustomizationScreen" class="screen">
+        <div class="header">
+            <button class="back-btn" onclick="showProfile()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Personalizar Mascota</h2>
+            <button class="save-btn" onclick="saveMascotCustomization()">
+                <i class="fas fa-save"></i>
+                Guardar
+            </button>
+        </div>
+
+        <div class="customization-container">
+            <div class="mascot-preview-large">
+                <div class="mascot-3d-large">
+                    <div class="bear-3d">
+                        <div class="bear-head" id="previewBearHead">
+                            <div class="bear-ears">
+                                <div class="bear-ear left" id="previewBearEarLeft"></div>
+                                <div class="bear-ear right" id="previewBearEarRight"></div>
+                            </div>
+                            <div class="bear-face">
+                                <div class="bear-eyes">
+                                    <div class="bear-eye left" id="previewBearEyeLeft">
+                                        <div class="pupil"></div>
+                                    </div>
+                                    <div class="bear-eye right" id="previewBearEyeRight">
+                                        <div class="pupil"></div>
+                                    </div>
+                                </div>
+                                <div class="bear-nose" id="previewBearNose"></div>
+                                <div class="bear-mouth" id="previewBearMouth"></div>
+                            </div>
+                        </div>
+                        <div class="bear-body" id="previewBearBody">
+                            <div class="bear-arms">
+                                <div class="bear-arm left"></div>
+                                <div class="bear-arm right"></div>
+                            </div>
+                            <div class="bear-belly" id="previewBearBelly"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="customization-options">
+                <div class="customization-tab">
+                    <h3><i class="fas fa-palette"></i> Color del Pelaje</h3>
+                    <div class="color-options">
+                        <div class="color-option" data-color="#8B4513" onclick="changeBodyColor('#8B4513')"></div>
+                        <div class="color-option" data-color="#A0522D" onclick="changeBodyColor('#A0522D')"></div>
+                        <div class="color-option" data-color="#D2691E" onclick="changeBodyColor('#D2691E')"></div>
+                        <div class="color-option" data-color="#F4A460" onclick="changeBodyColor('#F4A460')"></div>
+                        <div class="color-option" data-color="#8B7355" onclick="changeBodyColor('#8B7355')"></div>
+                        <div class="color-option" data-color="#696969" onclick="changeBodyColor('#696969')"></div>
+                        <div class="color-option" data-color="#2F4F4F" onclick="changeBodyColor('#2F4F4F')"></div>
+                        <div class="color-option" data-color="#483D8B" onclick="changeBodyColor('#483D8B')"></div>
+                        <div class="color-option" data-color="#8B0000" onclick="changeBodyColor('#8B0000')"></div>
+                        <div class="color-option" data-color="#228B22" onclick="changeBodyColor('#228B22')"></div>
+                    </div>
+                </div>
+
+                <div class="customization-tab">
+                    <h3><i class="fas fa-eye"></i> Ojos</h3>
+                    <div class="eye-options">
+                        <button class="style-option" onclick="changeEyeStyle('normal')">
+                            <div class="eye-preview normal"></div>
+                            Normales
+                        </button>
+                        <button class="style-option" onclick="changeEyeStyle('large')">
+                            <div class="eye-preview large"></div>
+                            Grandes
+                        </button>
+                        <button class="style-option" onclick="changeEyeStyle('sleepy')">
+                            <div class="eye-preview sleepy"></div>
+                            Somnolientos
+                        </button>
+                        <button class="style-option" onclick="changeEyeStyle('happy')">
+                            <div class="eye-preview happy"></div>
+                            Felices
+                        </button>
+                    </div>
+                </div>
+
+                <div class="customization-tab">
+                    <h3><i class="fas fa-smile"></i> Boca</h3>
+                    <div class="mouth-options">
+                        <button class="style-option" onclick="changeMouthStyle('happy')">
+                            <div class="mouth-preview happy"></div>
+                            Sonriente
+                        </button>
+                        <button class="style-option" onclick="changeMouthStyle('neutral')">
+                            <div class="mouth-preview neutral"></div>
+                            Neutral
+                        </button>
+                        <button class="style-option" onclick="changeMouthStyle('surprised')">
+                            <div class="mouth-preview surprised"></div>
+                            Sorprendido
+                        </button>
+                        <button class="style-option" onclick="changeMouthStyle('playful')">
+                            <div class="mouth-preview playful"></div>
+                            Juguetón
+                        </button>
+                    </div>
+                </div>
+
+                <div class="customization-tab">
+                    <h3><i class="fas fa-tshirt"></i> Accesorios</h3>
+                    <div class="accessory-options">
+                        <button class="style-option" onclick="toggleAccessory('hat')">
+                            <i class="fas fa-hat-cowboy"></i>
+                            Sombrero
+                        </button>
+                        <button class="style-option" onclick="toggleAccessory('glasses')">
+                            <i class="fas fa-glasses"></i>
+                            Lentes
+                        </button>
+                        <button class="style-option" onclick="toggleAccessory('bowtie')">
+                            <i class="fas fa-user-tie"></i>
+                            Corbatín
+                        </button>
+                        <button class="style-option" onclick="toggleAccessory('scarf')">
+                            <i class="fas fa-mitten"></i>
+                            Bufanda
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Configuraciones -->
+    <div id="settingsScreen" class="screen">
+        <div class="header">
+            <button class="back-btn" onclick="showProfile()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Configuraciones</h2>
+        </div>
+
+        <div class="settings-container">
+            <div class="settings-section">
+                <h3><i class="fas fa-language"></i> Idioma</h3>
+                <div class="setting-item">
+                    <label>Idioma de la aplicación:</label>
+                    <select id="languageSelect" onchange="changeLanguage()">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                        <option value="pt">Português</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3><i class="fas fa-volume-up"></i> Audio</h3>
+                <div class="setting-item">
+                    <label>Efectos de sonido:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="soundEffects" checked onchange="toggleSoundEffects()">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Música de fondo:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="backgroundMusic" onchange="toggleBackgroundMusic()">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Volumen:</label>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="50" onchange="changeVolume()">
+                    <span id="volumeValue">50%</span>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3><i class="fas fa-gamepad"></i> Juego</h3>
+                <div class="setting-item">
+                    <label>Dificultad automática:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="adaptiveDifficulty" checked onchange="toggleAdaptiveDifficulty()">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Recordatorios diarios:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="dailyReminders" onchange="toggleDailyReminders()">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Vibración en móvil:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="vibration" onchange="toggleVibration()">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3><i class="fas fa-shield-alt"></i> Privacidad</h3>
+                <div class="setting-item">
+                    <label>Compartir progreso:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="shareProgress" onchange="toggleShareProgress()">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Análisis de errores:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="errorAnalysis" checked onchange="toggleErrorAnalysis()">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3><i class="fas fa-info-circle"></i> Información</h3>
+                <div class="setting-item">
+                    <button class="info-btn" onclick="showAbout()">
+                        <i class="fas fa-info"></i>
+                        Acerca de BeMaa
+                    </button>
+                </div>
+                <div class="setting-item">
+                    <button class="info-btn" onclick="showHelp()">
+                        <i class="fas fa-question-circle"></i>
+                        Ayuda y Soporte
+                    </button>
+                </div>
+                <div class="setting-item">
+                    <button class="info-btn" onclick="showPrivacyPolicy()">
+                        <i class="fas fa-file-contract"></i>
+                        Política de Privacidad
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section danger-zone">
+                <h3><i class="fas fa-exclamation-triangle"></i> Zona Peligrosa</h3>
+                <div class="setting-item">
+                    <button class="danger-btn" onclick="resetProgress()">
+                        <i class="fas fa-undo"></i>
+                        Reiniciar Progreso
+                    </button>
+                </div>
+                <div class="setting-item">
+                    <button class="danger-btn" onclick="deleteAccount()">
+                        <i class="fas fa-trash"></i>
+                        Eliminar Cuenta
+                    </button>
+                </div>
+                <div class="setting-item">
+                    <button class="logout-btn-settings" onclick="logoutUser()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
