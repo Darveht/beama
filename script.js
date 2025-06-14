@@ -1,6 +1,3 @@
-
-
-
 // Configuración Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCFQ_geG0HIv2EZ-bfKc97TJNtf2sdqPzc",
@@ -131,21 +128,21 @@ function getAdaptiveDifficulty(lessonId) {
     const lesson = lessons.find(l => l.id === lessonId);
     const userAccuracy = gameState.user.totalQuestions > 0 ? 
         gameState.user.totalCorrect / gameState.user.totalQuestions : 0.5;
-    
+
     let difficulty = lesson.difficulty;
-    
+
     // Ajustar basado en rendimiento
     if (userAccuracy > 0.8) {
         difficulty += 1;
     } else if (userAccuracy < 0.5) {
         difficulty = Math.max(1, difficulty - 1);
     }
-    
+
     // Considerar áreas débiles
     if (gameState.user.weakAreas.includes(lessonId)) {
         difficulty = Math.max(1, difficulty - 1);
     }
-    
+
     return Math.min(5, Math.max(1, difficulty));
 }
 
@@ -161,7 +158,7 @@ function generateQuestion(lessonId, difficulty) {
         geometria: generateGeometriaQuestion,
         porcentajes: generatePorcentajesQuestion
     };
-    
+
     return generators[lessonId](difficulty);
 }
 
@@ -170,7 +167,7 @@ function generateSumaQuestion(difficulty) {
     const a = Math.floor(Math.random() * maxNum) + 1;
     const b = Math.floor(Math.random() * maxNum) + 1;
     const correct = a + b;
-    
+
     const answers = [correct];
     while (answers.length < 4) {
         const wrong = correct + Math.floor(Math.random() * 20) - 10;
@@ -178,7 +175,7 @@ function generateSumaQuestion(difficulty) {
             answers.push(wrong);
         }
     }
-    
+
     return {
         question: `¿Cuánto es ${a} + ${b}?`,
         answers: shuffleArray(answers),
@@ -193,7 +190,7 @@ function generateRestaQuestion(difficulty) {
     const a = Math.floor(Math.random() * maxNum) + 10;
     const b = Math.floor(Math.random() * (a - 1)) + 1;
     const correct = a - b;
-    
+
     const answers = [correct];
     while (answers.length < 4) {
         const wrong = correct + Math.floor(Math.random() * 20) - 10;
@@ -201,7 +198,7 @@ function generateRestaQuestion(difficulty) {
             answers.push(wrong);
         }
     }
-    
+
     return {
         question: `¿Cuánto es ${a} - ${b}?`,
         answers: shuffleArray(answers),
@@ -216,7 +213,7 @@ function generateMultiplicacionQuestion(difficulty) {
     const a = Math.floor(Math.random() * maxNum) + 1;
     const b = Math.floor(Math.random() * maxNum) + 1;
     const correct = a * b;
-    
+
     const answers = [correct];
     while (answers.length < 4) {
         const wrong = correct + Math.floor(Math.random() * 30) - 15;
@@ -224,7 +221,7 @@ function generateMultiplicacionQuestion(difficulty) {
             answers.push(wrong);
         }
     }
-    
+
     return {
         question: `¿Cuánto es ${a} × ${b}?`,
         answers: shuffleArray(answers),
@@ -238,7 +235,7 @@ function generateDivisionQuestion(difficulty) {
     const divisor = Math.floor(Math.random() * 10) + 2;
     const quotient = Math.floor(Math.random() * difficulty * 10) + 1;
     const dividend = divisor * quotient;
-    
+
     const answers = [quotient];
     while (answers.length < 4) {
         const wrong = quotient + Math.floor(Math.random() * 10) - 5;
@@ -246,7 +243,7 @@ function generateDivisionQuestion(difficulty) {
             answers.push(wrong);
         }
     }
-    
+
     return {
         question: `¿Cuánto es ${dividend} ÷ ${divisor}?`,
         answers: shuffleArray(answers),
@@ -261,10 +258,10 @@ function generateFraccionesQuestion(difficulty) {
     const den1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
     const den2 = den1; // Mismo denominador para simplificar
-    
+
     const resultNum = num1 + num2;
     const correct = `${resultNum}/${den1}`;
-    
+
     return {
         question: `¿Cuánto es ${num1}/${den1} + ${num2}/${den2}?`,
         answers: shuffleArray([correct, `${resultNum+1}/${den1}`, `${resultNum-1}/${den1}`, `${resultNum}/${den1+1}`]),
@@ -279,7 +276,7 @@ function generateAlgebraQuestion(difficulty) {
     const b = Math.floor(Math.random() * 20) + 1;
     const x = Math.floor(Math.random() * 10) + 1;
     const result = a * x + b;
-    
+
     const answers = [x];
     while (answers.length < 4) {
         const wrong = x + Math.floor(Math.random() * 10) - 5;
@@ -287,7 +284,7 @@ function generateAlgebraQuestion(difficulty) {
             answers.push(wrong);
         }
     }
-    
+
     return {
         question: `Si ${a}x + ${b} = ${result}, ¿cuál es el valor de x?`,
         answers: shuffleArray(answers),
@@ -300,7 +297,7 @@ function generateAlgebraQuestion(difficulty) {
 function generateGeometriaQuestion(difficulty) {
     const lado = Math.floor(Math.random() * 10) + 1;
     const area = lado * lado;
-    
+
     const answers = [area];
     while (answers.length < 4) {
         const wrong = area + Math.floor(Math.random() * 20) - 10;
@@ -308,7 +305,7 @@ function generateGeometriaQuestion(difficulty) {
             answers.push(wrong);
         }
     }
-    
+
     return {
         question: `¿Cuál es el área de un cuadrado con lado de ${lado} unidades?`,
         answers: shuffleArray(answers),
@@ -322,7 +319,7 @@ function generatePorcentajesQuestion(difficulty) {
     const total = Math.floor(Math.random() * 100) + 50;
     const percentage = [10, 20, 25, 50, 75][Math.floor(Math.random() * 5)];
     const correct = Math.floor(total * percentage / 100);
-    
+
     const answers = [correct];
     while (answers.length < 4) {
         const wrong = correct + Math.floor(Math.random() * 20) - 10;
@@ -330,7 +327,7 @@ function generatePorcentajesQuestion(difficulty) {
             answers.push(wrong);
         }
     }
-    
+
     return {
         question: `¿Cuánto es el ${percentage}% de ${total}?`,
         answers: shuffleArray(answers),
@@ -344,7 +341,7 @@ function generatePorcentajesQuestion(difficulty) {
 function analyzeErrors(questionHistory) {
     const errorPatterns = {};
     const recentQuestions = questionHistory.slice(-10);
-    
+
     recentQuestions.forEach(q => {
         if (!q.correct) {
             const topic = q.topic;
@@ -354,14 +351,14 @@ function analyzeErrors(questionHistory) {
             errorPatterns[topic]++;
         }
     });
-    
+
     // Identificar áreas débiles
     const weakAreas = Object.keys(errorPatterns).filter(topic => 
         errorPatterns[topic] >= 3
     );
-    
+
     gameState.user.weakAreas = [...new Set([...gameState.user.weakAreas, ...weakAreas])];
-    
+
     return {
         errorPatterns,
         recommendations: generateRecommendations(errorPatterns)
@@ -370,7 +367,7 @@ function analyzeErrors(questionHistory) {
 
 function generateRecommendations(errorPatterns) {
     const recommendations = [];
-    
+
     Object.keys(errorPatterns).forEach(topic => {
         const errors = errorPatterns[topic];
         if (errors >= 3) {
@@ -381,7 +378,7 @@ function generateRecommendations(errorPatterns) {
             });
         }
     });
-    
+
     return recommendations;
 }
 
@@ -398,22 +395,22 @@ function generateCorrectiveExercises(topic) {
 function calculateRewards(score, accuracy, time, mode) {
     let gems = Math.floor(score / 10);
     let experience = score;
-    
+
     // Bonificaciones
     if (accuracy >= 0.9) gems += 10; // Precisión alta
     if (accuracy === 1.0) gems += 20; // Perfecto
     if (time < 60) gems += 5; // Velocidad
-    
+
     // Multiplicadores por modo
     const multipliers = {
         normal: 1,
         challenge: 1.5,
         survival: 2
     };
-    
+
     gems = Math.floor(gems * multipliers[mode]);
     experience = Math.floor(experience * multipliers[mode]);
-    
+
     return { gems, experience };
 }
 
@@ -421,7 +418,7 @@ function calculateRewards(score, accuracy, time, mode) {
 function switchAuthTab(tab) {
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-    
+
     if (tab === 'login') {
         document.querySelector('.auth-tab').classList.add('active');
         document.getElementById('loginForm').classList.add('active');
@@ -437,28 +434,28 @@ async function registerUser() {
     const password = document.getElementById('registerPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     const age = document.getElementById('userAge').value;
-    
+
     if (!name || !email || !password || !age) {
         updateMascotMessage('Por favor completa todos los campos para crear tu cuenta.');
         return;
     }
-    
+
     if (password !== confirmPassword) {
         updateMascotMessage('Las contraseñas no coinciden. Verifica que sean iguales.');
         return;
     }
-    
+
     if (password.length < 6) {
         updateMascotMessage('La contraseña debe tener al menos 6 caracteres para ser segura.');
         return;
     }
-    
+
     try {
         updateMascotMessage('Creando tu cuenta...');
-        
+
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
-        
+
         // Guardar información adicional en la base de datos
         await database.ref('users/' + user.uid).set({
             name: name,
@@ -496,17 +493,17 @@ async function registerUser() {
                 errorAnalysis: true
             }
         });
-        
+
         console.log('Registro exitoso:', user.uid);
         updateMascotMessage(`¡Cuenta creada exitosamente! Bienvenido ${name}! 🎉`);
-        
+
         // Limpiar formulario
         document.getElementById('registerName').value = '';
         document.getElementById('registerEmail').value = '';
         document.getElementById('registerPassword').value = '';
         document.getElementById('confirmPassword').value = '';
         document.getElementById('userAge').value = '';
-        
+
         // Dar tiempo para que se ejecute onAuthStateChanged
         setTimeout(() => {
             if (gameState.currentScreen === 'auth') {
@@ -514,10 +511,10 @@ async function registerUser() {
                 showHome();
             }
         }, 1000);
-        
+
     } catch (error) {
         console.error('Error en registro:', error);
-        
+
         let errorMessage = 'Error al crear la cuenta.';
         switch (error.code) {
             case 'auth/email-already-in-use':
@@ -532,7 +529,7 @@ async function registerUser() {
             default:
                 errorMessage = 'Error al crear la cuenta: ' + error.message;
         }
-        
+
         updateMascotMessage(errorMessage);
     }
 }
@@ -540,25 +537,25 @@ async function registerUser() {
 async function loginUser() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
-    
+
     if (!email || !password) {
         updateMascotMessage('Por favor completa todos los campos para iniciar sesión.');
         return;
     }
-    
+
     try {
         updateMascotMessage('Iniciando sesión...');
-        
+
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
-        
+
         console.log('Login exitoso:', user.uid);
         updateMascotMessage('¡Sesión iniciada correctamente!');
-        
+
         // Limpiar formulario
         document.getElementById('loginEmail').value = '';
         document.getElementById('loginPassword').value = '';
-        
+
         // Dar tiempo para que se ejecute onAuthStateChanged
         setTimeout(() => {
             if (gameState.currentScreen === 'auth') {
@@ -566,10 +563,10 @@ async function loginUser() {
                 showHome();
             }
         }, 1000);
-        
+
     } catch (error) {
         console.error('Error en login:', error);
-        
+
         let errorMessage = 'Error al iniciar sesión.';
         switch (error.code) {
             case 'auth/user-not-found':
@@ -587,7 +584,7 @@ async function loginUser() {
             default:
                 errorMessage = 'Error al iniciar sesión: ' + error.message;
         }
-        
+
         updateMascotMessage(errorMessage);
     }
 }
@@ -596,18 +593,18 @@ async function loginWithGoogle() {
     // Deshabilitar Google Sign-in temporalmente debido a problemas de dominio
     updateMascotMessage('Lo siento, el inicio de sesión con Google no está disponible en este momento. Por favor usa el registro manual con email y contraseña.');
     return;
-    
+
     /* Código comentado hasta que se configure el dominio autorizado
     const provider = new firebase.auth.GoogleAuthProvider();
-    
+
     try {
         const result = await auth.signInWithPopup(provider);
         const user = result.user;
-        
+
         // Verificar si es un usuario nuevo
         const userRef = database.ref('users/' + user.uid);
         const snapshot = await userRef.once('value');
-        
+
         if (!snapshot.exists()) {
             // Usuario nuevo, crear perfil
             await userRef.set({
@@ -647,15 +644,15 @@ async function loginWithGoogle() {
                 }
             });
         }
-        
+
         updateMascotMessage(`¡Hola ${user.displayName}! ¡Me alegra verte de nuevo! 🐻`);
-        
+
     } catch (error) {
         console.error('Error en login con Google:', error);
-        
+
         // Manejar errores específicos
         let errorMessage = 'Error al iniciar sesión con Google.';
-        
+
         switch (error.code) {
             case 'auth/popup-closed-by-user':
                 errorMessage = 'Proceso de inicio de sesión cancelado.';
@@ -672,7 +669,7 @@ async function loginWithGoogle() {
             default:
                 errorMessage = error.message;
         }
-        
+
         updateMascotMessage(`Error: ${errorMessage}`);
         console.log('Código de error:', error.code);
     }
@@ -695,12 +692,12 @@ let hasShownWelcomeMessage = false;
 // Listener de cambios de autenticación
 auth.onAuthStateChanged(async (user) => {
     console.log('Estado de autenticación cambió:', user ? 'Usuario conectado' : 'Usuario desconectado');
-    
+
     if (user) {
         try {
             gameState.isAuthenticated = true;
             gameState.currentUser = user;
-            
+
             // Verificar que el usuario esté realmente autenticado
             const token = await user.getIdToken(true);
             if (!token) {
@@ -708,12 +705,12 @@ auth.onAuthStateChanged(async (user) => {
                 await auth.signOut();
                 return;
             }
-            
+
             // Cargar datos del usuario
             const userRef = database.ref('users/' + user.uid);
             const snapshot = await userRef.once('value');
             const userData = snapshot.val();
-            
+
             if (userData) {
                 gameState.user = {
                     uid: user.uid,
@@ -751,8 +748,8 @@ auth.onAuthStateChanged(async (user) => {
                         errorAnalysis: true
                     }
                 };
-                
-                // Cargar personalización y configuraciones
+
+                // Cargar configuraciones (sin aplicar personalización automáticamente)
                 if (userData.mascotCustomization) {
                     Object.assign(mascotCustomization, userData.mascotCustomization);
                 }
@@ -798,32 +795,32 @@ auth.onAuthStateChanged(async (user) => {
                     }
                 };
             }
-            
+
             updateUserStats();
-            
+
             // Forzar cambio a pantalla de inicio después de autenticación exitosa
             console.log('Cambiando a pantalla de inicio...');
             showHome();
-            
+
             if (!hasShownWelcomeMessage) {
                 setTimeout(() => {
                     updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
                     hasShownWelcomeMessage = true;
                 }, 1000);
             }
-            
+
         } catch (error) {
             console.error('Error en autenticación:', error);
             gameState.isAuthenticated = false;
             gameState.currentUser = null;
             updateMascotMessage('Error al iniciar sesión. Por favor intenta de nuevo.');
         }
-        
+
     } else {
         gameState.isAuthenticated = false;
         gameState.currentUser = null;
         hasShownWelcomeMessage = false;
-        
+
         // Solo mostrar auth si no estamos en intro
         if (gameState.currentScreen !== 'intro') {
             showAuthScreen();
@@ -837,7 +834,7 @@ function showIntro() {
     hideAllScreens();
     document.getElementById('introScreen').classList.add('active');
     gameState.currentScreen = 'intro';
-    
+
     // Secuencia de animaciones
     setTimeout(() => {
         console.log('Intro terminado, verificando autenticación');
@@ -862,15 +859,15 @@ function showHome() {
         showAuthScreen();
         return;
     }
-    
+
     console.log('Mostrando pantalla de inicio');
     hideAllScreens();
     document.getElementById('homeScreen').classList.add('active');
     gameState.currentScreen = 'home';
-    
+
     // Solo actualizar estadísticas de usuario
     updateUserStats();
-    
+
     // Solo mostrar mensaje si no se ha mostrado antes o si es navegación manual
     if (!hasShownWelcomeMessage && gameState.user && gameState.user.name) {
         updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
@@ -913,7 +910,7 @@ function hideAllScreens() {
 function renderLessons() {
     const grid = document.getElementById('lessonsGrid');
     grid.innerHTML = '';
-    
+
     lessons.forEach((lesson, index) => {
         // Determinar estado del nodo
         let nodeState = 'locked';
@@ -929,7 +926,7 @@ function renderLessons() {
         if (lesson.progress === 100) {
             nodeState = 'perfect';
         }
-        
+
         // Tipos especiales de nodos
         let specialType = '';
         if (index === 3 || index === 7) { // Nodos checkpoint
@@ -937,18 +934,18 @@ function renderLessons() {
         } else if (index === lessons.length - 1) { // Nodo jefe final
             specialType = 'boss';
         }
-        
+
         const nodeElement = document.createElement('div');
         nodeElement.className = `lesson-node ${nodeState} ${specialType}`;
         nodeElement.onclick = () => selectLesson(lesson.id);
-        
+
         // Añadir delay de animación escalonado
         nodeElement.style.animationDelay = `${index * 0.1}s`;
-        
+
         nodeElement.innerHTML = `
             <div class="lesson-icon">${lesson.icon}</div>
         `;
-        
+
         grid.appendChild(nodeElement);
     });
 }
@@ -956,17 +953,17 @@ function renderLessons() {
 function selectLesson(lessonId) {
     const lesson = lessons.find(l => l.id === lessonId);
     const lessonIndex = lessons.findIndex(l => l.id === lessonId);
-    
+
     // Verificar si la lección está disponible
     if (lessonIndex > 0 && lessons[lessonIndex - 1].progress < 50) {
         playErrorSound();
         updateMascotMessage('¡Oops! Primero debes completar la lección anterior para desbloquear esta.');
         return;
     }
-    
+
     playClickSound();
     gameState.currentLesson = lessonId;
-    
+
     // Mostrar modal de información de la lección
     showLessonModal(lesson);
 }
@@ -998,9 +995,9 @@ function showLessonModal(lesson) {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
+
     if (lesson.progress === 0) {
         updateMascotMessage(`¡Nueva aventura! Vamos a explorar ${lesson.title} juntos.`);
     } else if (lesson.progress < 100) {
@@ -1030,7 +1027,7 @@ function startMode(mode) {
         playErrorSound();
         return;
     }
-    
+
     playClickSound();
     gameState.currentMode = mode;
     startGame();
@@ -1041,45 +1038,45 @@ function startGame() {
     hideAllScreens();
     document.getElementById('gameScreen').classList.add('active');
     gameState.currentScreen = 'game';
-    
+
     // Generar preguntas
     const difficulty = getAdaptiveDifficulty(gameState.currentLesson);
     gameState.questions = [];
-    
+
     const questionCount = gameState.currentMode === 'challenge' ? 20 : 10;
-    
+
     for (let i = 0; i < questionCount; i++) {
         const question = generateQuestion(gameState.currentLesson, difficulty);
         question.topic = gameState.currentLesson;
         gameState.questions.push(question);
     }
-    
+
     gameState.currentQuestionIndex = 0;
     gameState.score = 0;
     gameState.timeStart = Date.now();
-    
+
     // Mensaje inicial del juego
     const lessonName = lessons.find(l => l.id === gameState.currentLesson)?.title || 'matemáticas';
     updateMascotMessage(`¡Perfecto! Vamos a practicar ${lessonName}. Lee bien cada pregunta y piensa antes de responder.`, 'mascotSpeechGame');
-    
+
     setTimeout(showQuestion, 2000); // Dar tiempo para que termine de hablar
 }
 
 function showQuestion() {
     const question = gameState.questions[gameState.currentQuestionIndex];
-    
+
     document.getElementById('questionNum').textContent = gameState.currentQuestionIndex + 1;
     document.getElementById('totalQuestions').textContent = gameState.questions.length;
     document.getElementById('questionText').textContent = question.question;
-    
+
     // Actualizar barra de progreso
     const progress = ((gameState.currentQuestionIndex) / gameState.questions.length) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
-    
+
     // Mostrar respuestas
     const container = document.getElementById('answersContainer');
     container.innerHTML = '';
-    
+
     question.answers.forEach(answer => {
         const button = document.createElement('button');
         button.className = 'answer-btn';
@@ -1087,7 +1084,7 @@ function showQuestion() {
         button.onclick = () => selectAnswer(answer);
         container.appendChild(button);
     });
-    
+
     // Actualizar vidas
     document.getElementById('livesCount').textContent = gameState.user.lives;
 }
@@ -1095,14 +1092,14 @@ function showQuestion() {
 function selectAnswer(selectedAnswer) {
     const question = gameState.questions[gameState.currentQuestionIndex];
     const isCorrect = selectedAnswer == question.correct;
-    
+
     // Actualizar estadísticas
     gameState.user.totalQuestions++;
     if (isCorrect) {
         gameState.user.totalCorrect++;
         gameState.score += 10;
     }
-    
+
     // Feedback visual
     const buttons = document.querySelectorAll('.answer-btn');
     buttons.forEach(btn => {
@@ -1113,14 +1110,14 @@ function selectAnswer(selectedAnswer) {
         }
         btn.disabled = true;
     });
-    
+
     // Feedback de mascota
     if (isCorrect) {
         updateMascotMessage('¡Increíble! ¡Eres genial! Esa respuesta está perfecta.', 'mascotSpeechGame');
         const mascotGame = document.getElementById('bearGame');
         if (mascotGame) mascotGame.classList.add('pulse');
         playSuccessSound();
-        
+
         // Sonido adicional para gemas
         setTimeout(() => {
             playGemSound();
@@ -1131,13 +1128,13 @@ function selectAnswer(selectedAnswer) {
         if (mascotGame) mascotGame.classList.add('shake');
         playErrorSound();
         gameState.user.lives--;
-        
+
         if (gameState.currentMode === 'survival' && gameState.user.lives <= 0) {
             endGame();
             return;
         }
     }
-    
+
     // Limpiar animaciones
     setTimeout(() => {
         const mascotGame = document.getElementById('bearGame');
@@ -1145,7 +1142,7 @@ function selectAnswer(selectedAnswer) {
             mascotGame.classList.remove('pulse', 'shake');
         }
     }, 1000);
-    
+
     // Continuar al siguiente
     setTimeout(() => {
         nextQuestion();
@@ -1154,7 +1151,7 @@ function selectAnswer(selectedAnswer) {
 
 function nextQuestion() {
     gameState.currentQuestionIndex++;
-    
+
     if (gameState.currentQuestionIndex >= gameState.questions.length) {
         endGame();
     } else {
@@ -1165,40 +1162,40 @@ function nextQuestion() {
 function endGame() {
     hideAllScreens();
     document.getElementById('resultsScreen').classList.add('active');
-    
+
     const totalTime = (Date.now() - gameState.timeStart) / 1000;
     const accuracy = gameState.user.totalCorrect / gameState.user.totalQuestions;
     const rewards = calculateRewards(gameState.score, accuracy, totalTime, gameState.currentMode);
-    
+
     // Actualizar progreso de la lección actual
     const currentLesson = lessons.find(l => l.id === gameState.currentLesson);
     if (currentLesson) {
         const progressIncrease = Math.round(accuracy * 20); // 20% máximo por sesión
         currentLesson.progress = Math.min(100, currentLesson.progress + progressIncrease);
-        
+
         // Guardar progreso en localStorage temporalmente
         localStorage.setItem('lessonsProgress', JSON.stringify(lessons.map(l => ({id: l.id, progress: l.progress}))));
     }
-    
+
     // Actualizar gemas
     gameState.user.gems += rewards.gems;
-    
+
     // Mostrar resultados
     document.getElementById('finalScore').textContent = gameState.score;
     document.getElementById('accuracy').textContent = Math.round(accuracy * 100) + '%';
     document.getElementById('gemsEarned').textContent = rewards.gems;
-    
+
     // Actualizar racha
     if (accuracy >= 0.8) {
         gameState.user.streak++;
     } else {
         gameState.user.streak = 0;
     }
-    
+
     // Mostrar logros
     const achievements = document.getElementById('achievements');
     achievements.innerHTML = '';
-    
+
     if (accuracy === 1.0) {
         addAchievement('¡Perfecto! 🏆');
         playLevelUpSound();
@@ -1216,10 +1213,10 @@ function endGame() {
         addAchievement('¡Lección completada! 🎯');
         playLevelUpSound();
     }
-    
+
     // Actualizar UI
     updateUserStats();
-    
+
     // Mensaje de mascota y sonido
     if (accuracy >= 0.8) {
         updateMascotMessage('¡Increíble trabajo! Estoy muy orgulloso 🎊');
@@ -1275,7 +1272,7 @@ function calcEquals() {
     if (gameState.calculator.operation) {
         const expression = gameState.calculator.operation + gameState.calculator.display;
         addCalculatorStep(`Calculando: ${expression}`);
-        
+
         try {
             const result = eval(expression.replace('×', '*').replace('÷', '/'));
             gameState.calculator.display = result.toString();
@@ -1363,7 +1360,7 @@ function updateMascotMessage(message, targetElement = 'mascotSpeech') {
     if (speechElement) {
         speechElement.textContent = message;
     }
-    
+
     // También actualizar en otros elementos de speech si existen
     const speechElements = ['mascotSpeech', 'mascotSpeechLessons', 'mascotSpeechGame'];
     speechElements.forEach(id => {
@@ -1372,7 +1369,7 @@ function updateMascotMessage(message, targetElement = 'mascotSpeech') {
             element.textContent = message;
         }
     });
-    
+
     // Solo animación visual sin voz
     playMascotAnimation();
 }
@@ -1380,7 +1377,7 @@ function updateMascotMessage(message, targetElement = 'mascotSpeech') {
 function playMascotAnimation() {
     // Solo animación visual de la mascota
     const bears = ['bearHome', 'bearLessons', 'bearGame', 'previewBear'];
-    
+
     bears.forEach(bearId => {
         const bear = document.getElementById(bearId);
         if (bear && isElementVisible(bear)) {
@@ -1403,9 +1400,9 @@ function isElementVisible(element) {
 // Efectos de sonido estilo Duolingo
 function playSuccessSound() {
     if (!appSettings.soundEffects) return;
-    
+
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    
+
     // Sonido de éxito alegre y brillante
     const notes = [
         { freq: 523, time: 0, duration: 0.15 },    // C5
@@ -1413,26 +1410,26 @@ function playSuccessSound() {
         { freq: 784, time: 0.2, duration: 0.2 },   // G5
         { freq: 1047, time: 0.35, duration: 0.25 } // C6
     ];
-    
+
     notes.forEach(note => {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         const filterNode = audioContext.createBiquadFilter();
-        
+
         oscillator.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
+
         oscillator.frequency.setValueAtTime(note.freq, audioContext.currentTime + note.time);
         oscillator.type = 'triangle';
-        
+
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(2000, audioContext.currentTime + note.time);
-        
+
         gainNode.gain.setValueAtTime(0, audioContext.currentTime + note.time);
         gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + note.time + 0.02);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.time + note.duration);
-        
+
         oscillator.start(audioContext.currentTime + note.time);
         oscillator.stop(audioContext.currentTime + note.time + note.duration);
     });
@@ -1440,80 +1437,80 @@ function playSuccessSound() {
 
 function playErrorSound() {
     if (!appSettings.soundEffects) return;
-    
+
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     const filterNode = audioContext.createBiquadFilter();
-    
+
     oscillator.connect(filterNode);
     filterNode.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     // Sonido de error descendente
     oscillator.frequency.setValueAtTime(330, audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.1);
     oscillator.frequency.exponentialRampToValueAtTime(165, audioContext.currentTime + 0.3);
     oscillator.type = 'sawtooth';
-    
+
     filterNode.type = 'lowpass';
     filterNode.frequency.setValueAtTime(800, audioContext.currentTime);
     filterNode.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
-    
+
     gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
+
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.3);
 }
 
 function playClickSound() {
     if (!appSettings.soundEffects) return;
-    
+
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
     oscillator.type = 'sine';
-    
+
     gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-    
+
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.1);
 }
 
 function playHoverSound() {
     if (!appSettings.soundEffects) return;
-    
+
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(500, audioContext.currentTime + 0.08);
     oscillator.type = 'sine';
-    
+
     gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
-    
+
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.08);
 }
 
 function playLevelUpSound() {
     if (!appSettings.soundEffects) return;
-    
+
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    
+
     // Secuencia ascendente de notas
     const notes = [
         { freq: 261, time: 0 },     // C4
@@ -1524,21 +1521,21 @@ function playLevelUpSound() {
         { freq: 784, time: 0.5 },   // G5
         { freq: 1047, time: 0.6 }   // C6
     ];
-    
+
     notes.forEach(note => {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
-        
+
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
+
         oscillator.frequency.setValueAtTime(note.freq, audioContext.currentTime + note.time);
         oscillator.type = 'triangle';
-        
+
         gainNode.gain.setValueAtTime(0, audioContext.currentTime + note.time);
         gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + note.time + 0.02);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.time + 0.2);
-        
+
         oscillator.start(audioContext.currentTime + note.time);
         oscillator.stop(audioContext.currentTime + note.time + 0.2);
     });
@@ -1546,27 +1543,27 @@ function playLevelUpSound() {
 
 function playGemSound() {
     if (!appSettings.soundEffects) return;
-    
+
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     const filterNode = audioContext.createBiquadFilter();
-    
+
     oscillator.connect(filterNode);
     filterNode.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(1500, audioContext.currentTime + 0.1);
     oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.2);
     oscillator.type = 'sine';
-    
+
     filterNode.type = 'highpass';
     filterNode.frequency.setValueAtTime(500, audioContext.currentTime);
-    
+
     gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-    
+
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.2);
 }
@@ -1575,7 +1572,7 @@ function updateUserStats() {
     document.getElementById('streak').textContent = gameState.user.streak;
     document.getElementById('gems').textContent = gameState.user.gems;
     document.getElementById('lives').textContent = gameState.user.lives;
-    
+
     const userNameElement = document.getElementById('userName');
     if (userNameElement && gameState.user.name) {
         userNameElement.textContent = gameState.user.name;
@@ -1600,17 +1597,17 @@ async function saveUserProgress() {
                 strengths: gameState.user.strengths,
                 lastPlayed: firebase.database.ServerValue.TIMESTAMP
             };
-            
+
             // Agregar personalización de mascota si existe
             if (gameState.user.mascotCustomization) {
                 updateData.mascotCustomization = gameState.user.mascotCustomization;
             }
-            
+
             // Agregar configuraciones si existen
             if (gameState.user.settings) {
                 updateData.settings = gameState.user.settings;
             }
-            
+
             await database.ref('users/' + gameState.currentUser.uid).update(updateData);
         } catch (error) {
             console.error('Error guardando progreso:', error);
@@ -1668,13 +1665,13 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Error cargando progreso de lecciones:', e);
         }
     }
-    
+
     showIntro();
     updateUserStats();
-    
+
     // Agregar efectos de sonido a botones
     addSoundEffectsToButtons();
-    
+
     // Cerrar modal al hacer clic fuera
     window.onclick = function(event) {
         const modal = document.getElementById('calculatorModal');
@@ -1682,7 +1679,7 @@ document.addEventListener('DOMContentLoaded', function() {
             closeCalculator();
         }
     };
-    
+
     // Restaurar vidas cada hora
     setInterval(() => {
         if (gameState.user.lives < 5) {
@@ -1702,7 +1699,7 @@ function addSoundEffectsToButtons() {
             playHoverSound();
         }
     });
-    
+
     // Agregar click sound a todos los botones
     document.addEventListener('click', function(e) {
         if (e.target.matches('button, .lesson-card, .answer-btn, .action-btn, .mode-btn, .color-option, .style-option, .option-card')) {
@@ -1723,7 +1720,7 @@ const achievements = {
 // Sistema de recomendaciones inteligente
 function getSmartRecommendations() {
     const recommendations = [];
-    
+
     // Basado en áreas débiles
     gameState.user.weakAreas.forEach(area => {
         recommendations.push({
@@ -1733,7 +1730,7 @@ function getSmartRecommendations() {
             priority: 'high'
         });
     });
-    
+
     // Basado en fortalezas
     gameState.user.strengths.forEach(area => {
         const nextLevel = lessons.find(l => l.id === area && l.difficulty < 5);
@@ -1746,7 +1743,7 @@ function getSmartRecommendations() {
             });
         }
     });
-    
+
     // Lecciones nuevas
     const untriedLessons = lessons.filter(l => l.progress === 0);
     if (untriedLessons.length > 0) {
@@ -1757,7 +1754,7 @@ function getSmartRecommendations() {
             priority: 'low'
         });
     }
-    
+
     return recommendations.sort((a, b) => {
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority];
@@ -1809,7 +1806,7 @@ function showProfile() {
         showAuthScreen();
         return;
     }
-    
+
     hideAllScreens();
     document.getElementById('profileScreen').classList.add('active');
     gameState.currentScreen = 'profile';
@@ -1821,16 +1818,16 @@ function showMascotCustomization() {
     hideAllScreens();
     document.getElementById('mascotCustomizationScreen').classList.add('active');
     gameState.currentScreen = 'mascotCustomization';
-    
+
     // Cargar personalización y aplicar al preview
     loadMascotCustomization();
-    
+
     // Pequeño delay para asegurar que el DOM esté listo
     setTimeout(() => {
         applyMascotCustomization('preview');
         initializeDragFunctionality();
     }, 150);
-    
+
     updateMascotMessage('Hagamos que tu avatar sea único. Puedes cambiar colores, ojos, boca y más.');
 }
 
@@ -1842,48 +1839,48 @@ let currentTransform = 0;
 function initializeDragFunctionality() {
     const customizationControls = document.querySelector('.customization-controls');
     const dragHandle = document.querySelector('.drag-handle');
-    
+
     if (!customizationControls || !dragHandle) return;
-    
+
     // Mouse events
     dragHandle.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', endDrag);
-    
+
     // Touch events para móvil
     dragHandle.addEventListener('touchstart', startDrag, { passive: false });
     document.addEventListener('touchmove', drag, { passive: false });
     document.addEventListener('touchend', endDrag);
-    
+
     function startDrag(e) {
         isDragging = true;
         startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
         dragHandle.style.cursor = 'grabbing';
         e.preventDefault();
     }
-    
+
     function drag(e) {
         if (!isDragging) return;
-        
+
         const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
         const deltaY = currentY - startY;
-        
+
         // Limitar el movimiento
         const maxUp = -window.innerHeight * 0.2; // Máximo hacia arriba
         const maxDown = window.innerHeight * 0.1; // Máximo hacia abajo
-        
+
         currentTransform = Math.min(maxDown, Math.max(maxUp, deltaY));
-        
+
         customizationControls.style.transform = `translateY(${currentTransform}px)`;
         e.preventDefault();
     }
-    
+
     function endDrag() {
         if (!isDragging) return;
-        
+
         isDragging = false;
         dragHandle.style.cursor = 'grab';
-        
+
         // Snap a posiciones específicas
         if (currentTransform > window.innerHeight * 0.05) {
             // Minimizar
@@ -1898,7 +1895,7 @@ function initializeDragFunctionality() {
             customizationControls.style.transform = 'translateY(0)';
             customizationControls.style.height = '55vh';
         }
-        
+
         currentTransform = 0;
     }
 }
@@ -1909,15 +1906,15 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-modern').forEach(tab => {
         tab.classList.remove('active');
     });
-    
+
     // Remover active de todos los paneles
     document.querySelectorAll('.customization-panel-modern').forEach(panel => {
         panel.classList.remove('active');
     });
-    
+
     // Activar la tab seleccionada
     event.target.classList.add('active');
-    
+
     // Activar el panel correspondiente
     const panelMap = {
         'pelaje': 'pelajePanel',
@@ -1927,7 +1924,7 @@ function switchTab(tabName) {
         'accesorios': 'accesoriosPanel',
         'fondos': 'fondosPanel'
     };
-    
+
     const panelId = panelMap[tabName];
     if (panelId) {
         document.getElementById(panelId).classList.add('active');
@@ -1936,10 +1933,10 @@ function switchTab(tabName) {
 
 function changeBackground(backgroundType) {
     mascotCustomization.background = backgroundType;
-    
+
     const backgroundPreview = document.getElementById('backgroundPreview');
     const previewSection = document.querySelector('.mascot-preview-section');
-    
+
     if (backgroundPreview && previewSection) {
         switch(backgroundType) {
             case 'forest':
@@ -1968,13 +1965,13 @@ function changeBackground(backgroundType) {
                 break;
         }
     }
-    
+
     // Actualizar selección visual
     document.querySelectorAll('#fondosPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
     event.target.closest('.option-card').classList.add('selected');
-    
+
     const messages = {
         'none': 'El fondo clasico me encanta',
         'forest': 'Me siento como en casa en el bosque',
@@ -1985,33 +1982,33 @@ function changeBackground(backgroundType) {
         'sunset': 'Que hermoso atardecer',
         'winter': 'Me encanta la nieve'
     };
-    
+
     updateMascotMessage(messages[backgroundType] || 'Nuevo fondo genial');
 }
 
 function changeBodyColor(color) {
     mascotCustomization.bodyColor = color;
     applyMascotCustomization('preview');
-    
+
     // Actualizar selección visual
     document.querySelectorAll('#pelajePanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
     event.target.closest('.option-card').classList.add('selected');
-    
+
     updateMascotMessage('Me gusta este color, se ve genial');
 }
 
 function changeEyeStyle(style) {
     mascotCustomization.eyeStyle = style;
     applyMascotCustomization('preview');
-    
+
     // Actualizar selección visual
     document.querySelectorAll('#ojosPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
     event.target.closest('.option-card').classList.add('selected');
-    
+
     const messages = {
         'normal': 'Unos ojos clasicos',
         'large': 'Que ojos tan grandes y expresivos',
@@ -2022,20 +2019,20 @@ function changeEyeStyle(style) {
         'rainbow': 'Que colorido me veo',
         'cool': 'Me veo super genial'
     };
-    
+
     updateMascotMessage(messages[style] || 'Me encanta este estilo');
 }
 
 function changeMouthStyle(style) {
     mascotCustomization.mouthStyle = style;
     applyMascotCustomization('preview');
-    
+
     // Actualizar selección visual
     document.querySelectorAll('#bocaPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
     event.target.closest('.option-card').classList.add('selected');
-    
+
     const messages = {
         'happy': 'Una sonrisa hermosa',
         'neutral': 'Expresion serena y calmada',
@@ -2044,20 +2041,20 @@ function changeMouthStyle(style) {
         'laugh': 'Me da mucha risa',
         'cute': 'Que adorable me veo'
     };
-    
+
     updateMascotMessage(messages[style] || 'Me gusta esta expresion');
 }
 
 function changeNoseStyle(style) {
     mascotCustomization.noseStyle = style;
     applyMascotCustomization('preview');
-    
+
     // Actualizar selección visual
     document.querySelectorAll('#narizPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
     event.target.closest('.option-card').classList.add('selected');
-    
+
     const messages = {
         'normal': 'Una nariz perfecta',
         'small': 'Que tierna naricita',
@@ -2065,18 +2062,18 @@ function changeNoseStyle(style) {
         'button': 'Como un botoncito',
         'heart': 'Una nariz llena de amor'
     };
-    
+
     updateMascotMessage(messages[style] || 'Esta nariz me queda genial');
 }
 
 function toggleAccessory(accessory) {
     mascotCustomization.accessories[accessory] = !mascotCustomization.accessories[accessory];
     applyMascotCustomization('preview');
-    
+
     // Actualizar selección visual
     const button = event.target.closest('.option-card');
     button.classList.toggle('selected');
-    
+
     const messages = {
         'hat': mascotCustomization.accessories[accessory] ? 'Un sombrero elegante' : 'Sin sombrero, mas natural',
         'glasses': mascotCustomization.accessories[accessory] ? 'Me veo muy intelectual' : 'Sin lentes, ojos al natural',
@@ -2087,7 +2084,7 @@ function toggleAccessory(accessory) {
         'chain': mascotCustomization.accessories[accessory] ? 'Estilo brillante' : 'Sin cadena, estilo minimalista',
         'scarf': mascotCustomization.accessories[accessory] ? 'Abrigadito y fashionable' : 'Sin bufanda, mas fresco'
     };
-    
+
     updateMascotMessage(messages[accessory] || 'Cambio de look');
 }
 
@@ -2098,33 +2095,33 @@ function resetCustomization() {
     mascotCustomization.mouthStyle = 'happy';
     mascotCustomization.noseStyle = 'normal';
     mascotCustomization.background = 'none';
-    
+
     // Resetear accesorios
     Object.keys(mascotCustomization.accessories).forEach(accessory => {
         mascotCustomization.accessories[accessory] = false;
     });
-    
+
     // Resetear fondo
     const previewSection = document.querySelector('.mascot-preview-section');
     if (previewSection) {
         previewSection.style.background = 'linear-gradient(135deg, #58cc02 0%, #89e219 100%)';
     }
-    
+
     // Aplicar cambios
     applyMascotCustomization('preview');
-    
+
     // Actualizar selecciones visuales
     document.querySelectorAll('.option-card').forEach(card => {
         card.classList.remove('selected');
     });
-    
+
     // Marcar opciones por defecto como seleccionadas
     document.querySelector('[data-color="#D2691E"]')?.classList.add('selected');
     document.querySelector('#ojosPanel .option-card')?.classList.add('selected');
     document.querySelector('#bocaPanel .option-card')?.classList.add('selected');
     document.querySelector('#narizPanel .option-card')?.classList.add('selected');
     document.querySelector('#fondosPanel .option-card')?.classList.add('selected');
-    
+
     updateMascotMessage('He vuelto a mi aspecto original');
 }
 
@@ -2139,15 +2136,15 @@ function showSettings() {
 // Funciones de perfil
 function updateProfileData() {
     if (!gameState.user) return;
-    
+
     document.getElementById('profileName').value = gameState.user.name || '';
     document.getElementById('profileEmail').value = gameState.user.email || '';
     document.getElementById('profileAge').value = gameState.user.age || 'kid';
-    
+
     document.getElementById('profileStreak').textContent = gameState.user.streak || 0;
     document.getElementById('profileGems').textContent = gameState.user.gems || 0;
     document.getElementById('profileLevel').textContent = gameState.user.level || 1;
-    
+
     const accuracy = gameState.user.totalQuestions > 0 ? 
         Math.round((gameState.user.totalCorrect / gameState.user.totalQuestions) * 100) : 0;
     document.getElementById('profileAccuracy').textContent = accuracy + '%';
@@ -2199,11 +2196,11 @@ function loadMascotCustomization() {
     if (gameState.currentScreen !== 'mascotCustomization') {
         return;
     }
-    
+
     if (gameState.user && gameState.user.mascotCustomization) {
         Object.assign(mascotCustomization, gameState.user.mascotCustomization);
     }
-    
+
     // Cargar fondo si existe
     if (mascotCustomization.background && mascotCustomization.background !== 'none') {
         const backgroundMap = {
@@ -2215,15 +2212,15 @@ function loadMascotCustomization() {
             'sunset': 'linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%)',
             'winter': 'linear-gradient(135deg, #b0e0e6 0%, #ffffff 100%)'
         };
-        
+
         const previewSection = document.querySelector('.mascot-preview-section');
         if (previewSection && backgroundMap[mascotCustomization.background]) {
             previewSection.style.background = backgroundMap[mascotCustomization.background];
         }
     }
-    
+
     applyMascotCustomization('preview');
-    
+
     // Marcar las opciones seleccionadas en la UI
     setTimeout(() => {
         // Marcar color seleccionado
@@ -2233,7 +2230,7 @@ function loadMascotCustomization() {
                 card.classList.add('selected');
             }
         });
-        
+
         // Marcar accesorios activos
         Object.keys(mascotCustomization.accessories).forEach(accessory => {
             if (mascotCustomization.accessories[accessory]) {
@@ -2243,7 +2240,7 @@ function loadMascotCustomization() {
                 }
             }
         });
-        
+
         // Marcar fondo seleccionado
         if (mascotCustomization.background) {
             const backgroundCard = document.querySelector(`[onclick="changeBackground('${mascotCustomization.background}')"]`);
@@ -2261,16 +2258,16 @@ function applyMascotCustomization(target = 'main') {
     if (gameState.currentScreen !== 'mascotCustomization') {
         return;
     }
-    
+
     // SOLO trabajar con elementos preview
     const prefixes = ['preview'];
-    
+
     prefixes.forEach(prefix => {
         // Aplicar color del cuerpo
         const head = document.getElementById(`${prefix}BearHead`);
         const body = document.getElementById(`${prefix}BearBody`);
         const ears = document.querySelectorAll(`#${prefix}BearEarLeft, #${prefix}BearEarRight`);
-        
+
         if (head) {
             head.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 20)} 50%, ${darkenColor(mascotCustomization.bodyColor, 40)} 100%)`;
         }
@@ -2280,22 +2277,22 @@ function applyMascotCustomization(target = 'main') {
         ears.forEach(ear => {
             if (ear) ear.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 30)} 70%)`;
         });
-        
+
         // Aplicar estilo de ojos más avanzado
         const eyes = document.querySelectorAll(`#${prefix}BearEyeLeft, #${prefix}BearEyeRight`);
         eyes.forEach((eye, index) => {
             if (!eye) return;
-            
+
             // Resetear estilos
             eye.style.transform = 'scale(1)';
             eye.style.height = '28px';
             eye.style.width = '28px';
             eye.style.borderRadius = '50%';
             eye.innerHTML = '';
-            
+
             const pupil = eye.querySelector('.pupil') || document.createElement('div');
             pupil.className = 'pupil';
-            
+
             switch (mascotCustomization.eyeStyle) {
                 case 'large':
                     eye.style.transform = 'scale(1.4)';
@@ -2321,7 +2318,7 @@ function applyMascotCustomization(target = 'main') {
                 case 'rainbow':
                     eye.style.background = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)';
                     pupil.style.background = '#fff';
-                    pupil.style.border = '2px solid #000';
+                    pupil.style.boxShadow = '0 0 10px #00d4ff';
                     break;
                 case 'heart':
                     eye.innerHTML = `<div style="color: ${mascotCustomization.eyeColor}; font-size: 18px;">💖</div>`;
@@ -2338,7 +2335,7 @@ function applyMascotCustomization(target = 'main') {
                 default:
                     pupil.style.background = `radial-gradient(circle at 30% 30%, ${mascotCustomization.eyeColor} 0%, #000 100%)`;
             }
-            
+
             if (!eye.querySelector('.pupil') && ['star', 'rainbow', 'heart', 'cool'].includes(mascotCustomization.eyeStyle)) {
                 // Para estos estilos especiales no necesitamos pupila tradicional
             } else if (!eye.innerHTML.includes('div') || mascotCustomization.eyeStyle === 'normal') {
@@ -2346,7 +2343,7 @@ function applyMascotCustomization(target = 'main') {
                 eye.appendChild(pupil);
             }
         });
-        
+
         // Aplicar estilo de nariz
         const nose = document.getElementById(`${prefix}BearNose`);
         if (nose) {
@@ -2382,13 +2379,13 @@ function applyMascotCustomization(target = 'main') {
                     nose.innerHTML = '';
             }
         }
-        
+
         // Aplicar estilo de boca avanzado
         const mouth = document.getElementById(`${prefix}BearMouth`);
         if (mouth) {
             mouth.style.border = '4px solid #2c2c2c';
             mouth.style.borderTop = 'none';
-            
+
             switch (mascotCustomization.mouthStyle) {
                 case 'surprised':
                     mouth.style.borderRadius = '50%';
@@ -2431,10 +2428,10 @@ function applyMascotCustomization(target = 'main') {
                     mouth.innerHTML = '';
             }
         }
-        
+
         // Aplicar accesorios
         applyAccessories(prefix);
-        
+
         // Aplicar patrones
         applyPatterns(prefix);
     });
@@ -2455,14 +2452,14 @@ function applyAccessories(prefix) {
     // Limpiar accesorios existentes
     const existingAccessories = document.querySelectorAll(`[id*="${prefix}Accessory"]`);
     existingAccessories.forEach(acc => acc.remove());
-    
+
     const bearHead = document.getElementById(`${prefix}BearHead`) || 
                      document.querySelector(`#bear${prefix} .bear-head`);
     const bearBody = document.getElementById(`${prefix}BearBody`) || 
                      document.querySelector(`#bear${prefix} .bear-body`);
-    
+
     if (!bearHead) return;
-    
+
     // Lentes
     if (mascotCustomization.accessories.glasses) {
         const glasses = document.createElement('div');
@@ -2477,7 +2474,7 @@ function applyAccessories(prefix) {
         glasses.style.background = 'rgba(0,100,200,0.3)';
         glasses.style.zIndex = '10';
         glasses.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
-        
+
         // Agregar puente de lentes
         glasses.innerHTML = `
             <div style="position: absolute; top: 8px; left: 32px; width: 6px; height: 3px; background: #333; border-radius: 2px;"></div>
@@ -2485,7 +2482,7 @@ function applyAccessories(prefix) {
         `;
         bearHead.appendChild(glasses);
     }
-    
+
     // Sombrero
     if (mascotCustomization.accessories.hat) {
         const hat = document.createElement('div');
@@ -2502,7 +2499,7 @@ function applyAccessories(prefix) {
         hat.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
         bearHead.appendChild(hat);
     }
-    
+
     // Gorra
     if (mascotCustomization.accessories.cap) {
         const cap = document.createElement('div');
@@ -2521,11 +2518,12 @@ function applyAccessories(prefix) {
         `;
         bearHead.appendChild(cap);
     }
-    
+
     // Diadema
     if (mascotCustomization.accessories.headband) {
         const headband = document.createElement('div');
-        headband.id = `${prefix}AccessoryHeadband`;
+        ```tool_code
+headband.id = `${prefix}AccessoryHeadband`;
         headband.style.position = 'absolute';
         headband.style.top = '10px';
         headband.style.left = '10px';
@@ -2540,7 +2538,7 @@ function applyAccessories(prefix) {
         `;
         bearHead.appendChild(headband);
     }
-    
+
     // Aretes
     if (mascotCustomization.accessories.earrings) {
         const leftEarring = document.createElement('div');
@@ -2555,15 +2553,15 @@ function applyAccessories(prefix) {
         leftEarring.style.border = '1px solid #333';
         leftEarring.style.zIndex = '10';
         leftEarring.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-        
+
         const rightEarring = leftEarring.cloneNode(true);
         rightEarring.id = `${prefix}AccessoryEarringRight`;
         rightEarring.style.left = '102px';
-        
+
         bearHead.appendChild(leftEarring);
         bearHead.appendChild(rightEarring);
     }
-    
+
     // Corbatín
     if (mascotCustomization.accessories.bowtie && bearBody) {
         const bowtie = document.createElement('div');
@@ -2582,7 +2580,7 @@ function applyAccessories(prefix) {
         `;
         bearBody.appendChild(bowtie);
     }
-    
+
     // Cadena
     if (mascotCustomization.accessories.chain && bearBody) {
         const chain = document.createElement('div');
@@ -2601,7 +2599,7 @@ function applyAccessories(prefix) {
         `;
         bearBody.appendChild(chain);
     }
-    
+
     // Bufanda
     if (mascotCustomization.accessories.scarf && bearBody) {
         const scarf = document.createElement('div');
@@ -2625,13 +2623,13 @@ function applyPatterns(prefix) {
                      document.querySelector(`#bear${prefix} .bear-head`);
     const bearBody = document.getElementById(`${prefix}BearBody`) || 
                      document.querySelector(`#bear${prefix} .bear-body`);
-    
+
     if (!bearHead || !bearBody) return;
-    
+
     // Limpiar patrones existentes
     const existingPatterns = document.querySelectorAll(`[id*="${prefix}Pattern"]`);
     existingPatterns.forEach(pattern => pattern.remove());
-    
+
     // Manchas
     if (mascotCustomization.patterns.spots) {
         [bearHead, bearBody].forEach((part, index) => {
@@ -2652,7 +2650,7 @@ function applyPatterns(prefix) {
             part.appendChild(spots);
         });
     }
-    
+
     // Rayas
     if (mascotCustomization.patterns.stripes) {
         [bearHead, bearBody].forEach((part, index) => {
@@ -2683,7 +2681,7 @@ function saveMascotCustomization() {
         console.log('Intento de guardar personalización fuera de pantalla correcta');
         return;
     }
-    
+
     gameState.user.mascotCustomization = { ...mascotCustomization };
     saveUserProgress();
     showProfile();
@@ -2700,7 +2698,7 @@ function loadSettings() {
     if (gameState.user && gameState.user.settings) {
         Object.assign(appSettings, gameState.user.settings);
     }
-    
+
     document.getElementById('languageSelect').value = appSettings.language;
     document.getElementById('soundEffects').checked = appSettings.soundEffects;
     document.getElementById('backgroundMusic').checked = appSettings.backgroundMusic;
@@ -2717,7 +2715,7 @@ function changeLanguage() {
     const language = document.getElementById('languageSelect').value;
     appSettings.language = language;
     saveSettings();
-    
+
     // Aquí implementarías la lógica de cambio de idioma
     updateMascotMessage(language === 'es' ? '¡Idioma cambiado a español!' : 'Language changed to ' + language + '!');
 }
@@ -2806,9 +2804,9 @@ function resetProgress() {
         gameState.user.totalQuestions = 0;
         gameState.user.weakAreas = [];
         gameState.user.strengths = [];
-        
+
         lessons.forEach(lesson => lesson.progress = 0);
-        
+
         saveUserProgress();
         updateUserStats();
         updateMascotMessage('Tu progreso ha sido reiniciado. ¡Comencemos de nuevo!');
