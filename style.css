@@ -756,7 +756,13 @@ body {
     left: 50%;
     transform: translateX(-50%);
     width: 4px;
-    background: linear-gradient(to bottom, #58a700, #46870e, #c7d93d);
+    background: repeating-linear-gradient(
+      45deg,
+      #58a700,
+      #58a700 10px,
+      #46870e 10px,
+      #46870e 20px
+    );
     border-radius: 2px;
     z-index: 1;
 }
@@ -2771,25 +2777,7 @@ input:checked + .slider:before {
         font-size: 1.2rem;
     }
 
-    .game-modes {
-        padding: 20px 15px;
-        margin-top: 15px;
-    }
-
-    .game-modes h3 {
-        font-size: 1.3rem;
-        margin-bottom: 20px;
-    }
-
-    .mode-btn {
-        padding: 15px 25px;
-        margin: 8px;
-        font-size: 1rem;
-        display: block;
-        width: 100%;
-        max-width: 280px;
-        margin: 10px auto;
-    }
+/* Estilos de modos de juego eliminados */
 
     .answers-container {
         grid-template-columns: 1fr;
@@ -3054,24 +3042,267 @@ input:checked + .slider:before {
         font-size: 1.2rem;
     }
 
-    .game-modes {
-        padding: 20px 15px;
-        margin-top: 15px;
+    .answers-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
 
-    .game-modes h3 {
+    .calculator-buttons {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .game-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .quick-actions .action-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .profile-info {
+        gap: 15px;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .info-item label {
+        min-width: auto;
+        font-size: 1rem;
+    }
+
+    .info-item input, .info-item select {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    /* Header móvil */
+    .header {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+
+    .user-stats {
+        gap: 10px;
+    }
+
+    .stat {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Mascota en móvil */
+    .mascot-container {
+        margin: 20px 0;
+    }
+
+    .mascot-3d-inline {
+        transform: scale(0.8);
+    }
+
+    .mascot-speech {
+        max-width: 280px;
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Formularios móvil */
+    .auth-container {
+        padding: 15px;
+    }
+
+    .auth-content {
+        padding: 25px 20px;
+    }
+
+    .form-group input, .form-group select {
+        padding: 12px 40px 12px 12px;
+        font-size: 1rem;
+    }
+
+    .auth-btn, .google-btn {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    /* Configuraciones móvil */
+    .settings-container {
+        padding: 10px;
+    }
+
+    .settings-section {
+        padding: 20px 15px;
+        margin-bottom: 15px;
+    }
+
+    .setting-item {
+        padding: 12px 0;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .setting-item label {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    #languageSelect {
+        min-width: 140px;
+        padding: 8px 12px;
+    }
+
+    #volumeSlider {
+        margin: 0 10px;
+        min-width: 120px;
+    }
+
+    /* Botones móvil */
+    .start-btn {
+        padding: 15px 30px;
         font-size: 1.3rem;
+        margin: 20px auto;
+    }
+
+    .action-btn, .mode-btn {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+
+    /* Juego móvil */
+    .game-header {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .progress-bar {
+        min-width: 120px;
+        height: 8px;
+    }
+
+    .question-container {
+        padding: 20px 15px;
+        margin-bottom: 15px;
+    }
+
+    .question-text {
+        font-size: 1.3rem;
+        line-height: 1.4;
+    }
+
+    /* Modal móvil */
+    .modal-content {
+        margin: 20px;
+        max-width: calc(100vw - 40px);
+        max-height: calc(100vh - 40px);
+        padding: 15px;
+    }
+
+    .calculator-display {
+        font-size: 1.5rem;
+        padding: 15px;
+        min-height: 50px;
+    }
+
+    .calculator-buttons button {
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+
+    /* Resultados móvil */
+    .results-container {
+        padding: 25px 20px;
+        margin: 10px;
+    }
+
+    .celebration{
+        font-size: 4rem;
+    }
+
+    .score-display {
+        margin: 20px 0;
+    }
+
+    .result-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .result-actions .action-btn {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+/* Responsive mejorado */
+@media (max-width: 768px) {
+    /* Ocultar versión desktop del editor */
+    #mascotCustomizationScreen .customization-container {
+        display: none;
+    }
+
+    /* Mostrar versión móvil */
+    .customization-container-mobile {
+        display: block;
+    }
+
+    /* Ajustes generales para móvil */
+    .lessons-intro {
+        padding: 20px 15px;
         margin-bottom: 20px;
     }
 
-    .mode-btn {
-        padding: 15px 25px;
-        margin: 8px;
+    .lessons-intro h2 {
+        font-size: 1.5rem;
+    }
+
+    .lessons-intro p {
         font-size: 1rem;
-        display: block;
-        width: 100%;
-        max-width: 280px;
-        margin: 10px auto;
+    }
+
+    .lessons-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 15px;
+    }
+
+    .lesson-card {
+        padding: 20px 15px;
+    }
+
+    .lesson-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .lesson-title {
+        font-size: 1.2rem;
     }
 
     .answers-container {
