@@ -1022,9 +1022,9 @@ function closeLessonModal() {
 
 function startLessonFromModal() {
     closeLessonModal();
-    // Mostrar modos de juego
-    const lesson = lessons.find(l => l.id === gameState.currentLesson);
-    updateMascotMessage(`¡Perfecto! ¿Cómo quieres practicar ${lesson.title}?`);
+    // Ir directamente al juego en modo normal
+    gameState.currentMode = 'normal';
+    startGame();
 }
 
 function startMode(mode) {
