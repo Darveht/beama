@@ -490,10 +490,11 @@
         <div class="customization-fullscreen-container">
             <!-- Sección de Preview -->
             <div class="mascot-preview-section">
+                <div class="background-preview" id="backgroundPreview"></div>
                 <div class="preview-header">
-                    <h2 class="preview-title">Tu Avatar</h2>
-                    <button class="close-btn-modern" onclick="showProfile()">
-                        <i class="fas fa-times"></i>
+                    <h2 class="preview-title">Personalizar</h2>
+                    <button class="ok-btn-modern" onclick="saveMascotCustomization()">
+                        OK
                     </button>
                 </div>
                 
@@ -539,19 +540,22 @@
 
                 <div class="customization-tabs-modern">
                     <button class="tab-modern active" onclick="switchTab('pelaje')">
-                        <i class="fas fa-palette"></i> Pelaje
+                        Pelaje
                     </button>
                     <button class="tab-modern" onclick="switchTab('ojos')">
-                        <i class="fas fa-eye"></i> Ojos
+                        Ojos
                     </button>
                     <button class="tab-modern" onclick="switchTab('boca')">
-                        <i class="fas fa-smile"></i> Boca
+                        Boca
                     </button>
                     <button class="tab-modern" onclick="switchTab('nariz')">
-                        <i class="fas fa-baby"></i> Nariz
+                        Nariz
                     </button>
                     <button class="tab-modern" onclick="switchTab('accesorios')">
-                        <i class="fas fa-hat-wizard"></i> Accesorios
+                        Extras
+                    </button>
+                    <button class="tab-modern" onclick="switchTab('fondos')">
+                        Fondos
                     </button>
                 </div>
 
@@ -559,9 +563,7 @@
                     <!-- Panel Pelaje -->
                     <div class="customization-panel-modern active" id="pelajePanel">
                         <div class="panel-section">
-                            <h4 class="section-title">
-                                <i class="fas fa-palette"></i> Color del Pelaje
-                            </h4>
+                            <h4 class="section-title">Color del Pelaje</h4>
                             <div class="options-grid-modern">
                                 <div class="option-card" onclick="changeBodyColor('#8B4513')" data-color="#8B4513">
                                     <div class="color-preview" style="background: #8B4513;"></div>
@@ -602,9 +604,7 @@
                     <!-- Panel Ojos -->
                     <div class="customization-panel-modern" id="ojosPanel">
                         <div class="panel-section">
-                            <h4 class="section-title">
-                                <i class="fas fa-eye"></i> Estilo de Ojos
-                            </h4>
+                            <h4 class="section-title">Estilo de Ojos</h4>
                             <div class="options-grid-modern">
                                 <div class="option-card selected" onclick="changeEyeStyle('normal')">
                                     <div class="option-preview">👁️</div>
@@ -645,9 +645,7 @@
                     <!-- Panel Boca -->
                     <div class="customization-panel-modern" id="bocaPanel">
                         <div class="panel-section">
-                            <h4 class="section-title">
-                                <i class="fas fa-smile"></i> Expresión
-                            </h4>
+                            <h4 class="section-title">Expresión</h4>
                             <div class="options-grid-modern">
                                 <div class="option-card selected" onclick="changeMouthStyle('happy')">
                                     <div class="option-preview">😊</div>
@@ -680,9 +678,7 @@
                     <!-- Panel Nariz -->
                     <div class="customization-panel-modern" id="narizPanel">
                         <div class="panel-section">
-                            <h4 class="section-title">
-                                <i class="fas fa-baby"></i> Tipo de Nariz
-                            </h4>
+                            <h4 class="section-title">Tipo de Nariz</h4>
                             <div class="options-grid-modern">
                                 <div class="option-card selected" onclick="changeNoseStyle('normal')">
                                     <div class="option-preview">👃</div>
@@ -711,9 +707,7 @@
                     <!-- Panel Accesorios -->
                     <div class="customization-panel-modern" id="accesoriosPanel">
                         <div class="panel-section">
-                            <h4 class="section-title">
-                                <i class="fas fa-hat-wizard"></i> Accesorios
-                            </h4>
+                            <h4 class="section-title">Accesorios</h4>
                             <div class="options-grid-modern">
                                 <div class="option-card" onclick="toggleAccessory('hat')">
                                     <div class="option-preview">🎩</div>
@@ -750,15 +744,47 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="save-actions">
-                    <button class="reset-btn" onclick="resetCustomization()">
-                        <i class="fas fa-undo"></i> Resetear
-                    </button>
-                    <button class="save-btn-modern" onclick="saveMascotCustomization()">
-                        <i class="fas fa-save"></i> Guardar Cambios
-                    </button>
+                    <!-- Panel Fondos -->
+                    <div class="customization-panel-modern" id="fondosPanel">
+                        <div class="panel-section">
+                            <h4 class="section-title">Fondos</h4>
+                            <div class="options-grid-modern">
+                                <div class="option-card selected" onclick="changeBackground('none')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #58cc02 0%, #89e219 100%);"></div>
+                                    <div class="option-label">Por defecto</div>
+                                </div>
+                                <div class="option-card" onclick="changeBackground('forest')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #2d5016 0%, #3e7b20 100%);"></div>
+                                    <div class="option-label">Bosque</div>
+                                </div>
+                                <div class="option-card" onclick="changeBackground('ocean')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #006994 0%, #0077be 100%);"></div>
+                                    <div class="option-label">Océano</div>
+                                </div>
+                                <div class="option-card" onclick="changeBackground('desert')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #daa520 0%, #f4a460 100%);"></div>
+                                    <div class="option-label">Desierto</div>
+                                </div>
+                                <div class="option-card" onclick="changeBackground('mountain')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #708090 0%, #a9a9a9 100%);"></div>
+                                    <div class="option-label">Montaña</div>
+                                </div>
+                                <div class="option-card" onclick="changeBackground('space')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #191970 0%, #4b0082 100%);"></div>
+                                    <div class="option-label">Espacio</div>
+                                </div>
+                                <div class="option-card" onclick="changeBackground('sunset')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);"></div>
+                                    <div class="option-label">Atardecer</div>
+                                </div>
+                                <div class="option-card" onclick="changeBackground('winter')">
+                                    <div class="background-preview-option" style="background: linear-gradient(135deg, #b0e0e6 0%, #ffffff 100%);"></div>
+                                    <div class="option-label">Invierno</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
