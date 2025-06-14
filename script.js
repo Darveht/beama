@@ -496,6 +496,7 @@ async function registerUser() {
             }
         });
         
+        console.log('Registro exitoso:', user.uid);
         updateMascotMessage(`¡Cuenta creada exitosamente! Bienvenido ${name}! 🎉`);
         
         // Limpiar formulario
@@ -504,6 +505,14 @@ async function registerUser() {
         document.getElementById('registerPassword').value = '';
         document.getElementById('confirmPassword').value = '';
         document.getElementById('userAge').value = '';
+        
+        // Dar tiempo para que se ejecute onAuthStateChanged
+        setTimeout(() => {
+            if (gameState.currentScreen === 'auth') {
+                console.log('Forzando cambio a home desde registerUser');
+                showHome();
+            }
+        }, 1000);
         
     } catch (error) {
         console.error('Error en registro:', error);
@@ -539,13 +548,23 @@ async function loginUser() {
     try {
         updateMascotMessage('Iniciando sesión...');
         
-        await auth.signInWithEmailAndPassword(email, password);
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
         
+        console.log('Login exitoso:', user.uid);
         updateMascotMessage('¡Sesión iniciada correctamente!');
         
         // Limpiar formulario
         document.getElementById('loginEmail').value = '';
         document.getElementById('loginPassword').value = '';
+        
+        // Dar tiempo para que se ejecute onAuthStateChanged
+        setTimeout(() => {
+            if (gameState.currentScreen === 'auth') {
+                console.log('Forzando cambio a home desde loginUser');
+                showHome();
+            }
+        }, 1000);
         
     } catch (error) {
         console.error('Error en login:', error);
@@ -739,22 +758,58 @@ auth.onAuthStateChanged(async (user) => {
                 if (userData.settings) {
                     Object.assign(appSettings, userData.settings);
                 }
+            } else {
+                // Si no hay datos de usuario en la base de datos, crear un perfil básico
+                gameState.user = {
+                    uid: user.uid,
+                    name: user.displayName || user.email.split('@')[0],
+                    email: user.email,
+                    age: 'adult',
+                    level: 1,
+                    streak: 0,
+                    gems: 100,
+                    lives: 5,
+                    totalCorrect: 0,
+                    totalQuestions: 0,
+                    weakAreas: [],
+                    strengths: [],
+                    mascotCustomization: {
+                        bodyColor: '#D2691E',
+                        eyeStyle: 'normal',
+                        mouthStyle: 'happy',
+                        accessories: {
+                            hat: false,
+                            glasses: false,
+                            bowtie: false,
+                            scarf: false
+                        }
+                    },
+                    settings: {
+                        language: 'es',
+                        soundEffects: true,
+                        backgroundMusic: false,
+                        volume: 50,
+                        adaptiveDifficulty: true,
+                        dailyReminders: false,
+                        vibration: false,
+                        shareProgress: false,
+                        errorAnalysis: true
+                    }
+                };
             }
             
             updateUserStats();
             
-            // Cambiar a pantalla de inicio después de autenticación exitosa
-            setTimeout(() => {
-                if (gameState.currentScreen === 'auth') {
-                    showHome();
-                    if (!hasShownWelcomeMessage) {
-                        setTimeout(() => {
-                            updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
-                            hasShownWelcomeMessage = true;
-                        }, 1000);
-                    }
-                }
-            }, 500);
+            // Forzar cambio a pantalla de inicio después de autenticación exitosa
+            console.log('Cambiando a pantalla de inicio...');
+            showHome();
+            
+            if (!hasShownWelcomeMessage) {
+                setTimeout(() => {
+                    updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
+                    hasShownWelcomeMessage = true;
+                }, 1000);
+            }
             
         } catch (error) {
             console.error('Error en autenticación:', error);
