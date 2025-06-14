@@ -889,7 +889,6 @@ function showLessons() {
     document.getElementById('lessonsScreen').classList.add('active');
     gameState.currentScreen = 'lessons';
     renderLessons();
-    updateMascotMessage('¿Qué tema quieres practicar hoy? Elige la lección que más te guste.', 'mascotSpeechLessons');
 }
 
 function showProfile() {
