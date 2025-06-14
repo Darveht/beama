@@ -597,6 +597,69 @@
                             <div class="eye-preview happy"></div>
                             Felices
                         </button>
+                        <button class="style-option" onclick="changeEyeStyle('star')">
+                            <div class="eye-preview star">⭐</div>
+                            Estrella
+                        </button>
+                        <button class="style-option" onclick="changeEyeStyle('rainbow')">
+                            <div class="eye-preview rainbow"></div>
+                            Arcoíris
+                        </button>
+                        <button class="style-option" onclick="changeEyeStyle('heart')">
+                            <div class="eye-preview heart">💖</div>
+                            Corazón
+                        </button>
+                        <button class="style-option" onclick="changeEyeStyle('cool')">
+                            <div class="eye-preview cool"></div>
+                            Geniales
+                        </button>
+                    </div>
+                    
+                    <h4 style="margin-top: 20px;"><i class="fas fa-palette"></i> Color de Ojos</h4>
+                    <div class="eye-color-options">
+                        <div class="eye-color-option selected" data-eye-color="#000000" onclick="changeEyeColor('#000000')"></div>
+                        <div class="eye-color-option" data-eye-color="#8B4513" onclick="changeEyeColor('#8B4513')"></div>
+                        <div class="eye-color-option" data-eye-color="#228B22" onclick="changeEyeColor('#228B22')"></div>
+                        <div class="eye-color-option" data-eye-color="#0066CC" onclick="changeEyeColor('#0066CC')"></div>
+                        <div class="eye-color-option" data-eye-color="#8A2BE2" onclick="changeEyeColor('#8A2BE2')"></div>
+                        <div class="eye-color-option" data-eye-color="#DC143C" onclick="changeEyeColor('#DC143C')"></div>
+                        <div class="eye-color-option" data-eye-color="#FF69B4" onclick="changeEyeColor('#FF69B4')"></div>
+                        <div class="eye-color-option" data-eye-color="#FFD700" onclick="changeEyeColor('#FFD700')"></div>
+                    </div>
+                </div>
+
+                <div class="customization-tab">
+                    <h3><i class="fas fa-nose"></i> Nariz</h3>
+                    <div class="nose-options">
+                        <button class="style-option" onclick="changeNoseStyle('normal')">
+                            <div class="nose-preview normal"></div>
+                            Normal
+                        </button>
+                        <button class="style-option" onclick="changeNoseStyle('small')">
+                            <div class="nose-preview small"></div>
+                            Pequeña
+                        </button>
+                        <button class="style-option" onclick="changeNoseStyle('big')">
+                            <div class="nose-preview big"></div>
+                            Grande
+                        </button>
+                        <button class="style-option" onclick="changeNoseStyle('button')">
+                            <div class="nose-preview button"></div>
+                            Botón
+                        </button>
+                        <button class="style-option" onclick="changeNoseStyle('heart')">
+                            <div class="nose-preview heart">💗</div>
+                            Corazón
+                        </button>
+                    </div>
+                    
+                    <h4 style="margin-top: 15px;"><i class="fas fa-palette"></i> Color de Nariz</h4>
+                    <div class="nose-color-options">
+                        <div class="nose-color-option selected" data-nose-color="#2c2c2c" onclick="changeNoseColor('#2c2c2c')"></div>
+                        <div class="nose-color-option" data-nose-color="#000000" onclick="changeNoseColor('#000000')"></div>
+                        <div class="nose-color-option" data-nose-color="#8B4513" onclick="changeNoseColor('#8B4513')"></div>
+                        <div class="nose-color-option" data-nose-color="#FF69B4" onclick="changeNoseColor('#FF69B4')"></div>
+                        <div class="nose-color-option" data-nose-color="#DC143C" onclick="changeNoseColor('#DC143C')"></div>
                     </div>
                 </div>
 
@@ -619,6 +682,14 @@
                             <div class="mouth-preview playful"></div>
                             Juguetón
                         </button>
+                        <button class="style-option" onclick="changeMouthStyle('laugh')">
+                            <div class="mouth-preview laugh"></div>
+                            Riendo
+                        </button>
+                        <button class="style-option" onclick="changeMouthStyle('cute')">
+                            <div class="mouth-preview cute">💋</div>
+                            Adorable
+                        </button>
                     </div>
                 </div>
 
@@ -633,13 +704,43 @@
                             <i class="fas fa-glasses"></i>
                             Lentes
                         </button>
+                        <button class="style-option" onclick="toggleAccessory('cap')">
+                            <i class="fas fa-baseball-ball"></i>
+                            Gorra
+                        </button>
+                        <button class="style-option" onclick="toggleAccessory('headband')">
+                            <i class="fas fa-crown"></i>
+                            Diadema
+                        </button>
+                        <button class="style-option" onclick="toggleAccessory('earrings')">
+                            <i class="fas fa-gem"></i>
+                            Aretes
+                        </button>
                         <button class="style-option" onclick="toggleAccessory('bowtie')">
                             <i class="fas fa-user-tie"></i>
                             Corbatín
                         </button>
+                        <button class="style-option" onclick="toggleAccessory('chain')">
+                            <i class="fas fa-link"></i>
+                            Cadena
+                        </button>
                         <button class="style-option" onclick="toggleAccessory('scarf')">
                             <i class="fas fa-mitten"></i>
                             Bufanda
+                        </button>
+                    </div>
+                </div>
+
+                <div class="customization-tab">
+                    <h3><i class="fas fa-paint-brush"></i> Patrones</h3>
+                    <div class="pattern-options">
+                        <button class="style-option" onclick="togglePattern('spots')">
+                            <i class="fas fa-circle"></i>
+                            Manchas
+                        </button>
+                        <button class="style-option" onclick="togglePattern('stripes')">
+                            <i class="fas fa-bars"></i>
+                            Rayas
                         </button>
                     </div>
                 </div>
