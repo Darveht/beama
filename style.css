@@ -748,24 +748,7 @@ body {
     min-height: 80vh;
 }
 
-.lessons-grid::before {
-    content: '';
-    position: absolute;
-    top: 60px;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    background: repeating-linear-gradient(
-      45deg,
-      #58a700,
-      #58a700 10px,
-      #46870e 10px,
-      #46870e 20px
-    );
-    border-radius: 2px;
-    z-index: 1;
-}
+/* Línea verde eliminada para coincidir con el estilo de Duolingo */
 
 .lesson-node {
     position: relative;
@@ -2677,9 +2660,7 @@ input:checked + .slider:before {
         max-width: 320px;
     }
 
-    .lessons-grid::before {
-        width: 3px;
-    }
+    /* Línea verde eliminada en móvil */
 
     .lesson-node {
         width: 70px;
