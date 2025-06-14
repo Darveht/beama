@@ -55,7 +55,7 @@ const lessons = [
     {
         id: 'suma',
         title: 'Suma',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Aprende a sumar números',
         levels: 10,
         progress: 0,
@@ -64,7 +64,7 @@ const lessons = [
     {
         id: 'resta',
         title: 'Resta',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Domina la resta',
         levels: 10,
         progress: 0,
@@ -73,7 +73,7 @@ const lessons = [
     {
         id: 'multiplicacion',
         title: 'Multiplicación',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Tablas de multiplicar',
         levels: 10,
         progress: 0,
@@ -82,7 +82,7 @@ const lessons = [
     {
         id: 'division',
         title: 'División',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Divide y vencerás',
         levels: 10,
         progress: 0,
@@ -91,7 +91,7 @@ const lessons = [
     {
         id: 'fracciones',
         title: 'Fracciones',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Números quebrados',
         levels: 10,
         progress: 0,
@@ -100,7 +100,7 @@ const lessons = [
     {
         id: 'algebra',
         title: 'Álgebra',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Ecuaciones básicas',
         levels: 10,
         progress: 0,
@@ -109,7 +109,7 @@ const lessons = [
     {
         id: 'geometria',
         title: 'Geometría',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Formas y figuras',
         levels: 10,
         progress: 0,
@@ -118,7 +118,7 @@ const lessons = [
     {
         id: 'porcentajes',
         title: 'Porcentajes',
-        icon: '⭐',
+        icon: '<img src="https://images.icon-icons.com/1389/PNG/512/star_96096.png" alt="⭐" style="width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">',
         description: 'Cálculo de porcentajes',
         levels: 10,
         progress: 0,
@@ -983,7 +983,7 @@ function showLessonModal(lesson) {
                     <button class="close-btn" onclick="closeLessonModal()">×</button>
                 </div>
                 <div class="lesson-modal-body">
-                    <div class="lesson-big-icon">${lesson.icon}</div>
+                    <div class="lesson-big-icon" style="font-size: 5rem;">${lesson.icon}</div>
                     <p class="lesson-description">${lesson.description}</p>
                     <div class="lesson-progress">
                         <div class="progress-bar">
