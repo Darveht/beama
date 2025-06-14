@@ -97,6 +97,31 @@ body {
     animation: fadeIn 0.3s ease;
 }
 
+
+.demo-btn {
+    width: 100%;
+    padding: 12px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.demo-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+
 .profile-menu.active {
     display: flex;
     align-items: flex-end;
