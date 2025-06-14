@@ -868,11 +868,8 @@ function showHome() {
     document.getElementById('homeScreen').classList.add('active');
     gameState.currentScreen = 'home';
     
-    // Aplicar personalización de mascota
-    setTimeout(() => {
-        applyMascotCustomization('main');
-        updateUserStats();
-    }, 100);
+    // Solo actualizar estadísticas de usuario
+    updateUserStats();
     
     // Solo mostrar mensaje si no se ha mostrado antes o si es navegación manual
     if (!hasShownWelcomeMessage && gameState.user && gameState.user.name) {
@@ -1834,7 +1831,7 @@ function showMascotCustomization() {
         initializeDragFunctionality();
     }, 150);
     
-    updateMascotMessage('¡Hagamos que tu avatar sea único! Puedes cambiar colores, ojos, boca y más.');
+    updateMascotMessage('Hagamos que tu avatar sea único. Puedes cambiar colores, ojos, boca y más.');
 }
 
 // Funcionalidad de arrastrar para la barra de personalización
@@ -1979,14 +1976,14 @@ function changeBackground(backgroundType) {
     event.target.closest('.option-card').classList.add('selected');
     
     const messages = {
-        'none': '¡El fondo clásico me encanta!',
-        'forest': '¡Me siento como en casa en el bosque!',
-        'ocean': '¡El océano es tan relajante!',
-        'desert': '¡Qué aventura en el desierto!',
-        'mountain': '¡Las montañas son majestuosas!',
-        'space': '¡Explorando el universo!',
-        'sunset': '¡Qué hermoso atardecer!',
-        'winter': '¡Me encanta la nieve!'
+        'none': 'El fondo clásico me encanta',
+        'forest': 'Me siento como en casa en el bosque',
+        'ocean': 'El océano es tan relajante',
+        'desert': 'Qué aventura en el desierto',
+        'mountain': 'Las montañas son majestuosas',
+        'space': 'Explorando el universo',
+        'sunset': 'Qué hermoso atardecer',
+        'winter': 'Me encanta la nieve'
     };
     
     updateMascotMessage(messages[backgroundType] || '¡Nuevo fondo genial!');
@@ -2016,14 +2013,14 @@ function changeEyeStyle(style) {
     event.target.closest('.option-card').classList.add('selected');
     
     const messages = {
-        'normal': '¡Unos ojos clásicos!',
-        'large': '¡Qué ojos tan grandes y expresivos!',
-        'sleepy': '¡Aww, parezco tener sueño!',
-        'happy': '¡Me veo muy feliz así!',
-        'star': '¡Tengo estrellas en los ojos!',
-        'heart': '¡Ojos llenos de amor!',
-        'rainbow': '¡Qué colorido me veo!',
-        'cool': '¡Me veo súper genial!'
+        'normal': 'Unos ojos clásicos',
+        'large': 'Qué ojos tan grandes y expresivos',
+        'sleepy': 'Parezco tener sueño',
+        'happy': 'Me veo muy feliz así',
+        'star': 'Tengo estrellas en los ojos',
+        'heart': 'Ojos llenos de amor',
+        'rainbow': 'Qué colorido me veo',
+        'cool': 'Me veo súper genial'
     };
     
     updateMascotMessage(messages[style] || '¡Me encanta este estilo!');
@@ -2040,12 +2037,12 @@ function changeMouthStyle(style) {
     event.target.closest('.option-card').classList.add('selected');
     
     const messages = {
-        'happy': '¡Una sonrisa hermosa!',
-        'neutral': 'Expresión serena y calmada.',
-        'surprised': '¡Qué sorpresa tan grande!',
-        'playful': '¡Me siento juguetón!',
-        'laugh': '¡Jajaja, me da mucha risa!',
-        'cute': '¡Aww, qué adorable me veo!'
+        'happy': 'Una sonrisa hermosa',
+        'neutral': 'Expresión serena y calmada',
+        'surprised': 'Qué sorpresa tan grande',
+        'playful': 'Me siento juguetón',
+        'laugh': 'Me da mucha risa',
+        'cute': 'Qué adorable me veo'
     };
     
     updateMascotMessage(messages[style] || '¡Me gusta esta expresión!');
@@ -2062,11 +2059,11 @@ function changeNoseStyle(style) {
     event.target.closest('.option-card').classList.add('selected');
     
     const messages = {
-        'normal': '¡Una nariz perfecta!',
-        'small': '¡Qué tierna naricita!',
-        'big': '¡Una nariz prominente y distinguida!',
-        'button': '¡Como un botoncito!',
-        'heart': '¡Una nariz llena de amor!'
+        'normal': 'Una nariz perfecta',
+        'small': 'Qué tierna naricita',
+        'big': 'Una nariz prominente y distinguida',
+        'button': 'Como un botoncito',
+        'heart': 'Una nariz llena de amor'
     };
     
     updateMascotMessage(messages[style] || '¡Esta nariz me queda genial!');
@@ -2081,14 +2078,14 @@ function toggleAccessory(accessory) {
     button.classList.toggle('selected');
     
     const messages = {
-        'hat': mascotCustomization.accessories[accessory] ? '¡Un sombrero elegante!' : 'Sin sombrero, más natural.',
-        'glasses': mascotCustomization.accessories[accessory] ? '¡Me veo muy intelectual!' : 'Sin lentes, ojos al natural.',
-        'cap': mascotCustomization.accessories[accessory] ? '¡Lista para el deporte!' : 'Sin gorra, estilo casual.',
-        'headband': mascotCustomization.accessories[accessory] ? '¡Como toda una princesa!' : 'Sin diadema, estilo simple.',
-        'earrings': mascotCustomization.accessories[accessory] ? '¡Brillando con estilo!' : 'Sin aretes, look natural.',
-        'bowtie': mascotCustomization.accessories[accessory] ? '¡Muy elegante y formal!' : 'Sin corbatín, más relajado.',
-        'chain': mascotCustomization.accessories[accessory] ? '¡Bling bling!' : 'Sin cadena, estilo minimalista.',
-        'scarf': mascotCustomization.accessories[accessory] ? '¡Abrigadito y fashionable!' : 'Sin bufanda, más fresco.'
+        'hat': mascotCustomization.accessories[accessory] ? 'Un sombrero elegante' : 'Sin sombrero, más natural',
+        'glasses': mascotCustomization.accessories[accessory] ? 'Me veo muy intelectual' : 'Sin lentes, ojos al natural',
+        'cap': mascotCustomization.accessories[accessory] ? 'Lista para el deporte' : 'Sin gorra, estilo casual',
+        'headband': mascotCustomization.accessories[accessory] ? 'Como toda una princesa' : 'Sin diadema, estilo simple',
+        'earrings': mascotCustomization.accessories[accessory] ? 'Brillando con estilo' : 'Sin aretes, look natural',
+        'bowtie': mascotCustomization.accessories[accessory] ? 'Muy elegante y formal' : 'Sin corbatín, más relajado',
+        'chain': mascotCustomization.accessories[accessory] ? 'Estilo brillante' : 'Sin cadena, estilo minimalista',
+        'scarf': mascotCustomization.accessories[accessory] ? 'Abrigadito y fashionable' : 'Sin bufanda, más fresco'
     };
     
     updateMascotMessage(messages[accessory] || '¡Cambio de look!');
@@ -2154,8 +2151,6 @@ function updateProfileData() {
     const accuracy = gameState.user.totalQuestions > 0 ? 
         Math.round((gameState.user.totalCorrect / gameState.user.totalQuestions) * 100) : 0;
     document.getElementById('profileAccuracy').textContent = accuracy + '%';
-    
-    updateMascotDisplay();
 }
 
 function editProfileName() {
@@ -2681,17 +2676,14 @@ function saveMascotCustomization() {
     saveUserProgress();
     updateMascotDisplay();
     showProfile();
-    updateMascotMessage('¡Tu mascota ha sido personalizada! ¡Se ve increíble!');
+    updateMascotMessage('Tu mascota ha sido personalizada y se ve increíble');
 }
 
 function updateMascotDisplay() {
-    // Aplicar a todas las instancias de la mascota
-    applyMascotCustomization('main');
-    
-    // Asegurar que se aplique a todas las pantallas
-    setTimeout(() => {
+    // Esta función ahora solo se usa en personalización
+    if (gameState.currentScreen === 'mascotCustomization' || gameState.currentScreen === 'profile') {
         applyMascotCustomization('main');
-    }, 100);
+    }
 }
 
 // Funciones de configuraciones
