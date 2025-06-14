@@ -736,126 +736,205 @@ body {
     margin: 0;
 }
 
-/* Lecciones */
+/* Lecciones estilo Duolingo */
 .lessons-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
-    padding: 0 10px;
-}
-
-.lesson-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto 30px;
     position: relative;
-    overflow: hidden;
-    border: 2px solid transparent;
+    min-height: 80vh;
 }
 
-.lesson-card::before {
+.lessons-grid::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(29, 161, 242, 0.1), transparent);
-    transition: left 0.6s;
+    top: 60px;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    background: linear-gradient(to bottom, #58a700, #46870e, #c7d93d);
+    border-radius: 2px;
+    z-index: 1;
 }
 
-.lesson-card:hover::before {
-    left: 100%;
+.lesson-node {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    background: #e5e5e5;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 4px solid #b7b7b7;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    margin: 25px 0;
+    animation: bounceIn 0.6s ease-out;
 }
 
-.lesson-card:hover {
-    transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 20px 40px rgba(29, 161, 242, 0.25);
-    border-color: #1DA1F2;
-    background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+.lesson-node:nth-child(even) {
+    margin-left: 120px;
 }
 
-.lesson-card:active {
-    transform: translateY(-8px) scale(1.01);
+.lesson-node:nth-child(odd) {
+    margin-right: 120px;
+}
+
+.lesson-node.available {
+    background: linear-gradient(135deg, #58a700, #46870e);
+    border-color: #58a700;
+    color: white;
+    box-shadow: 0 6px 20px rgba(88, 167, 0, 0.4);
+}
+
+.lesson-node.current {
+    background: linear-gradient(135deg, #ff9600, #ff8500);
+    border-color: #ff9600;
+    color: white;
+    box-shadow: 0 6px 20px rgba(255, 150, 0, 0.4);
+    animation: pulse 2s infinite;
+}
+
+.lesson-node.completed {
+    background: linear-gradient(135deg, #58a700, #46870e);
+    border-color: #58a700;
+    color: white;
+    position: relative;
+}
+
+.lesson-node.perfect {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-color: #FFD700;
+    color: #333;
+    position: relative;
+}
+
+.lesson-node.locked {
+    background: #e5e5e5;
+    border-color: #b7b7b7;
+    color: #b7b7b7;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.lesson-node.checkpoint {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #ce82ff, #be6aff);
+    border-color: #ce82ff;
+    border-width: 6px;
+    box-shadow: 0 8px 25px rgba(206, 130, 255, 0.4);
+}
+
+.lesson-node.boss {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #ff4b4b, #cc0000);
+    border-color: #ff4b4b;
+    border-width: 8px;
+    box-shadow: 0 10px 30px rgba(255, 75, 75, 0.5);
+}
+
+.lesson-node:hover:not(.locked) {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.lesson-node:active:not(.locked) {
+    transform: scale(1.05);
 }
 
 .lesson-icon {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
+    font-size: 2.2rem;
+    margin-bottom: 4px;
     display: block;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     transition: all 0.3s ease;
-}
-
-.lesson-card:hover .lesson-icon {
-    transform: scale(1.1) rotate(5deg);
-    filter: drop-shadow(0 6px 12px rgba(29, 161, 242, 0.3));
-}
-
-.lesson-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    color: #333;
-    transition: color 0.3s ease;
-}
-
-.lesson-card:hover .lesson-title {
-    color: #1DA1F2;
-}
-
-.lesson-progress {
-    background: linear-gradient(90deg, #e9ecef, #f8f9fa);
-    height: 10px;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.lesson-progress-fill {
-    background: linear-gradient(90deg, #4CAF50, #45a049, #2e7d32);
-    height: 100%;
-    transition: width 0.5s ease;
-    border-radius: 10px;
     position: relative;
 }
 
-.lesson-progress-fill::after {
-    content: '';
+.lesson-node.checkpoint .lesson-icon {
+    font-size: 2.8rem;
+}
+
+.lesson-node.boss .lesson-icon {
+    font-size: 3.5rem;
+}
+
+.lesson-node.completed .lesson-icon::after,
+.lesson-node.perfect .lesson-icon::after {
+    content: '👑';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: progressShine 2s infinite;
+    top: -12px;
+    right: -12px;
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #58a700;
 }
 
-@keyframes progressShine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+.lesson-node.perfect .lesson-icon::after {
+    content: '⭐';
+    border-color: #FFD700;
 }
 
-.lesson-level {
-    color: #666;
-    font-size: 1rem;
+.lesson-title {
+    font-size: 0.7rem;
     font-weight: 600;
-    background: #f8f9fa;
-    padding: 8px 15px;
-    border-radius: 20px;
-    display: inline-block;
-    transition: all 0.3s ease;
+    margin: 0;
+    color: inherit;
+    transition: color 0.3s ease;
+    line-height: 1.1;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-.lesson-card:hover .lesson-level {
-    background: #e3f2fd;
-    color: #1976d2;
+.lesson-node.checkpoint .lesson-title,
+.lesson-node.boss .lesson-title {
+    font-size: 0.8rem;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 6px 20px rgba(255, 150, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(255, 150, 0, 0.8);
+    }
+    100% {
+        box-shadow: 0 6px 20px rgba(255, 150, 0, 0.4);
+    }
 }
 
 /* Modos de juego */
@@ -979,10 +1058,7 @@ body {
 
 .question-number {
     color: #666;
-    margin-bottom: 20px;
-}
-
-.question-text {
+    margin-bottom: 20px;<question-text>
     font-size: 1.5rem;
     margin-bottom: 20px;
     color: #333;
@@ -2418,24 +2494,344 @@ input:checked + .slider:before {
 
 /* Responsive para móvil */
 @media (max-width: 768px) {
-    .customization-fullscreen-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: 40vh 1fr;
+    /* Ocultar versión desktop del editor */
+    #mascotCustomizationScreen .customization-container {
+        display: none;
     }
 
-    .mascot-display-large {
-        transform: scale(1.8);
+    /* Mostrar versión móvil */
+    .customization-container-mobile {
+        display: block;
+    }
+
+    /* Ajustes generales para móvil */
+    .lessons-intro {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+    }
+
+    .lessons-intro h2 {
+        font-size: 1.5rem;
+    }
+
+    .lessons-intro p {
+        font-size: 1rem;
+    }
+
+    /* Ajustes del mapa de lecciones para móvil */
+    .lessons-grid {
+        padding: 15px 10px;
+        max-width: 320px;
+    }
+
+    .lessons-grid::before {
+        width: 3px;
+    }
+
+    .lesson-node {
+        width: 70px;
+        height: 70px;
+        border-width: 3px;
         margin: 20px 0;
     }
 
-    .customization-controls {
-        border-radius: 25px 25px 0 0;
-        margin-top: -25px;
-        z-index: 5;
+    .lesson-node:nth-child(even) {
+        margin-left: 80px;
     }
 
-    .options-grid-modern {
-        grid-template-columns: repeat(3, 1fr);
+    .lesson-node:nth-child(odd) {
+        margin-right: 80px;
+    }
+
+    .lesson-node.checkpoint {
+        width: 85px;
+        height: 85px;
+        border-width: 4px;
+    }
+
+    .lesson-node.boss {
+        width: 100px;
+        height: 100px;
+        border-width: 5px;
+    }
+
+    .lesson-icon {
+        font-size: 1.8rem;
+        margin-bottom: 3px;
+    }
+
+    .lesson-node.checkpoint .lesson-icon {
+        font-size: 2.2rem;
+    }
+
+    .lesson-node.boss .lesson-icon {
+        font-size: 2.8rem;
+    }
+
+    .lesson-title {
+        font-size: 0.6rem;
+        line-height: 1.0;
+    }
+
+    .lesson-node.checkpoint .lesson-title,
+    .lesson-node.boss .lesson-title {
+        font-size: 0.7rem;
+    }
+
+    .lesson-node.completed .lesson-icon::after,
+    .lesson-node.perfect .lesson-icon::after {
+        font-size: 12px;
+        width: 16px;
+        height: 16px;
+        top: -8px;
+        right: -8px;
+        border-width: 1px;
+    }
+
+    .lesson-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .lesson-title {
+        font-size: 1.2rem;
+    }
+
+    .game-modes {
+        padding: 20px 15px;
+        margin-top: 15px;
+    }
+
+    .game-modes h3 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+    }
+
+    .mode-btn {
+        padding: 15px 25px;
+        margin: 8px;
+        font-size: 1rem;
+        display: block;
+        width: 100%;
+        max-width: 280px;
+        margin: 10px auto;
+    }
+
+    .answers-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .calculator-buttons {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .game-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .quick-actions .action-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .profile-info {
+        gap: 15px;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .info-item label {
+        min-width: auto;
+        font-size: 1rem;
+    }
+
+    .info-item input, .info-item select {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    /* Header móvil */
+    .header {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+
+    .user-stats {
+        gap: 10px;
+    }
+
+    .stat {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Mascota en móvil */
+    .mascot-container {
+        margin: 20px 0;
+    }
+
+    .mascot-3d-inline {
+        transform: scale(0.8);
+    }
+
+    .mascot-speech {
+        max-width: 280px;
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Formularios móvil */
+    .auth-container {
+        padding: 15px;
+    }
+
+    .auth-content {
+        padding: 25px 20px;
+    }
+
+    .form-group input, .form-group select {
+        padding: 12px 40px 12px 12px;
+        font-size: 1rem;
+    }
+
+    .auth-btn, .google-btn {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    /* Configuraciones móvil */
+    .settings-container {
+        padding: 10px;
+    }
+
+    .settings-section {
+        padding: 20px 15px;
+        margin-bottom: 15px;
+    }
+
+    .setting-item {
+        padding: 12px 0;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .setting-item label {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    #languageSelect {
+        min-width: 140px;
+        padding: 8px 12px;
+    }
+
+    #volumeSlider {
+        margin: 0 10px;
+        min-width: 120px;
+    }
+
+    /* Botones móvil */
+    .start-btn {
+        padding: 15px 30px;
+        font-size: 1.3rem;
+        margin: 20px auto;
+    }
+
+    .action-btn, .mode-btn {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+
+    /* Juego móvil */
+    .game-header {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .progress-bar {
+        min-width: 120px;
+        height: 8px;
+    }
+
+    .question-container {
+        padding: 20px 15px;
+        margin-bottom: 15px;
+    }
+
+    .question-text {
+        font-size: 1.3rem;
+        line-height: 1.4;
+    }
+
+    /* Modal móvil */
+    .modal-content {
+        margin: 20px;
+        max-width: calc(100vw - 40px);
+        max-height: calc(100vh - 40px);
+        padding: 15px;
+    }
+
+    .calculator-display {
+        font-size: 1.5rem;
+        padding: 15px;
+        min-height: 50px;
+    }
+
+    .calculator-buttons button {
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+
+    /* Resultados móvil */
+    .results-container {
+        padding: 25px 20px;
+        margin: 10px;
+    }
+
+    .celebration {
+        font-size: 4rem;
+    }
+
+    .score-display {
+        margin: 20px 0;
+    }
+
+    .result-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .result-actions .action-btn {
+        width: 100%;
+        max-width: 250px;
     }
 }
 
@@ -2703,7 +3099,7 @@ input:checked + .slider:before {
         margin: 10px;
     }
 
-    .celebration {
+    .celebration{
         font-size: 4rem;
     }
 
