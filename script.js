@@ -55,7 +55,7 @@ const lessons = [
     {
         id: 'suma',
         title: 'Suma',
-        icon: '➕',
+        icon: '⭐',
         description: 'Aprende a sumar números',
         levels: 10,
         progress: 0,
@@ -64,7 +64,7 @@ const lessons = [
     {
         id: 'resta',
         title: 'Resta',
-        icon: '➖',
+        icon: '⭐',
         description: 'Domina la resta',
         levels: 10,
         progress: 0,
@@ -73,7 +73,7 @@ const lessons = [
     {
         id: 'multiplicacion',
         title: 'Multiplicación',
-        icon: '✖️',
+        icon: '⭐',
         description: 'Tablas de multiplicar',
         levels: 10,
         progress: 0,
@@ -82,7 +82,7 @@ const lessons = [
     {
         id: 'division',
         title: 'División',
-        icon: '➗',
+        icon: '⭐',
         description: 'Divide y vencerás',
         levels: 10,
         progress: 0,
@@ -91,7 +91,7 @@ const lessons = [
     {
         id: 'fracciones',
         title: 'Fracciones',
-        icon: '½',
+        icon: '⭐',
         description: 'Números quebrados',
         levels: 10,
         progress: 0,
@@ -100,7 +100,7 @@ const lessons = [
     {
         id: 'algebra',
         title: 'Álgebra',
-        icon: '📈',
+        icon: '⭐',
         description: 'Ecuaciones básicas',
         levels: 10,
         progress: 0,
@@ -109,7 +109,7 @@ const lessons = [
     {
         id: 'geometria',
         title: 'Geometría',
-        icon: '📐',
+        icon: '⭐',
         description: 'Formas y figuras',
         levels: 10,
         progress: 0,
@@ -118,7 +118,7 @@ const lessons = [
     {
         id: 'porcentajes',
         title: 'Porcentajes',
-        icon: '%',
+        icon: '⭐',
         description: 'Cálculo de porcentajes',
         levels: 10,
         progress: 0,
@@ -950,7 +950,6 @@ function renderLessons() {
         
         nodeElement.innerHTML = `
             <div class="lesson-icon">${lesson.icon}</div>
-            <div class="lesson-title">${lesson.title}</div>
         `;
         
         grid.appendChild(nodeElement);
@@ -971,6 +970,40 @@ function selectLesson(lessonId) {
     playClickSound();
     gameState.currentLesson = lessonId;
     
+    // Mostrar modal de información de la lección
+    showLessonModal(lesson);
+}
+
+function showLessonModal(lesson) {
+    const modalHtml = `
+        <div class="lesson-modal-overlay" id="lessonModal" onclick="closeLessonModal()">
+            <div class="lesson-modal-content" onclick="event.stopPropagation()">
+                <div class="lesson-modal-header">
+                    <h2>${lesson.title}</h2>
+                    <button class="close-btn" onclick="closeLessonModal()">×</button>
+                </div>
+                <div class="lesson-modal-body">
+                    <div class="lesson-big-icon">${lesson.icon}</div>
+                    <p class="lesson-description">${lesson.description}</p>
+                    <div class="lesson-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${lesson.progress}%"></div>
+                        </div>
+                        <span class="progress-text">${lesson.progress}% completado</span>
+                    </div>
+                </div>
+                <div class="lesson-modal-actions">
+                    <button class="start-lesson-btn" onclick="startLessonFromModal()">
+                        <i class="fas fa-play"></i>
+                        Comenzar Lección
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
     if (lesson.progress === 0) {
         updateMascotMessage(`¡Nueva aventura! Vamos a explorar ${lesson.title} juntos.`);
     } else if (lesson.progress < 100) {
@@ -978,6 +1011,20 @@ function selectLesson(lessonId) {
     } else {
         updateMascotMessage(`¡Perfecto! Repasemos ${lesson.title} para mantenerte afilado.`);
     }
+}
+
+function closeLessonModal() {
+    const modal = document.getElementById('lessonModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function startLessonFromModal() {
+    closeLessonModal();
+    // Mostrar modos de juego
+    const lesson = lessons.find(l => l.id === gameState.currentLesson);
+    updateMascotMessage(`¡Perfecto! ¿Cómo quieres practicar ${lesson.title}?`);
 }
 
 function startMode(mode) {
