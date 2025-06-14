@@ -1986,19 +1986,23 @@ input:checked + .slider:before {
     box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.1);
 }
 
-/* Personalización de Mascota estilo Duolingo para móvil */
+/* Pantalla de Personalización de Avatar */
+#mascotCustomizationScreen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
 .customization-container-mobile {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 50%;
-    background: white;
-    border-radius: 20px 20px 0 0;
-    z-index: 1000;
-    box-shadow: 0 -4px 25px rgba(0,0,0,0.2);
-    animation: slideUpFromBottom 0.3s ease-out;
+    display: block;
+    position: relative;
+    background: transparent;
+    border-radius: 0;
+    z-index: auto;
+    box-shadow: none;
+    animation: none;
+    height: auto;
+    width: 100%;
 }
 
 @keyframes slideUpFromBottom {
