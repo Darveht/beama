@@ -892,19 +892,147 @@ body {
     border-color: #FFD700;
 }
 
-.lesson-title {
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin: 0;
-    color: inherit;
-    transition: color 0.3s ease;
-    line-height: 1.1;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+/* Estilos para modal de lección */
+.lesson-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
 }
 
-.lesson-node.checkpoint .lesson-title,
-.lesson-node.boss .lesson-title {
-    font-size: 0.8rem;
+.lesson-modal-content {
+    background: white;
+    border-radius: 25px;
+    max-width: 450px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUp 0.4s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.lesson-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.lesson-modal-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.lesson-modal-header .close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.lesson-modal-header .close-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.lesson-modal-body {
+    padding: 30px;
+    text-align: center;
+}
+
+.lesson-big-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 20px rgba(255, 215, 0, 0.4));
+}
+
+.lesson-description {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.lesson-progress {
+    margin-bottom: 20px;
+}
+
+.lesson-progress .progress-bar {
+    background: #e0e0e0;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.lesson-progress .progress-fill {
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 6px;
+}
+
+.progress-text {
+    font-weight: 600;
+    color: #4CAF50;
+    font-size: 1rem;
+}
+
+.lesson-modal-actions {
+    padding: 20px 30px 30px;
+}
+
+.start-lesson-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+}
+
+.start-lesson-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 @keyframes bounceIn {
@@ -2568,14 +2696,41 @@ input:checked + .slider:before {
         font-size: 2.8rem;
     }
 
-    .lesson-title {
-        font-size: 0.6rem;
-        line-height: 1.0;
+    /* Modal móvil */
+    .lesson-modal-content {
+        width: 95%;
+        margin: 10px;
     }
 
-    .lesson-node.checkpoint .lesson-title,
-    .lesson-node.boss .lesson-title {
-        font-size: 0.7rem;
+    .lesson-modal-header {
+        padding: 20px 20px 10px;
+    }
+
+    .lesson-modal-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .lesson-modal-body {
+        padding: 20px;
+    }
+
+    .lesson-big-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+    }
+
+    .lesson-description {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .lesson-modal-actions {
+        padding: 15px 20px 25px;
+    }
+
+    .start-lesson-btn {
+        padding: 15px 30px;
+        font-size: 1.1rem;
     }
 
     .lesson-node.completed .lesson-icon::after,
