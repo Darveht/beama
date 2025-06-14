@@ -1,5 +1,6 @@
 
 
+
 // Configuración Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCFQ_geG0HIv2EZ-bfKc97TJNtf2sdqPzc",
@@ -936,6 +937,7 @@ function renderLessons() {
 }
 
 function selectLesson(lessonId) {
+    playClickSound();
     gameState.currentLesson = lessonId;
     updateMascotMessage(`¡Excelente elección! Vamos a practicar ${lessons.find(l => l.id === lessonId).title}.`);
 }
@@ -943,9 +945,11 @@ function selectLesson(lessonId) {
 function startMode(mode) {
     if (!gameState.currentLesson) {
         updateMascotMessage('¡Primero selecciona una lección!');
+        playErrorSound();
         return;
     }
     
+    playClickSound();
     gameState.currentMode = mode;
     startGame();
 }
@@ -1034,6 +1038,11 @@ function selectAnswer(selectedAnswer) {
         const mascotGame = document.getElementById('bearGame');
         if (mascotGame) mascotGame.classList.add('pulse');
         playSuccessSound();
+        
+        // Sonido adicional para gemas
+        setTimeout(() => {
+            playGemSound();
+        }, 300);
     } else {
         updateMascotMessage('¡Tranquilo! Los osos también nos equivocamos. Vamos a intentarlo de nuevo.', 'mascotSpeechGame');
         const mascotGame = document.getElementById('bearGame');
@@ -1100,20 +1109,27 @@ function endGame() {
     
     if (accuracy === 1.0) {
         addAchievement('¡Perfecto! 🏆');
+        playLevelUpSound();
     }
     if (gameState.user.streak >= 3) {
         addAchievement('¡Racha de fuego! 🔥');
     }
     if (rewards.gems >= 50) {
         addAchievement('¡Rico en gemas! 💎');
+        setTimeout(() => {
+            playGemSound();
+        }, 500);
     }
     
     // Actualizar UI
     updateUserStats();
     
-    // Mensaje de mascota
+    // Mensaje de mascota y sonido
     if (accuracy >= 0.8) {
         updateMascotMessage('¡Increíble trabajo! Estoy muy orgulloso 🎊');
+        setTimeout(() => {
+            playSuccessSound();
+        }, 200);
     } else {
         updateMascotMessage('¡Buen intento! La práctica hace al maestro 📚');
     }
@@ -1261,150 +1277,92 @@ function updateMascotMessage(message, targetElement = 'mascotSpeech') {
         }
     });
     
-    // Reproducir voz en español
-    speakText(message);
+    // Solo animación visual sin voz
+    playMascotAnimation();
 }
 
-function speakText(text) {
-    // Cancelar cualquier síntesis de voz en curso
-    if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-        stopSpeakingAnimation();
-    }
-    
-    // Verificar si la síntesis de voz está disponible
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Configurar voz en español masculino
-        utterance.lang = 'es-ES';
-        utterance.rate = 0.9; // Velocidad natural
-        utterance.pitch = 0.8; // Tono más grave para oso masculino
-        utterance.volume = 0.8;
-        
-        // Buscar voz masculina en español
-        const voices = window.speechSynthesis.getVoices();
-        const spanishVoice = voices.find(voice => 
-            voice.lang.startsWith('es') && 
-            (voice.name.toLowerCase().includes('male') || 
-             voice.name.toLowerCase().includes('man') ||
-             voice.name.toLowerCase().includes('diego') ||
-             voice.name.toLowerCase().includes('jorge'))
-        ) || voices.find(voice => voice.lang.startsWith('es'));
-        
-        if (spanishVoice) {
-            utterance.voice = spanishVoice;
-        }
-        
-        // Eventos de la síntesis de voz
-        utterance.onstart = () => {
-            startSpeakingAnimation();
-        };
-        
-        utterance.onend = () => {
-            stopSpeakingAnimation();
-        };
-        
-        utterance.onerror = () => {
-            stopSpeakingAnimation();
-            console.log('Error en síntesis de voz, usando sonido alternativo');
-            playMascotSound();
-        };
-        
-        // Reproducir la voz
-        window.speechSynthesis.speak(utterance);
-    } else {
-        // Fallback a sonido sintético si no hay síntesis de voz
-        playMascotSound();
-    }
-}
-
-function startSpeakingAnimation() {
-    // Animar todos los osos que estén visibles
-    const bears = ['bearHome', 'bearLessons', 'bearGame'];
-    const mouths = ['bearMouthHome', 'bearMouthLessons', 'bearMouthGame'];
+function playMascotAnimation() {
+    // Solo animación visual de la mascota
+    const bears = ['bearHome', 'bearLessons', 'bearGame', 'previewBear'];
     
     bears.forEach(bearId => {
         const bear = document.getElementById(bearId);
         if (bear && isElementVisible(bear)) {
             bear.classList.add('speaking');
-        }
-    });
-    
-    mouths.forEach(mouthId => {
-        const mouth = document.getElementById(mouthId);
-        if (mouth && isElementVisible(mouth)) {
-            mouth.classList.add('speaking');
-        }
-    });
-}
-
-function stopSpeakingAnimation() {
-    // Detener animación de todos los osos
-    const bears = ['bearHome', 'bearLessons', 'bearGame'];
-    const mouths = ['bearMouthHome', 'bearMouthLessons', 'bearMouthGame'];
-    
-    bears.forEach(bearId => {
-        const bear = document.getElementById(bearId);
-        if (bear) {
-            bear.classList.remove('speaking');
-        }
-    });
-    
-    mouths.forEach(mouthId => {
-        const mouth = document.getElementById(mouthId);
-        if (mouth) {
-            mouth.classList.remove('speaking');
+            setTimeout(() => {
+                bear.classList.remove('speaking');
+            }, 800);
         }
     });
 }
 
 function isElementVisible(element) {
+    if (!element) return false;
     const rect = element.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0 && 
            window.getComputedStyle(element).display !== 'none' &&
            window.getComputedStyle(element).visibility !== 'hidden';
 }
 
-function playMascotSound() {
-    // Sonido sintético como fallback
+// Efectos de sonido estilo Duolingo
+function playSuccessSound() {
+    if (!appSettings.soundEffects) return;
+    
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    // Sonido de éxito alegre y brillante
+    const notes = [
+        { freq: 523, time: 0, duration: 0.15 },    // C5
+        { freq: 659, time: 0.1, duration: 0.15 },  // E5
+        { freq: 784, time: 0.2, duration: 0.2 },   // G5
+        { freq: 1047, time: 0.35, duration: 0.25 } // C6
+    ];
     
-    oscillator.frequency.setValueAtTime(200, audioContext.currentTime); // Más grave para oso
-    oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.15);
-    
-    gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.15);
-    
-    // Animar durante el sonido sintético
-    startSpeakingAnimation();
-    setTimeout(stopSpeakingAnimation, 150);
+    notes.forEach(note => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const filterNode = audioContext.createBiquadFilter();
+        
+        oscillator.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(note.freq, audioContext.currentTime + note.time);
+        oscillator.type = 'triangle';
+        
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(2000, audioContext.currentTime + note.time);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime + note.time);
+        gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + note.time + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.time + note.duration);
+        
+        oscillator.start(audioContext.currentTime + note.time);
+        oscillator.stop(audioContext.currentTime + note.time + note.duration);
+    });
 }
 
-// Asegurar que las voces estén cargadas
-window.speechSynthesis.onvoiceschanged = function() {
-    // Las voces están ahora disponibles
-};
-
-function playSuccessSound() {
+function playErrorSound() {
+    if (!appSettings.soundEffects) return;
+    
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
+    const filterNode = audioContext.createBiquadFilter();
     
-    oscillator.connect(gainNode);
+    oscillator.connect(filterNode);
+    filterNode.connect(gainNode);
     gainNode.connect(audioContext.destination);
     
-    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
-    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
-    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+    // Sonido de error descendente
+    oscillator.frequency.setValueAtTime(330, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.1);
+    oscillator.frequency.exponentialRampToValueAtTime(165, audioContext.currentTime + 0.3);
+    oscillator.type = 'sawtooth';
+    
+    filterNode.type = 'lowpass';
+    filterNode.frequency.setValueAtTime(800, audioContext.currentTime);
+    filterNode.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
     
     gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
@@ -1413,7 +1371,9 @@ function playSuccessSound() {
     oscillator.stop(audioContext.currentTime + 0.3);
 }
 
-function playErrorSound() {
+function playClickSound() {
+    if (!appSettings.soundEffects) return;
+    
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -1421,8 +1381,92 @@ function playErrorSound() {
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
     
-    oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.2);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function playHoverSound() {
+    if (!appSettings.soundEffects) return;
+    
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(500, audioContext.currentTime + 0.08);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.08);
+}
+
+function playLevelUpSound() {
+    if (!appSettings.soundEffects) return;
+    
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Secuencia ascendente de notas
+    const notes = [
+        { freq: 261, time: 0 },     // C4
+        { freq: 329, time: 0.1 },   // E4
+        { freq: 392, time: 0.2 },   // G4
+        { freq: 523, time: 0.3 },   // C5
+        { freq: 659, time: 0.4 },   // E5
+        { freq: 784, time: 0.5 },   // G5
+        { freq: 1047, time: 0.6 }   // C6
+    ];
+    
+    notes.forEach(note => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(note.freq, audioContext.currentTime + note.time);
+        oscillator.type = 'triangle';
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime + note.time);
+        gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + note.time + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.time + 0.2);
+        
+        oscillator.start(audioContext.currentTime + note.time);
+        oscillator.stop(audioContext.currentTime + note.time + 0.2);
+    });
+}
+
+function playGemSound() {
+    if (!appSettings.soundEffects) return;
+    
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    const filterNode = audioContext.createBiquadFilter();
+    
+    oscillator.connect(filterNode);
+    filterNode.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(1500, audioContext.currentTime + 0.1);
+    oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.2);
+    oscillator.type = 'sine';
+    
+    filterNode.type = 'highpass';
+    filterNode.frequency.setValueAtTime(500, audioContext.currentTime);
     
     gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
@@ -1516,6 +1560,9 @@ document.addEventListener('DOMContentLoaded', function() {
     showIntro();
     updateUserStats();
     
+    // Agregar efectos de sonido a botones
+    addSoundEffectsToButtons();
+    
     // Cerrar modal al hacer clic fuera
     window.onclick = function(event) {
         const modal = document.getElementById('calculatorModal');
@@ -1530,9 +1577,27 @@ document.addEventListener('DOMContentLoaded', function() {
             gameState.user.lives++;
             updateUserStats();
             updateMascotMessage('¡Recuperaste una vida! ❤️');
+            playGemSound();
         }
     }, 3600000); // 1 hora
 });
+
+// Función para agregar efectos de sonido a todos los botones
+function addSoundEffectsToButtons() {
+    // Agregar hover sound a todos los botones
+    document.addEventListener('mouseover', function(e) {
+        if (e.target.matches('button, .lesson-card, .answer-btn, .action-btn, .mode-btn, .color-option, .style-option, .option-card')) {
+            playHoverSound();
+        }
+    });
+    
+    // Agregar click sound a todos los botones
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('button, .lesson-card, .answer-btn, .action-btn, .mode-btn, .color-option, .style-option, .option-card')) {
+            playClickSound();
+        }
+    });
+}
 
 // Sistema de logros
 const achievements = {
