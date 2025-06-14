@@ -508,7 +508,7 @@
                     </div>
                     <button class="customize-btn" onclick="showMascotCustomization()">
                         <i class="fas fa-paint-brush"></i>
-                        Personalizar Mascota
+                        Personalizar Avatar
                     </button>
                 </div>
             </div>
@@ -517,474 +517,243 @@
 
     <!-- Pantalla de Personalización de Mascota -->
     <div id="mascotCustomizationScreen" class="screen">
-        <div class="header">
-            <button class="back-btn" onclick="showProfile()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <h2>Personalizar Mascota</h2>
-            <button class="save-btn" onclick="saveMascotCustomization()">
-                <i class="fas fa-save"></i>
-                Guardar
+        <div class="customization-header-mobile">
+            <h3>Personalizar Avatar</h3>
+            <button class="close-btn-mobile" onclick="showProfile()">
+                <i class="fas fa-arrow-left"></i> Volver
             </button>
         </div>
-
-        <!-- Versión móvil del editor estilo Duolingo -->
-        <div class="customization-container-mobile" id="customizationMobile">
-            <div class="customization-header-mobile">
-                <h3>Personalizar Avatar</h3>
-                <button class="close-btn-mobile" onclick="showProfile()">Cerrar</button>
-            </div>
-            
-            <div class="customization-content-mobile">
-                <div class="mascot-preview-mobile">
-                    <div class="mascot-3d" id="mascot3dMobile">
-                        <div class="bear-3d">
-                            <div class="bear-head" id="previewBearHeadMobile">
-                                <div class="bear-ears">
-                                    <div class="bear-ear left" id="previewBearEarLeftMobile"></div>
-                                    <div class="bear-ear right" id="previewBearEarRightMobile"></div>
-                                </div>
-                                <div class="bear-face">
-                                    <div class="bear-eyes">
-                                        <div class="bear-eye left" id="previewBearEyeLeftMobile">
-                                            <div class="pupil"></div>
-                                        </div>
-                                        <div class="bear-eye right" id="previewBearEyeRightMobile">
-                                            <div class="pupil"></div>
-                                        </div>
-                                    </div>
-                                    <div class="bear-nose" id="previewBearNoseMobile"></div>
-                                    <div class="bear-mouth" id="previewBearMouthMobile"></div>
-                                </div>
-                            </div>
-                            <div class="bear-body" id="previewBearBodyMobile">
-                                <div class="bear-arms">
-                                    <div class="bear-arm left"></div>
-                                    <div class="bear-arm right"></div>
-                                </div>
-                                <div class="bear-belly" id="previewBearBellyMobile"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="customization-tabs-mobile">
-                    <button class="customization-tab-mobile active" onclick="switchCustomizationTab('ropa')">
-                        <i class="fas fa-tshirt"></i> Ropa
-                    </button>
-                    <button class="customization-tab-mobile" onclick="switchCustomizationTab('ojos')">
-                        <i class="fas fa-eye"></i> Ojos
-                    </button>
-                    <button class="customization-tab-mobile" onclick="switchCustomizationTab('boca')">
-                        <i class="fas fa-smile"></i> Boca
-                    </button>
-                    <button class="customization-tab-mobile" onclick="switchCustomizationTab('nariz')">
-                        <i class="fas fa-nose"></i> Nariz
-                    </button>
-                    <button class="customization-tab-mobile" onclick="switchCustomizationTab('accesorios')">
-                        <i class="fas fa-hat-wizard"></i> Extras
-                    </button>
-                </div>
-
-                <!-- Panel Ropa -->
-                <div class="customization-panel-mobile active" id="ropaPanel">
-                    <h4><i class="fas fa-palette"></i> Color del Pelaje</h4>
-                    <div class="options-grid-mobile">
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#8B4513')">
-                            <div class="color-preview-mobile" style="background: #8B4513;"></div>
-                            <div class="option-label-mobile">Café</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#A0522D')">
-                            <div class="color-preview-mobile" style="background: #A0522D;"></div>
-                            <div class="option-label-mobile">Canela</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#D2691E')">
-                            <div class="color-preview-mobile" style="background: #D2691E;"></div>
-                            <div class="option-label-mobile">Miel</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#F4A460')">
-                            <div class="color-preview-mobile" style="background: #F4A460;"></div>
-                            <div class="option-label-mobile">Arena</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#696969')">
-                            <div class="color-preview-mobile" style="background: #696969;"></div>
-                            <div class="option-label-mobile">Gris</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#2F4F4F')">
-                            <div class="color-preview-mobile" style="background: #2F4F4F;"></div>
-                            <div class="option-label-mobile">Oscuro</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#483D8B')">
-                            <div class="color-preview-mobile" style="background: #483D8B;"></div>
-                            <div class="option-label-mobile">Púrpura</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileBodyColor('#228B22')">
-                            <div class="color-preview-mobile" style="background: #228B22;"></div>
-                            <div class="option-label-mobile">Verde</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Panel Ojos -->
-                <div class="customization-panel-mobile" id="ojosPanel">
-                    <h4><i class="fas fa-eye"></i> Estilo de Ojos</h4>
-                    <div class="options-grid-mobile">
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('normal')">
-                            <div class="option-preview-mobile">👁️</div>
-                            <div class="option-label-mobile">Normal</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('large')">
-                            <div class="option-preview-mobile">👀</div>
-                            <div class="option-label-mobile">Grandes</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('sleepy')">
-                            <div class="option-preview-mobile">😴</div>
-                            <div class="option-label-mobile">Somnoliento</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('happy')">
-                            <div class="option-preview-mobile">😊</div>
-                            <div class="option-label-mobile">Feliz</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('star')">
-                            <div class="option-preview-mobile">⭐</div>
-                            <div class="option-label-mobile">Estrella</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('heart')">
-                            <div class="option-preview-mobile">💖</div>
-                            <div class="option-label-mobile">Corazón</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('rainbow')">
-                            <div class="option-preview-mobile">🌈</div>
-                            <div class="option-label-mobile">Arcoíris</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileEyeStyle('cool')">
-                            <div class="option-preview-mobile">😎</div>
-                            <div class="option-label-mobile">Genial</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Panel Boca -->
-                <div class="customization-panel-mobile" id="bocaPanel">
-                    <h4><i class="fas fa-smile"></i> Expresión</h4>
-                    <div class="options-grid-mobile">
-                        <div class="option-item-mobile" onclick="changeMobileMouthStyle('happy')">
-                            <div class="option-preview-mobile">😊</div>
-                            <div class="option-label-mobile">Feliz</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileMouthStyle('neutral')">
-                            <div class="option-preview-mobile">😐</div>
-                            <div class="option-label-mobile">Neutral</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileMouthStyle('surprised')">
-                            <div class="option-preview-mobile">😮</div>
-                            <div class="option-label-mobile">Sorprendido</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileMouthStyle('playful')">
-                            <div class="option-preview-mobile">😜</div>
-                            <div class="option-label-mobile">Juguetón</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileMouthStyle('laugh')">
-                            <div class="option-preview-mobile">😄</div>
-                            <div class="option-label-mobile">Risueño</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileMouthStyle('cute')">
-                            <div class="option-preview-mobile">😘</div>
-                            <div class="option-label-mobile">Adorable</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Panel Nariz -->
-                <div class="customization-panel-mobile" id="narizPanel">
-                    <h4><i class="fas fa-nose"></i> Tipo de Nariz</h4>
-                    <div class="options-grid-mobile">
-                        <div class="option-item-mobile" onclick="changeMobileNoseStyle('normal')">
-                            <div class="option-preview-mobile">👃</div>
-                            <div class="option-label-mobile">Normal</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileNoseStyle('small')">
-                            <div class="option-preview-mobile">👶</div>
-                            <div class="option-label-mobile">Pequeña</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileNoseStyle('big')">
-                            <div class="option-preview-mobile">🔴</div>
-                            <div class="option-label-mobile">Grande</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileNoseStyle('button')">
-                            <div class="option-preview-mobile">⚪</div>
-                            <div class="option-label-mobile">Botón</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="changeMobileNoseStyle('heart')">
-                            <div class="option-preview-mobile">💗</div>
-                            <div class="option-label-mobile">Corazón</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Panel Accesorios -->
-                <div class="customization-panel-mobile" id="accesoriosPanel">
-                    <h4><i class="fas fa-hat-wizard"></i> Accesorios</h4>
-                    <div class="options-grid-mobile">
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('hat')">
-                            <div class="accessory-preview-mobile">🎩</div>
-                            <div class="option-label-mobile">Sombrero</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('glasses')">
-                            <div class="accessory-preview-mobile">👓</div>
-                            <div class="option-label-mobile">Lentes</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('cap')">
-                            <div class="accessory-preview-mobile">🧢</div>
-                            <div class="option-label-mobile">Gorra</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('headband')">
-                            <div class="accessory-preview-mobile">👑</div>
-                            <div class="option-label-mobile">Diadema</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('earrings')">
-                            <div class="accessory-preview-mobile">💎</div>
-                            <div class="option-label-mobile">Aretes</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('bowtie')">
-                            <div class="accessory-preview-mobile">🎀</div>
-                            <div class="option-label-mobile">Corbatín</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('chain')">
-                            <div class="accessory-preview-mobile">📿</div>
-                            <div class="option-label-mobile">Cadena</div>
-                        </div>
-                        <div class="option-item-mobile" onclick="toggleMobileAccessory('scarf')">
-                            <div class="accessory-preview-mobile">🧣</div>
-                            <div class="option-label-mobile">Bufanda</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <button class="save-btn-mobile" onclick="saveMascotCustomization()">
-                <i class="fas fa-save"></i> Guardar
-            </button>
-        </div>
-
-        <div class="customization-container"></div>
-            <div class="mascot-preview-large">
-                <div class="mascot-3d-large">
+        
+        <div class="customization-content-mobile">
+            <div class="mascot-preview-mobile">
+                <div class="mascot-3d" id="mascot3dMobile">
                     <div class="bear-3d">
-                        <div class="bear-head" id="previewBearHead">
+                        <div class="bear-head" id="previewBearHeadMobile">
                             <div class="bear-ears">
-                                <div class="bear-ear left" id="previewBearEarLeft"></div>
-                                <div class="bear-ear right" id="previewBearEarRight"></div>
+                                <div class="bear-ear left" id="previewBearEarLeftMobile"></div>
+                                <div class="bear-ear right" id="previewBearEarRightMobile"></div>
                             </div>
                             <div class="bear-face">
                                 <div class="bear-eyes">
-                                    <div class="bear-eye left" id="previewBearEyeLeft">
+                                    <div class="bear-eye left" id="previewBearEyeLeftMobile">
                                         <div class="pupil"></div>
                                     </div>
-                                    <div class="bear-eye right" id="previewBearEyeRight">
+                                    <div class="bear-eye right" id="previewBearEyeRightMobile">
                                         <div class="pupil"></div>
                                     </div>
                                 </div>
-                                <div class="bear-nose" id="previewBearNose"></div>
-                                <div class="bear-mouth" id="previewBearMouth"></div>
+                                <div class="bear-nose" id="previewBearNoseMobile"></div>
+                                <div class="bear-mouth" id="previewBearMouthMobile"></div>
                             </div>
                         </div>
-                        <div class="bear-body" id="previewBearBody">
+                        <div class="bear-body" id="previewBearBodyMobile">
                             <div class="bear-arms">
                                 <div class="bear-arm left"></div>
                                 <div class="bear-arm right"></div>
                             </div>
-                            <div class="bear-belly" id="previewBearBelly"></div>
+                            <div class="bear-belly" id="previewBearBellyMobile"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="customization-options">
-                <div class="customization-tab">
-                    <h3><i class="fas fa-palette"></i> Color del Pelaje</h3>
-                    <div class="color-options">
-                        <div class="color-option" data-color="#8B4513" onclick="changeBodyColor('#8B4513')"></div>
-                        <div class="color-option" data-color="#A0522D" onclick="changeBodyColor('#A0522D')"></div>
-                        <div class="color-option" data-color="#D2691E" onclick="changeBodyColor('#D2691E')"></div>
-                        <div class="color-option" data-color="#F4A460" onclick="changeBodyColor('#F4A460')"></div>
-                        <div class="color-option" data-color="#8B7355" onclick="changeBodyColor('#8B7355')"></div>
-                        <div class="color-option" data-color="#696969" onclick="changeBodyColor('#696969')"></div>
-                        <div class="color-option" data-color="#2F4F4F" onclick="changeBodyColor('#2F4F4F')"></div>
-                        <div class="color-option" data-color="#483D8B" onclick="changeBodyColor('#483D8B')"></div>
-                        <div class="color-option" data-color="#8B0000" onclick="changeBodyColor('#8B0000')"></div>
-                        <div class="color-option" data-color="#228B22" onclick="changeBodyColor('#228B22')"></div>
+            <div class="customization-tabs-mobile">
+                <button class="customization-tab-mobile active" onclick="switchCustomizationTab('ropa')">
+                    <i class="fas fa-tshirt"></i> Ropa
+                </button>
+                <button class="customization-tab-mobile" onclick="switchCustomizationTab('ojos')">
+                    <i class="fas fa-eye"></i> Ojos
+                </button>
+                <button class="customization-tab-mobile" onclick="switchCustomizationTab('boca')">
+                    <i class="fas fa-smile"></i> Boca
+                </button>
+                <button class="customization-tab-mobile" onclick="switchCustomizationTab('nariz')">
+                    <i class="fas fa-nose"></i> Nariz
+                </button>
+                <button class="customization-tab-mobile" onclick="switchCustomizationTab('accesorios')">
+                    <i class="fas fa-hat-wizard"></i> Extras
+                </button>
+            </div>
+
+            <!-- Panel Ropa -->
+            <div class="customization-panel-mobile active" id="ropaPanel">
+                <h4><i class="fas fa-palette"></i> Color del Pelaje</h4>
+                <div class="options-grid-mobile">
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#8B4513')">
+                        <div class="color-preview-mobile" style="background: #8B4513;"></div>
+                        <div class="option-label-mobile">Café</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#A0522D')">
+                        <div class="color-preview-mobile" style="background: #A0522D;"></div>
+                        <div class="option-label-mobile">Canela</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#D2691E')">
+                        <div class="color-preview-mobile" style="background: #D2691E;"></div>
+                        <div class="option-label-mobile">Miel</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#F4A460')">
+                        <div class="color-preview-mobile" style="background: #F4A460;"></div>
+                        <div class="option-label-mobile">Arena</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#696969')">
+                        <div class="color-preview-mobile" style="background: #696969;"></div>
+                        <div class="option-label-mobile">Gris</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#2F4F4F')">
+                        <div class="color-preview-mobile" style="background: #2F4F4F;"></div>
+                        <div class="option-label-mobile">Oscuro</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#483D8B')">
+                        <div class="color-preview-mobile" style="background: #483D8B;"></div>
+                        <div class="option-label-mobile">Púrpura</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileBodyColor('#228B22')">
+                        <div class="color-preview-mobile" style="background: #228B22;"></div>
+                        <div class="option-label-mobile">Verde</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="customization-tab">
-                    <h3><i class="fas fa-eye"></i> Ojos</h3>
-                    <div class="eye-options">
-                        <button class="style-option" onclick="changeEyeStyle('normal')">
-                            <div class="eye-preview normal"></div>
-                            Normales
-                        </button>
-                        <button class="style-option" onclick="changeEyeStyle('large')">
-                            <div class="eye-preview large"></div>
-                            Grandes
-                        </button>
-                        <button class="style-option" onclick="changeEyeStyle('sleepy')">
-                            <div class="eye-preview sleepy"></div>
-                            Somnolientos
-                        </button>
-                        <button class="style-option" onclick="changeEyeStyle('happy')">
-                            <div class="eye-preview happy"></div>
-                            Felices
-                        </button>
-                        <button class="style-option" onclick="changeEyeStyle('star')">
-                            <div class="eye-preview star">⭐</div>
-                            Estrella
-                        </button>
-                        <button class="style-option" onclick="changeEyeStyle('rainbow')">
-                            <div class="eye-preview rainbow"></div>
-                            Arcoíris
-                        </button>
-                        <button class="style-option" onclick="changeEyeStyle('heart')">
-                            <div class="eye-preview heart">💖</div>
-                            Corazón
-                        </button>
-                        <button class="style-option" onclick="changeEyeStyle('cool')">
-                            <div class="eye-preview cool"></div>
-                            Geniales
-                        </button>
+            <!-- Panel Ojos -->
+            <div class="customization-panel-mobile" id="ojosPanel">
+                <h4><i class="fas fa-eye"></i> Estilo de Ojos</h4>
+                <div class="options-grid-mobile">
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('normal')">
+                        <div class="option-preview-mobile">👁️</div>
+                        <div class="option-label-mobile">Normal</div>
                     </div>
-                    
-                    <h4 style="margin-top: 20px;"><i class="fas fa-palette"></i> Color de Ojos</h4>
-                    <div class="eye-color-options">
-                        <div class="eye-color-option selected" data-eye-color="#000000" onclick="changeEyeColor('#000000')"></div>
-                        <div class="eye-color-option" data-eye-color="#8B4513" onclick="changeEyeColor('#8B4513')"></div>
-                        <div class="eye-color-option" data-eye-color="#228B22" onclick="changeEyeColor('#228B22')"></div>
-                        <div class="eye-color-option" data-eye-color="#0066CC" onclick="changeEyeColor('#0066CC')"></div>
-                        <div class="eye-color-option" data-eye-color="#8A2BE2" onclick="changeEyeColor('#8A2BE2')"></div>
-                        <div class="eye-color-option" data-eye-color="#DC143C" onclick="changeEyeColor('#DC143C')"></div>
-                        <div class="eye-color-option" data-eye-color="#FF69B4" onclick="changeEyeColor('#FF69B4')"></div>
-                        <div class="eye-color-option" data-eye-color="#FFD700" onclick="changeEyeColor('#FFD700')"></div>
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('large')">
+                        <div class="option-preview-mobile">👀</div>
+                        <div class="option-label-mobile">Grandes</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('sleepy')">
+                        <div class="option-preview-mobile">😴</div>
+                        <div class="option-label-mobile">Somnoliento</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('happy')">
+                        <div class="option-preview-mobile">😊</div>
+                        <div class="option-label-mobile">Feliz</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('star')">
+                        <div class="option-preview-mobile">⭐</div>
+                        <div class="option-label-mobile">Estrella</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('heart')">
+                        <div class="option-preview-mobile">💖</div>
+                        <div class="option-label-mobile">Corazón</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('rainbow')">
+                        <div class="option-preview-mobile">🌈</div>
+                        <div class="option-label-mobile">Arcoíris</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileEyeStyle('cool')">
+                        <div class="option-preview-mobile">😎</div>
+                        <div class="option-label-mobile">Genial</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="customization-tab">
-                    <h3><i class="fas fa-nose"></i> Nariz</h3>
-                    <div class="nose-options">
-                        <button class="style-option" onclick="changeNoseStyle('normal')">
-                            <div class="nose-preview normal"></div>
-                            Normal
-                        </button>
-                        <button class="style-option" onclick="changeNoseStyle('small')">
-                            <div class="nose-preview small"></div>
-                            Pequeña
-                        </button>
-                        <button class="style-option" onclick="changeNoseStyle('big')">
-                            <div class="nose-preview big"></div>
-                            Grande
-                        </button>
-                        <button class="style-option" onclick="changeNoseStyle('button')">
-                            <div class="nose-preview button"></div>
-                            Botón
-                        </button>
-                        <button class="style-option" onclick="changeNoseStyle('heart')">
-                            <div class="nose-preview heart">💗</div>
-                            Corazón
-                        </button>
+            <!-- Panel Boca -->
+            <div class="customization-panel-mobile" id="bocaPanel">
+                <h4><i class="fas fa-smile"></i> Expresión</h4>
+                <div class="options-grid-mobile">
+                    <div class="option-item-mobile" onclick="changeMobileMouthStyle('happy')">
+                        <div class="option-preview-mobile">😊</div>
+                        <div class="option-label-mobile">Feliz</div>
                     </div>
-                    
-                    <h4 style="margin-top: 15px;"><i class="fas fa-palette"></i> Color de Nariz</h4>
-                    <div class="nose-color-options">
-                        <div class="nose-color-option selected" data-nose-color="#2c2c2c" onclick="changeNoseColor('#2c2c2c')"></div>
-                        <div class="nose-color-option" data-nose-color="#000000" onclick="changeNoseColor('#000000')"></div>
-                        <div class="nose-color-option" data-nose-color="#8B4513" onclick="changeNoseColor('#8B4513')"></div>
-                        <div class="nose-color-option" data-nose-color="#FF69B4" onclick="changeNoseColor('#FF69B4')"></div>
-                        <div class="nose-color-option" data-nose-color="#DC143C" onclick="changeNoseColor('#DC143C')"></div>
+                    <div class="option-item-mobile" onclick="changeMobileMouthStyle('neutral')">
+                        <div class="option-preview-mobile">😐</div>
+                        <div class="option-label-mobile">Neutral</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileMouthStyle('surprised')">
+                        <div class="option-preview-mobile">😮</div>
+                        <div class="option-label-mobile">Sorprendido</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileMouthStyle('playful')">
+                        <div class="option-preview-mobile">😜</div>
+                        <div class="option-label-mobile">Juguetón</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileMouthStyle('laugh')">
+                        <div class="option-preview-mobile">😄</div>
+                        <div class="option-label-mobile">Risueño</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileMouthStyle('cute')">
+                        <div class="option-preview-mobile">😘</div>
+                        <div class="option-label-mobile">Adorable</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="customization-tab">
-                    <h3><i class="fas fa-smile"></i> Boca</h3>
-                    <div class="mouth-options">
-                        <button class="style-option" onclick="changeMouthStyle('happy')">
-                            <div class="mouth-preview happy"></div>
-                            Sonriente
-                        </button>
-                        <button class="style-option" onclick="changeMouthStyle('neutral')">
-                            <div class="mouth-preview neutral"></div>
-                            Neutral
-                        </button>
-                        <button class="style-option" onclick="changeMouthStyle('surprised')">
-                            <div class="mouth-preview surprised"></div>
-                            Sorprendido
-                        </button>
-                        <button class="style-option" onclick="changeMouthStyle('playful')">
-                            <div class="mouth-preview playful"></div>
-                            Juguetón
-                        </button>
-                        <button class="style-option" onclick="changeMouthStyle('laugh')">
-                            <div class="mouth-preview laugh"></div>
-                            Riendo
-                        </button>
-                        <button class="style-option" onclick="changeMouthStyle('cute')">
-                            <div class="mouth-preview cute">💋</div>
-                            Adorable
-                        </button>
+            <!-- Panel Nariz -->
+            <div class="customization-panel-mobile" id="narizPanel">
+                <h4><i class="fas fa-nose"></i> Tipo de Nariz</h4>
+                <div class="options-grid-mobile">
+                    <div class="option-item-mobile" onclick="changeMobileNoseStyle('normal')">
+                        <div class="option-preview-mobile">👃</div>
+                        <div class="option-label-mobile">Normal</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileNoseStyle('small')">
+                        <div class="option-preview-mobile">👶</div>
+                        <div class="option-label-mobile">Pequeña</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileNoseStyle('big')">
+                        <div class="option-preview-mobile">🔴</div>
+                        <div class="option-label-mobile">Grande</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileNoseStyle('button')">
+                        <div class="option-preview-mobile">⚪</div>
+                        <div class="option-label-mobile">Botón</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="changeMobileNoseStyle('heart')">
+                        <div class="option-preview-mobile">💗</div>
+                        <div class="option-label-mobile">Corazón</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="customization-tab">
-                    <h3><i class="fas fa-tshirt"></i> Accesorios</h3>
-                    <div class="accessory-options">
-                        <button class="style-option" onclick="toggleAccessory('hat')">
-                            <i class="fas fa-hat-cowboy"></i>
-                            Sombrero
-                        </button>
-                        <button class="style-option" onclick="toggleAccessory('glasses')">
-                            <i class="fas fa-glasses"></i>
-                            Lentes
-                        </button>
-                        <button class="style-option" onclick="toggleAccessory('cap')">
-                            <i class="fas fa-baseball-ball"></i>
-                            Gorra
-                        </button>
-                        <button class="style-option" onclick="toggleAccessory('headband')">
-                            <i class="fas fa-crown"></i>
-                            Diadema
-                        </button>
-                        <button class="style-option" onclick="toggleAccessory('earrings')">
-                            <i class="fas fa-gem"></i>
-                            Aretes
-                        </button>
-                        <button class="style-option" onclick="toggleAccessory('bowtie')">
-                            <i class="fas fa-user-tie"></i>
-                            Corbatín
-                        </button>
-                        <button class="style-option" onclick="toggleAccessory('chain')">
-                            <i class="fas fa-link"></i>
-                            Cadena
-                        </button>
-                        <button class="style-option" onclick="toggleAccessory('scarf')">
-                            <i class="fas fa-mitten"></i>
-                            Bufanda
-                        </button>
+            <!-- Panel Accesorios -->
+            <div class="customization-panel-mobile" id="accesoriosPanel">
+                <h4><i class="fas fa-hat-wizard"></i> Accesorios</h4>
+                <div class="options-grid-mobile">
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('hat')">
+                        <div class="accessory-preview-mobile">🎩</div>
+                        <div class="option-label-mobile">Sombrero</div>
                     </div>
-                </div>
-
-                <div class="customization-tab">
-                    <h3><i class="fas fa-paint-brush"></i> Patrones</h3>
-                    <div class="pattern-options">
-                        <button class="style-option" onclick="togglePattern('spots')">
-                            <i class="fas fa-circle"></i>
-                            Manchas
-                        </button>
-                        <button class="style-option" onclick="togglePattern('stripes')">
-                            <i class="fas fa-bars"></i>
-                            Rayas
-                        </button>
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('glasses')">
+                        <div class="accessory-preview-mobile">👓</div>
+                        <div class="option-label-mobile">Lentes</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('cap')">
+                        <div class="accessory-preview-mobile">🧢</div>
+                        <div class="option-label-mobile">Gorra</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('headband')">
+                        <div class="accessory-preview-mobile">👑</div>
+                        <div class="option-label-mobile">Diadema</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('earrings')">
+                        <div class="accessory-preview-mobile">💎</div>
+                        <div class="option-label-mobile">Aretes</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('bowtie')">
+                        <div class="accessory-preview-mobile">🎀</div>
+                        <div class="option-label-mobile">Corbatín</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('chain')">
+                        <div class="accessory-preview-mobile">📿</div>
+                        <div class="option-label-mobile">Cadena</div>
+                    </div>
+                    <div class="option-item-mobile" onclick="toggleMobileAccessory('scarf')">
+                        <div class="accessory-preview-mobile">🧣</div>
+                        <div class="option-label-mobile">Bufanda</div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <button class="save-btn-mobile" onclick="saveMascotCustomization()">
+            <i class="fas fa-save"></i> Guardar
+        </button>
     </div>
 
     <!-- Pantalla de Configuraciones -->
