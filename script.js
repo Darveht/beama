@@ -912,33 +912,72 @@ function hideAllScreens() {
     });
 }
 
-// Renderizado de lecciones
+// Renderizado de lecciones estilo Duolingo
 function renderLessons() {
     const grid = document.getElementById('lessonsGrid');
     grid.innerHTML = '';
     
-    lessons.forEach(lesson => {
-        const card = document.createElement('div');
-        card.className = 'lesson-card';
-        card.onclick = () => selectLesson(lesson.id);
+    lessons.forEach((lesson, index) => {
+        // Determinar estado del nodo
+        let nodeState = 'locked';
+        if (index === 0 || lessons[index - 1].progress >= 50) {
+            nodeState = 'available';
+        }
+        if (lesson.progress > 0 && lesson.progress < 70) {
+            nodeState = 'current';
+        }
+        if (lesson.progress >= 70 && lesson.progress < 100) {
+            nodeState = 'completed';
+        }
+        if (lesson.progress === 100) {
+            nodeState = 'perfect';
+        }
         
-        card.innerHTML = `
+        // Tipos especiales de nodos
+        let specialType = '';
+        if (index === 3 || index === 7) { // Nodos checkpoint
+            specialType = 'checkpoint';
+        } else if (index === lessons.length - 1) { // Nodo jefe final
+            specialType = 'boss';
+        }
+        
+        const nodeElement = document.createElement('div');
+        nodeElement.className = `lesson-node ${nodeState} ${specialType}`;
+        nodeElement.onclick = () => selectLesson(lesson.id);
+        
+        // Añadir delay de animación escalonado
+        nodeElement.style.animationDelay = `${index * 0.1}s`;
+        
+        nodeElement.innerHTML = `
             <div class="lesson-icon">${lesson.icon}</div>
             <div class="lesson-title">${lesson.title}</div>
-            <div class="lesson-progress">
-                <div class="lesson-progress-fill" style="width: ${lesson.progress}%"></div>
-            </div>
-            <div class="lesson-level">Nivel ${Math.floor(lesson.progress / 10) + 1}/10</div>
         `;
         
-        grid.appendChild(card);
+        grid.appendChild(nodeElement);
     });
 }
 
 function selectLesson(lessonId) {
+    const lesson = lessons.find(l => l.id === lessonId);
+    const lessonIndex = lessons.findIndex(l => l.id === lessonId);
+    
+    // Verificar si la lección está disponible
+    if (lessonIndex > 0 && lessons[lessonIndex - 1].progress < 50) {
+        playErrorSound();
+        updateMascotMessage('¡Oops! Primero debes completar la lección anterior para desbloquear esta.');
+        return;
+    }
+    
     playClickSound();
     gameState.currentLesson = lessonId;
-    updateMascotMessage(`¡Excelente elección! Vamos a practicar ${lessons.find(l => l.id === lessonId).title}.`);
+    
+    if (lesson.progress === 0) {
+        updateMascotMessage(`¡Nueva aventura! Vamos a explorar ${lesson.title} juntos.`);
+    } else if (lesson.progress < 100) {
+        updateMascotMessage(`¡Continuemos con ${lesson.title}! Ya tienes ${lesson.progress}% completado.`);
+    } else {
+        updateMascotMessage(`¡Perfecto! Repasemos ${lesson.title} para mantenerte afilado.`);
+    }
 }
 
 function startMode(mode) {
@@ -1087,6 +1126,16 @@ function endGame() {
     const accuracy = gameState.user.totalCorrect / gameState.user.totalQuestions;
     const rewards = calculateRewards(gameState.score, accuracy, totalTime, gameState.currentMode);
     
+    // Actualizar progreso de la lección actual
+    const currentLesson = lessons.find(l => l.id === gameState.currentLesson);
+    if (currentLesson) {
+        const progressIncrease = Math.round(accuracy * 20); // 20% máximo por sesión
+        currentLesson.progress = Math.min(100, currentLesson.progress + progressIncrease);
+        
+        // Guardar progreso en localStorage temporalmente
+        localStorage.setItem('lessonsProgress', JSON.stringify(lessons.map(l => ({id: l.id, progress: l.progress}))));
+    }
+    
     // Actualizar gemas
     gameState.user.gems += rewards.gems;
     
@@ -1118,6 +1167,10 @@ function endGame() {
         setTimeout(() => {
             playGemSound();
         }, 500);
+    }
+    if (currentLesson && currentLesson.progress === 100) {
+        addAchievement('¡Lección completada! 🎯');
+        playLevelUpSound();
     }
     
     // Actualizar UI
@@ -1556,6 +1609,22 @@ document.addEventListener('visibilitychange', async () => {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar progreso de lecciones desde localStorage
+    const savedProgress = localStorage.getItem('lessonsProgress');
+    if (savedProgress) {
+        try {
+            const progressData = JSON.parse(savedProgress);
+            progressData.forEach(saved => {
+                const lesson = lessons.find(l => l.id === saved.id);
+                if (lesson) {
+                    lesson.progress = saved.progress;
+                }
+            });
+        } catch (e) {
+            console.log('Error cargando progreso de lecciones:', e);
+        }
+    }
+    
     showIntro();
     updateUserStats();
     
