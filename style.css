@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -2069,62 +2068,61 @@ input:checked + .slider:before {
 }
 
 .controls-header {
-    padding: 25px 30px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 15px 30px 10px;
     background: white;
     position: sticky;
     top: 0;
     z-index: 10;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
 .controls-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: #333;
-    margin: 0;
+    margin: 0 0 10px 0;
+}
+
+.drag-handle {
+    width: 40px;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    margin: 0 auto 10px;
+    cursor: grab;
+    transition: background 0.3s ease;
+}
+
+.drag-handle:hover {
+    background: #bbb;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+    background: #999;
 }
 
 .customization-tabs-modern {
     display: flex;
-    padding: 20px 30px 0;
-    gap: 10px;
+    padding: 15px 20px;
+    gap: 8px;
     background: white;
     border-bottom: 1px solid rgba(0,0,0,0.1);
     overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-.tab-modern {
-    background: #f8f9fa;
-    border: none;
-    padding: 15px 25px;
-    border-radius: 25px;
-    font-weight: 600;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    flex-shrink: 0;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.tab-modern.active {
-    background: linear-gradient(135deg, #1DA1F2, #1991DA);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(29, 161, 242, 0.3);
-}
-
-.tab-modern:hover:not(.active) {
-    background: #e9ecef;
-    transform: translateY(-1px);
+.customization-tabs-modern::-webkit-scrollbar {
+    display: none;
 }
 
 .customization-content {
     flex: 1;
-    padding: 30px;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(55vh - 140px);
 }
 
 .customization-panel-modern {
@@ -2299,18 +2297,18 @@ input:checked + .slider:before {
         grid-template-columns: 1fr;
         grid-template-rows: 40vh 1fr;
     }
-    
+
     .mascot-display-large {
         transform: scale(1.8);
         margin: 20px 0;
     }
-    
+
     .customization-controls {
         border-radius: 25px 25px 0 0;
         margin-top: -25px;
         z-index: 5;
     }
-    
+
     .options-grid-modern {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -2322,7 +2320,7 @@ input:checked + .slider:before {
     #mascotCustomizationScreen .customization-container {
         display: none;
     }
-    
+
     /* Mostrar versión móvil */
     .customization-container-mobile {
         display: block;
@@ -2334,22 +2332,22 @@ input:checked + .slider:before {
         gap: 15px;
         padding: 0 10px;
     }
-    
+
     .answers-container {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-    
+
     .calculator-buttons {
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
     }
-    
+
     .game-controls {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .quick-actions {
         flex-direction: column;
         align-items: center;
