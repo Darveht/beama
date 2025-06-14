@@ -1,5 +1,4 @@
 
-
 // Configuración Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCFQ_geG0HIv2EZ-bfKc97TJNtf2sdqPzc",
@@ -1542,15 +1541,15 @@ function showMascotCustomization() {
     updateMascotMessage('¡Hagamos que tu avatar sea único! Puedes cambiar colores, ojos, boca y más.');
 }
 
-// Funciones para el editor móvil estilo Duolingo
-function switchCustomizationTab(tabName) {
+// Funciones para la nueva interfaz de personalización
+function switchTab(tabName) {
     // Remover active de todas las tabs
-    document.querySelectorAll('.customization-tab-mobile').forEach(tab => {
+    document.querySelectorAll('.tab-modern').forEach(tab => {
         tab.classList.remove('active');
     });
     
     // Remover active de todos los paneles
-    document.querySelectorAll('.customization-panel-mobile').forEach(panel => {
+    document.querySelectorAll('.customization-panel-modern').forEach(panel => {
         panel.classList.remove('active');
     });
     
@@ -1559,7 +1558,7 @@ function switchCustomizationTab(tabName) {
     
     // Activar el panel correspondiente
     const panelMap = {
-        'ropa': 'ropaPanel',
+        'pelaje': 'pelajePanel',
         'ojos': 'ojosPanel',
         'boca': 'bocaPanel',
         'nariz': 'narizPanel',
@@ -1572,28 +1571,28 @@ function switchCustomizationTab(tabName) {
     }
 }
 
-function changeMobileBodyColor(color) {
+function changeBodyColor(color) {
     mascotCustomization.bodyColor = color;
-    applyMascotCustomization('mobile');
+    applyMascotCustomization('preview');
     
     // Actualizar selección visual
-    document.querySelectorAll('#ropaPanel .option-item-mobile').forEach(option => {
+    document.querySelectorAll('#pelajePanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
-    event.target.closest('.option-item-mobile').classList.add('selected');
+    event.target.closest('.option-card').classList.add('selected');
     
     updateMascotMessage('¡Me gusta este color! ¡Se ve genial!');
 }
 
-function changeMobileEyeStyle(style) {
+function changeEyeStyle(style) {
     mascotCustomization.eyeStyle = style;
-    applyMascotCustomization('mobile');
+    applyMascotCustomization('preview');
     
     // Actualizar selección visual
-    document.querySelectorAll('#ojosPanel .option-item-mobile').forEach(option => {
+    document.querySelectorAll('#ojosPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
-    event.target.closest('.option-item-mobile').classList.add('selected');
+    event.target.closest('.option-card').classList.add('selected');
     
     const messages = {
         'normal': '¡Unos ojos clásicos!',
@@ -1609,15 +1608,15 @@ function changeMobileEyeStyle(style) {
     updateMascotMessage(messages[style] || '¡Me encanta este estilo!');
 }
 
-function changeMobileMouthStyle(style) {
+function changeMouthStyle(style) {
     mascotCustomization.mouthStyle = style;
-    applyMascotCustomization('mobile');
+    applyMascotCustomization('preview');
     
     // Actualizar selección visual
-    document.querySelectorAll('#bocaPanel .option-item-mobile').forEach(option => {
+    document.querySelectorAll('#bocaPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
-    event.target.closest('.option-item-mobile').classList.add('selected');
+    event.target.closest('.option-card').classList.add('selected');
     
     const messages = {
         'happy': '¡Una sonrisa hermosa!',
@@ -1631,15 +1630,15 @@ function changeMobileMouthStyle(style) {
     updateMascotMessage(messages[style] || '¡Me gusta esta expresión!');
 }
 
-function changeMobileNoseStyle(style) {
+function changeNoseStyle(style) {
     mascotCustomization.noseStyle = style;
-    applyMascotCustomization('mobile');
+    applyMascotCustomization('preview');
     
     // Actualizar selección visual
-    document.querySelectorAll('#narizPanel .option-item-mobile').forEach(option => {
+    document.querySelectorAll('#narizPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
-    event.target.closest('.option-item-mobile').classList.add('selected');
+    event.target.closest('.option-card').classList.add('selected');
     
     const messages = {
         'normal': '¡Una nariz perfecta!',
@@ -1652,12 +1651,12 @@ function changeMobileNoseStyle(style) {
     updateMascotMessage(messages[style] || '¡Esta nariz me queda genial!');
 }
 
-function toggleMobileAccessory(accessory) {
+function toggleAccessory(accessory) {
     mascotCustomization.accessories[accessory] = !mascotCustomization.accessories[accessory];
-    applyMascotCustomization('mobile');
+    applyMascotCustomization('preview');
     
     // Actualizar selección visual
-    const button = event.target.closest('.option-item-mobile');
+    const button = event.target.closest('.option-card');
     button.classList.toggle('selected');
     
     const messages = {
@@ -1672,6 +1671,35 @@ function toggleMobileAccessory(accessory) {
     };
     
     updateMascotMessage(messages[accessory] || '¡Cambio de look!');
+}
+
+function resetCustomization() {
+    // Resetear a valores por defecto
+    mascotCustomization.bodyColor = '#D2691E';
+    mascotCustomization.eyeStyle = 'normal';
+    mascotCustomization.mouthStyle = 'happy';
+    mascotCustomization.noseStyle = 'normal';
+    
+    // Resetear accesorios
+    Object.keys(mascotCustomization.accessories).forEach(accessory => {
+        mascotCustomization.accessories[accessory] = false;
+    });
+    
+    // Aplicar cambios
+    applyMascotCustomization('preview');
+    
+    // Actualizar selecciones visuales
+    document.querySelectorAll('.option-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Marcar opciones por defecto como seleccionadas
+    document.querySelector('[data-color="#D2691E"]')?.classList.add('selected');
+    document.querySelector('#ojosPanel .option-card')?.classList.add('selected');
+    document.querySelector('#bocaPanel .option-card')?.classList.add('selected');
+    document.querySelector('#narizPanel .option-card')?.classList.add('selected');
+    
+    updateMascotMessage('¡He vuelto a mi aspecto original!');
 }
 
 function showSettings() {
@@ -1746,7 +1774,28 @@ function loadMascotCustomization() {
     if (gameState.user && gameState.user.mascotCustomization) {
         Object.assign(mascotCustomization, gameState.user.mascotCustomization);
     }
-    applyMascotCustomization('mobile');
+    applyMascotCustomization('preview');
+    
+    // Marcar las opciones seleccionadas en la UI
+    setTimeout(() => {
+        // Marcar color seleccionado
+        document.querySelectorAll('.option-card').forEach(card => {
+            const colorAttr = card.getAttribute('data-color');
+            if (colorAttr === mascotCustomization.bodyColor) {
+                card.classList.add('selected');
+            }
+        });
+        
+        // Marcar accesorios activos
+        Object.keys(mascotCustomization.accessories).forEach(accessory => {
+            if (mascotCustomization.accessories[accessory]) {
+                const accessoryCard = document.querySelector(`[onclick="toggleAccessory('${accessory}')"]`);
+                if (accessoryCard) {
+                    accessoryCard.classList.add('selected');
+                }
+            }
+        });
+    }, 100);
 }
 
 // Las funciones de personalización móvil ya manejan todo
@@ -1755,10 +1804,8 @@ function applyMascotCustomization(target = 'main') {
     let prefixes;
     if (target === 'preview') {
         prefixes = ['preview'];
-    } else if (target === 'mobile') {
-        prefixes = ['previewMobile'];
     } else {
-        prefixes = ['', 'Home', 'Lessons', 'Game', 'preview', 'previewMobile'];
+        prefixes = ['', 'Home', 'Lessons', 'Game', 'preview'];
     }
     
     prefixes.forEach(prefix => {
