@@ -1,4 +1,5 @@
 
+
 // Configuración Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCFQ_geG0HIv2EZ-bfKc97TJNtf2sdqPzc",
@@ -1537,7 +1538,145 @@ function showMascotCustomization() {
     document.getElementById('mascotCustomizationScreen').classList.add('active');
     gameState.currentScreen = 'mascotCustomization';
     loadMascotCustomization();
+    
+    // En móvil, aplicar customización al preview móvil también
+    if (window.innerWidth <= 768) {
+        applyMascotCustomization('mobile');
+    }
+    
     updateMascotMessage('¡Hagamos que tu mascota sea única! Puedes cambiar colores, ojos, boca y más.');
+}
+
+// Funciones para el editor móvil estilo Duolingo
+function switchCustomizationTab(tabName) {
+    // Remover active de todas las tabs
+    document.querySelectorAll('.customization-tab-mobile').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remover active de todos los paneles
+    document.querySelectorAll('.customization-panel-mobile').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // Activar la tab seleccionada
+    event.target.classList.add('active');
+    
+    // Activar el panel correspondiente
+    const panelMap = {
+        'ropa': 'ropaPanel',
+        'ojos': 'ojosPanel',
+        'boca': 'bocaPanel',
+        'nariz': 'narizPanel',
+        'accesorios': 'accesoriosPanel'
+    };
+    
+    const panelId = panelMap[tabName];
+    if (panelId) {
+        document.getElementById(panelId).classList.add('active');
+    }
+}
+
+function changeMobileBodyColor(color) {
+    mascotCustomization.bodyColor = color;
+    applyMascotCustomization('mobile');
+    
+    // Actualizar selección visual
+    document.querySelectorAll('#ropaPanel .option-item-mobile').forEach(option => {
+        option.classList.remove('selected');
+    });
+    event.target.closest('.option-item-mobile').classList.add('selected');
+    
+    updateMascotMessage('¡Me gusta este color! ¡Se ve genial!');
+}
+
+function changeMobileEyeStyle(style) {
+    mascotCustomization.eyeStyle = style;
+    applyMascotCustomization('mobile');
+    
+    // Actualizar selección visual
+    document.querySelectorAll('#ojosPanel .option-item-mobile').forEach(option => {
+        option.classList.remove('selected');
+    });
+    event.target.closest('.option-item-mobile').classList.add('selected');
+    
+    const messages = {
+        'normal': '¡Unos ojos clásicos!',
+        'large': '¡Qué ojos tan grandes y expresivos!',
+        'sleepy': '¡Aww, parezco tener sueño!',
+        'happy': '¡Me veo muy feliz así!',
+        'star': '¡Tengo estrellas en los ojos!',
+        'heart': '¡Ojos llenos de amor!',
+        'rainbow': '¡Qué colorido me veo!',
+        'cool': '¡Me veo súper genial!'
+    };
+    
+    updateMascotMessage(messages[style] || '¡Me encanta este estilo!');
+}
+
+function changeMobileMouthStyle(style) {
+    mascotCustomization.mouthStyle = style;
+    applyMascotCustomization('mobile');
+    
+    // Actualizar selección visual
+    document.querySelectorAll('#bocaPanel .option-item-mobile').forEach(option => {
+        option.classList.remove('selected');
+    });
+    event.target.closest('.option-item-mobile').classList.add('selected');
+    
+    const messages = {
+        'happy': '¡Una sonrisa hermosa!',
+        'neutral': 'Expresión serena y calmada.',
+        'surprised': '¡Qué sorpresa tan grande!',
+        'playful': '¡Me siento juguetón!',
+        'laugh': '¡Jajaja, me da mucha risa!',
+        'cute': '¡Aww, qué adorable me veo!'
+    };
+    
+    updateMascotMessage(messages[style] || '¡Me gusta esta expresión!');
+}
+
+function changeMobileNoseStyle(style) {
+    mascotCustomization.noseStyle = style;
+    applyMascotCustomization('mobile');
+    
+    // Actualizar selección visual
+    document.querySelectorAll('#narizPanel .option-item-mobile').forEach(option => {
+        option.classList.remove('selected');
+    });
+    event.target.closest('.option-item-mobile').classList.add('selected');
+    
+    const messages = {
+        'normal': '¡Una nariz perfecta!',
+        'small': '¡Qué tierna naricita!',
+        'big': '¡Una nariz prominente y distinguida!',
+        'button': '¡Como un botoncito!',
+        'heart': '¡Una nariz llena de amor!'
+    };
+    
+    updateMascotMessage(messages[style] || '¡Esta nariz me queda genial!');
+}
+
+function toggleMobileAccessory(accessory) {
+    mascotCustomization.accessories[accessory] = !mascotCustomization.accessories[accessory];
+    applyMascotCustomization('mobile');
+    
+    // Actualizar selección visual
+    const button = event.target.closest('.option-item-mobile');
+    button.classList.toggle('selected');
+    
+    const messages = {
+        'hat': mascotCustomization.accessories[accessory] ? '¡Un sombrero elegante!' : 'Sin sombrero, más natural.',
+        'glasses': mascotCustomization.accessories[accessory] ? '¡Me veo muy intelectual!' : 'Sin lentes, ojos al natural.',
+        'cap': mascotCustomization.accessories[accessory] ? '¡Lista para el deporte!' : 'Sin gorra, estilo casual.',
+        'headband': mascotCustomization.accessories[accessory] ? '¡Como toda una princesa!' : 'Sin diadema, estilo simple.',
+        'earrings': mascotCustomization.accessories[accessory] ? '¡Brillando con estilo!' : 'Sin aretes, look natural.',
+        'bowtie': mascotCustomization.accessories[accessory] ? '¡Muy elegante y formal!' : 'Sin corbatín, más relajado.',
+        'chain': mascotCustomization.accessories[accessory] ? '¡Bling bling!' : 'Sin cadena, estilo minimalista.',
+        'scarf': mascotCustomization.accessories[accessory] ? '¡Abrigadito y fashionable!' : 'Sin bufanda, más fresco.'
+    };
+    
+    updateMascotMessage(messages[accessory] || '¡Cambio de look!');
 }
 
 function showSettings() {
@@ -1700,7 +1839,14 @@ function toggleAccessory(accessory) {
 }
 
 function applyMascotCustomization(target = 'main') {
-    const prefixes = target === 'preview' ? ['preview'] : ['', 'Home', 'Lessons', 'Game'];
+    let prefixes;
+    if (target === 'preview') {
+        prefixes = ['preview'];
+    } else if (target === 'mobile') {
+        prefixes = ['previewMobile'];
+    } else {
+        prefixes = ['', 'Home', 'Lessons', 'Game', 'preview', 'previewMobile'];
+    }
     
     prefixes.forEach(prefix => {
         // Aplicar color del cuerpo
