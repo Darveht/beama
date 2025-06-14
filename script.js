@@ -13,18 +13,9 @@ const firebaseConfig = {
 };
 
 // Inicializar Firebase
-let auth, database;
-try {
-    firebase.initializeApp(firebaseConfig);
-    auth = firebase.auth();
-    database = firebase.database();
-    console.log('Firebase inicializado correctamente');
-} catch (error) {
-    console.error('Error inicializando Firebase:', error);
-    // Modo sin conexión para desarrollo local
-    auth = null;
-    database = null;
-}
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
 
 // Estado del juego
 const gameState = {
@@ -446,8 +437,6 @@ async function registerUser() {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const age = document.getElementById('userAge').value;
     
-    console.log('Intentando registrar usuario:', { name, email, age });
-    
     if (!name || !email || !password || !age) {
         updateMascotMessage('Por favor completa todos los campos para crear tu cuenta.');
         return;
@@ -460,63 +449,6 @@ async function registerUser() {
     
     if (password.length < 6) {
         updateMascotMessage('La contraseña debe tener al menos 6 caracteres para ser segura.');
-        return;
-    }
-    
-    // Modo sin Firebase para desarrollo local
-    if (!auth || !database) {
-        console.log('Modo sin Firebase - Creando usuario local');
-        // Crear usuario local para desarrollo
-        const localUser = {
-            uid: 'local_' + Date.now(),
-            name: name,
-            email: email,
-            age: age,
-            level: 1,
-            streak: 0,
-            gems: 100,
-            lives: 5,
-            totalCorrect: 0,
-            totalQuestions: 0,
-            weakAreas: [],
-            strengths: [],
-            mascotCustomization: {
-                bodyColor: '#D2691E',
-                eyeStyle: 'normal',
-                mouthStyle: 'happy',
-                noseStyle: 'normal',
-                accessories: {
-                    hat: false,
-                    glasses: false,
-                    bowtie: false,
-                    scarf: false,
-                    earrings: false,
-                    chain: false,
-                    cap: false,
-                    headband: false
-                }
-            },
-            settings: {
-                language: 'es',
-                soundEffects: true,
-                backgroundMusic: false,
-                volume: 50,
-                adaptiveDifficulty: true,
-                dailyReminders: false,
-                vibration: false,
-                shareProgress: false,
-                errorAnalysis: true
-            }
-        };
-        
-        gameState.isAuthenticated = true;
-        gameState.currentUser = { uid: localUser.uid, email: localUser.email };
-        gameState.user = localUser;
-        
-        updateMascotMessage(`¡Bienvenido ${name}! ¡Tu aventura matemática comienza ahora! 🎉`);
-        setTimeout(() => {
-            showHome();
-        }, 2000);
         return;
     }
     
@@ -539,19 +471,14 @@ async function registerUser() {
             weakAreas: [],
             strengths: [],
             mascotCustomization: {
-                bodyColor: '#D2691E',
+                bodyColor: '#8B4513',
                 eyeStyle: 'normal',
                 mouthStyle: 'happy',
-                noseStyle: 'normal',
                 accessories: {
                     hat: false,
                     glasses: false,
                     bowtie: false,
-                    scarf: false,
-                    earrings: false,
-                    chain: false,
-                    cap: false,
-                    headband: false
+                    scarf: false
                 }
             },
             settings: {
@@ -595,92 +522,16 @@ async function loginUser() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
-    console.log('Intentando login:', { email });
-    
     if (!email || !password) {
-        updateMascotMessage('Por favor completa todos los campos');
-        return;
-    }
-    
-    // Modo sin Firebase para desarrollo local
-    if (!auth || !database) {
-        console.log('Modo sin Firebase - Login local');
-        // Simular login exitoso para desarrollo
-        const localUser = {
-            uid: 'local_demo',
-            name: 'Usuario Demo',
-            email: email,
-            age: 'kid',
-            level: 1,
-            streak: 0,
-            gems: 100,
-            lives: 5,
-            totalCorrect: 0,
-            totalQuestions: 0,
-            weakAreas: [],
-            strengths: [],
-            mascotCustomization: {
-                bodyColor: '#D2691E',
-                eyeStyle: 'normal',
-                mouthStyle: 'happy',
-                noseStyle: 'normal',
-                accessories: {
-                    hat: false,
-                    glasses: false,
-                    bowtie: false,
-                    scarf: false,
-                    earrings: false,
-                    chain: false,
-                    cap: false,
-                    headband: false
-                }
-            },
-            settings: {
-                language: 'es',
-                soundEffects: true,
-                backgroundMusic: false,
-                volume: 50,
-                adaptiveDifficulty: true,
-                dailyReminders: false,
-                vibration: false,
-                shareProgress: false,
-                errorAnalysis: true
-            }
-        };
-        
-        gameState.isAuthenticated = true;
-        gameState.currentUser = { uid: localUser.uid, email: localUser.email };
-        gameState.user = localUser;
-        
-        updateMascotMessage(`¡Hola de nuevo! ¡Bienvenido a BeMaa!`);
-        setTimeout(() => {
-            showHome();
-        }, 2000);
+        alert('Por favor completa todos los campos');
         return;
     }
     
     try {
         await auth.signInWithEmailAndPassword(email, password);
-        updateMascotMessage('¡Bienvenido de vuelta!');
     } catch (error) {
         console.error('Error en login:', error);
-        
-        let errorMessage = 'Error al iniciar sesión.';
-        switch (error.code) {
-            case 'auth/user-not-found':
-                errorMessage = 'No existe una cuenta con este correo. ¿Quieres registrarte?';
-                break;
-            case 'auth/wrong-password':
-                errorMessage = 'Contraseña incorrecta. Intenta de nuevo.';
-                break;
-            case 'auth/invalid-email':
-                errorMessage = 'El correo electrónico no es válido.';
-                break;
-            default:
-                errorMessage = 'Error al iniciar sesión: ' + error.message;
-        }
-        
-        updateMascotMessage(errorMessage);
+        alert('Error al iniciar sesión: ' + error.message);
     }
 }
 
@@ -785,22 +636,21 @@ async function logoutUser() {
 let hasShownWelcomeMessage = false;
 
 // Listener de cambios de autenticación
-if (auth) {
-    auth.onAuthStateChanged(async (user) => {
-        console.log('Estado de autenticación cambió:', user ? 'Usuario conectado' : 'Usuario desconectado');
-        
-        if (user) {
-            try {
-                gameState.isAuthenticated = true;
-                gameState.currentUser = user;
-                
-                // Verificar que el usuario esté realmente autenticado
-                const token = await user.getIdToken(true);
-                if (!token) {
-                    console.error('No se pudo obtener token de usuario');
-                    await auth.signOut();
-                    return;
-                }
+auth.onAuthStateChanged(async (user) => {
+    console.log('Estado de autenticación cambió:', user ? 'Usuario conectado' : 'Usuario desconectado');
+    
+    if (user) {
+        try {
+            gameState.isAuthenticated = true;
+            gameState.currentUser = user;
+            
+            // Verificar que el usuario esté realmente autenticado
+            const token = await user.getIdToken(true);
+            if (!token) {
+                console.error('No se pudo obtener token de usuario');
+                await auth.signOut();
+                return;
+            }
             
             // Cargar datos del usuario
             const userRef = database.ref('users/' + user.uid);
@@ -887,10 +737,7 @@ if (auth) {
             showAuthScreen();
         }
     }
-    });
-} else {
-    console.log('Firebase no disponible - usando modo de desarrollo local');
-}
+});
 
 // Funciones de navegación
 function showIntro() {
@@ -917,16 +764,8 @@ function showHome() {
     }
     
     hideAllScreens();
-    hideBottomNav();
     document.getElementById('homeScreen').classList.add('active');
-    document.getElementById('bottomNav').style.display = 'flex';
     gameState.currentScreen = 'home';
-    
-    // Renderizar lecciones en la página de inicio
-    renderLessons();
-    
-    // Actualizar navegación activa
-    updateActiveNav('home');
     
     // Solo mostrar mensaje si no se ha mostrado antes o si es navegación manual
     if (!hasShownWelcomeMessage) {
@@ -1566,213 +1405,16 @@ document.addEventListener('visibilitychange', async () => {
     }
 });
 
-// Funciones de navegación bottom tab
-function navigateToHome() {
-    showHome();
-    closeProfileMenu();
-}
-
-function updateActiveNav(activeTab) {
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    const navItems = document.querySelectorAll('.nav-item');
-    if (activeTab === 'home' && navItems[0]) navItems[0].classList.add('active');
-    if (activeTab === 'shop' && navItems[1]) navItems[1].classList.add('active');
-    if (activeTab === 'more' && navItems[2]) navItems[2].classList.add('active');
-}
-
-function hideBottomNav() {
-    document.getElementById('bottomNav').style.display = 'none';
-}
-
-function showBottomNav() {
-    document.getElementById('bottomNav').style.display = 'flex';
-}
-
-function toggleProfileMenu() {
-    const menu = document.getElementById('profileMenu');
-    menu.classList.toggle('active');
-    updateActiveNav('more');
-}
-
-function closeProfileMenu() {
-    document.getElementById('profileMenu').classList.remove('active');
-}
-
-// Funciones para tabs de perfil
-function switchProfileTab(tabName) {
-    // Remover active de todas las tabs
-    document.querySelectorAll('.profile-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Remover active de todos los contenidos
-    document.querySelectorAll('.profile-tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    
-    // Activar la tab seleccionada
-    event.target.classList.add('active');
-    
-    // Activar el contenido correspondiente
-    const tabMap = {
-        'stats': 'statsTab',
-        'info': 'infoTab',
-        'achievements': 'achievementsTab',
-        'settings': 'settingsTab'
-    };
-    
-    const contentId = tabMap[tabName];
-    if (contentId) {
-        document.getElementById(contentId).classList.add('active');
-    }
-    
-    // Cargar logros si es necesario
-    if (tabName === 'achievements') {
-        loadAchievements();
-    }
-}
-
-function loadAchievements() {
-    const grid = document.getElementById('achievementsGrid');
-    if (!grid) return;
-    
-    grid.innerHTML = '';
-    
-    const userAchievements = [
-        { icon: '🏅', name: 'Primer Triunfo', unlocked: gameState.user.totalCorrect > 0 },
-        { icon: '🏆', name: 'Puntuación Perfecta', unlocked: false },
-        { icon: '⚡', name: 'Rápido', unlocked: false },
-        { icon: '🔥', name: 'Racha de 7', unlocked: gameState.user.streak >= 7 },
-        { icon: '💎', name: 'Rico en Gemas', unlocked: gameState.user.gems >= 1000 },
-        { icon: '🎯', name: 'Precisión 90%', unlocked: (gameState.user.totalCorrect / gameState.user.totalQuestions) >= 0.9 }
-    ];
-    
-    userAchievements.forEach(achievement => {
-        const card = document.createElement('div');
-        card.className = `achievement-card ${achievement.unlocked ? 'unlocked' : ''}`;
-        card.innerHTML = `
-            <div class="achievement-icon">${achievement.icon}</div>
-            <div class="achievement-name">${achievement.name}</div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-function editProfile() {
-    // Aquí podrías implementar un modal de edición o navegar a una pantalla de edición
-    updateMascotMessage('Función de edición de perfil próximamente disponible.');
-}
-
-// Redefinir showProfile para usar la nueva estructura
-function showProfile() {
-    if (!gameState.isAuthenticated) {
-        showAuthScreen();
-        return;
-    }
-    
-    hideAllScreens();
-    hideBottomNav();
-    document.getElementById('profileScreen').classList.add('active');
-    gameState.currentScreen = 'profile';
-    updateProfileData();
-    closeProfileMenu();
-    updateMascotMessage('¡Este es tu perfil! Aquí puedes ver tu progreso.');
-}
-
-// Actualizar función showMascotCustomization
-function showMascotCustomization() {
-    hideAllScreens();
-    hideBottomNav();
-    document.getElementById('mascotCustomizationScreen').classList.add('active');
-    gameState.currentScreen = 'mascotCustomization';
-    loadMascotCustomization();
-    applyMascotCustomization('preview');
-    updateMascotMessage('¡Hagamos que tu avatar sea único! Puedes cambiar colores, ojos, boca y más.');
-}
-
-// Actualizar función showSettings
-function showSettings() {
-    hideAllScreens();
-    hideBottomNav();
-    document.getElementById('settingsScreen').classList.add('active');
-    gameState.currentScreen = 'settings';
-    loadSettings();
-    closeProfileMenu();
-    updateMascotMessage('Aquí puedes ajustar la aplicación a tu gusto.');
-}
-
-// Botón de acceso directo para desarrollo
-function accessDirectly() {
-    console.log('Acceso directo activado');
-    const localUser = {
-        uid: 'demo_user',
-        name: 'Usuario Demo',
-        email: 'demo@bemaa.com',
-        age: 'kid',
-        level: 1,
-        streak: 0,
-        gems: 100,
-        lives: 5,
-        totalCorrect: 0,
-        totalQuestions: 0,
-        weakAreas: [],
-        strengths: [],
-        mascotCustomization: {
-            bodyColor: '#D2691E',
-            eyeStyle: 'normal',
-            mouthStyle: 'happy',
-            noseStyle: 'normal',
-            accessories: {
-                hat: false,
-                glasses: false,
-                bowtie: false,
-                scarf: false,
-                earrings: false,
-                chain: false,
-                cap: false,
-                headband: false
-            }
-        },
-        settings: {
-            language: 'es',
-            soundEffects: true,
-            backgroundMusic: false,
-            volume: 50,
-            adaptiveDifficulty: true,
-            dailyReminders: false,
-            vibration: false,
-            shareProgress: false,
-            errorAnalysis: true
-        }
-    };
-    
-    gameState.isAuthenticated = true;
-    gameState.currentUser = { uid: localUser.uid, email: localUser.email };
-    gameState.user = localUser;
-    
-    showHome();
-    updateMascotMessage('¡Acceso directo activado! ¡Bienvenido a BeMaa!');
-}
-
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
     showIntro();
     updateUserStats();
     
-    // Cerrar menú de perfil al hacer clic fuera
+    // Cerrar modal al hacer clic fuera
     window.onclick = function(event) {
         const modal = document.getElementById('calculatorModal');
-        const profileMenu = document.getElementById('profileMenu');
-        
         if (event.target === modal) {
             closeCalculator();
-        }
-        
-        if (event.target === profileMenu) {
-            closeProfileMenu();
         }
     };
     
@@ -2073,37 +1715,17 @@ function showSettings() {
 function updateProfileData() {
     if (!gameState.user) return;
     
-    // Actualizar elementos del header
-    const profileNameDisplay = document.getElementById('profileNameDisplay');
-    const profileLevelDisplay = document.getElementById('profileLevelDisplay');
-    if (profileNameDisplay) profileNameDisplay.textContent = gameState.user.name || 'Usuario';
-    if (profileLevelDisplay) profileLevelDisplay.textContent = gameState.user.level || 1;
+    document.getElementById('profileName').value = gameState.user.name || '';
+    document.getElementById('profileEmail').value = gameState.user.email || '';
+    document.getElementById('profileAge').value = gameState.user.age || 'kid';
     
-    // Actualizar elementos de información
-    const profileName = document.getElementById('profileName');
-    const profileEmail = document.getElementById('profileEmail');
-    const profileAge = document.getElementById('profileAge');
-    if (profileName) profileName.textContent = gameState.user.name || 'Usuario';
-    if (profileEmail) profileEmail.textContent = gameState.user.email || 'email@ejemplo.com';
-    if (profileAge) {
-        const ageMap = { 'kid': '6-12 años', 'teen': '13-17 años', 'adult': '18+ años' };
-        profileAge.textContent = ageMap[gameState.user.age] || '6-12 años';
-    }
-    
-    // Actualizar estadísticas
-    const elements = ['profileStreak', 'profileGems', 'profileLevel'];
-    elements.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            const property = id.replace('profile', '').toLowerCase();
-            element.textContent = gameState.user[property] || 0;
-        }
-    });
+    document.getElementById('profileStreak').textContent = gameState.user.streak || 0;
+    document.getElementById('profileGems').textContent = gameState.user.gems || 0;
+    document.getElementById('profileLevel').textContent = gameState.user.level || 1;
     
     const accuracy = gameState.user.totalQuestions > 0 ? 
         Math.round((gameState.user.totalCorrect / gameState.user.totalQuestions) * 100) : 0;
-    const profileAccuracy = document.getElementById('profileAccuracy');
-    if (profileAccuracy) profileAccuracy.textContent = accuracy + '%';
+    document.getElementById('profileAccuracy').textContent = accuracy + '%';
     
     updateMascotDisplay();
 }
