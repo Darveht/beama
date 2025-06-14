@@ -1,6 +1,5 @@
 
 
-
 // Configuración Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCFQ_geG0HIv2EZ-bfKc97TJNtf2sdqPzc",
@@ -2195,6 +2194,11 @@ function isValidEmail(email) {
 
 // Funciones de personalización de mascota
 function loadMascotCustomization() {
+    // SOLO cargar si estamos en la pantalla de personalización
+    if (gameState.currentScreen !== 'mascotCustomization') {
+        return;
+    }
+    
     if (gameState.user && gameState.user.mascotCustomization) {
         Object.assign(mascotCustomization, gameState.user.mascotCustomization);
     }
@@ -2252,17 +2256,13 @@ function loadMascotCustomization() {
 // Las funciones de personalización móvil ya manejan todo
 
 function applyMascotCustomization(target = 'main') {
-    // Solo aplicar personalización en la pantalla de personalización
-    if (gameState.currentScreen !== 'mascotCustomization' && gameState.currentScreen !== 'profile') {
+    // SOLO aplicar personalización en la pantalla de personalización
+    if (gameState.currentScreen !== 'mascotCustomization') {
         return;
     }
     
-    let prefixes;
-    if (target === 'preview') {
-        prefixes = ['preview'];
-    } else {
-        prefixes = ['preview']; // Solo aplicar al preview, no a otros elementos
-    }
+    // SOLO trabajar con elementos preview
+    const prefixes = ['preview'];
     
     prefixes.forEach(prefix => {
         // Aplicar color del cuerpo
@@ -2679,6 +2679,7 @@ function applyPatterns(prefix) {
 function saveMascotCustomization() {
     // Solo guardar si estamos en la pantalla de personalización
     if (gameState.currentScreen !== 'mascotCustomization') {
+        console.log('Intento de guardar personalización fuera de pantalla correcta');
         return;
     }
     
@@ -2689,7 +2690,7 @@ function saveMascotCustomization() {
 }
 
 function updateMascotDisplay() {
-    // Función eliminada para evitar interferencias
+    // Función eliminada completamente para evitar interferencias
     return;
 }
 
