@@ -1,3 +1,4 @@
+
 * {
     margin: 0;
     padding: 0;
@@ -12,214 +13,19 @@ body {
     overflow-x: hidden;
 }
 
-/* Pantalla de inicio */
+/* Pantallas */
 .screen {
     display: none;
     min-height: 100vh;
-    padding: 20px 20px 80px 20px;
+    padding: 20px;
     animation: fadeIn 0.3s ease-in;
-    position: relative;
 }
 
 .screen.active {
     display: block;
 }
 
-/* Navegación Bottom Tab estilo Duolingo */
-.bottom-navigation {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 12px 0 20px 0;
-    z-index: 1000;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-}
-
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 8px 12px;
-    border-radius: 16px;
-    min-width: 60px;
-}
-
-.nav-item:hover {
-    background: rgba(88, 204, 2, 0.1);
-}
-
-.nav-item.active {
-    background: rgba(88, 204, 2, 0.15);
-}
-
-.nav-item.active .nav-icon {
-    color: #58cc02;
-    transform: scale(1.1);
-}
-
-.nav-item.active .nav-label {
-    color: #58cc02;
-    font-weight: 700;
-}
-
-.nav-icon {
-    font-size: 1.5rem;
-    color: #666;
-    transition: all 0.3s ease;
-}
-
-.nav-label {
-    font-size: 0.75rem;
-    color: #666;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-/* Menú de perfil estilo Duolingo */
-.profile-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    z-index: 2000;
-    animation: fadeIn 0.3s ease;
-}
-
-
-.demo-btn {
-    width: 100%;
-    padding: 12px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.demo-btn:hover {
-    background: #218838;
-    transform: translateY(-2px);
-}
-
-
-.profile-menu.active {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-}
-
-.profile-menu-content {
-    background: white;
-    border-radius: 25px 25px 0 0;
-    width: 100%;
-    max-width: 400px;
-    padding: 30px 20px;
-    transform: translateY(100%);
-    animation: slideUp 0.3s ease-out forwards;
-}
-
-.profile-menu-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 0;
-    border-bottom: 1px solid #f0f0f0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.profile-menu-item:hover {
-    background: rgba(88, 204, 2, 0.1);
-    border-radius: 12px;
-    margin: 0 -10px;
-    padding: 15px 10px;
-}
-
-.profile-menu-item:last-child {
-    border-bottom: none;
-}
-
-.profile-menu-icon {
-    font-size: 1.3rem;
-    color: #58cc02;
-    width: 30px;
-    text-align: center;
-}
-
-.profile-menu-text {
-    font-weight: 600;
-    color: #333;
-}
-
-/* Header simplificado estilo Duolingo */
-.header-duolingo {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-    margin-bottom: 20px;
-}
-
-.streak-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 152, 0, 0.1);
-    padding: 8px 12px;
-    border-radius: 20px;
-    border: 2px solid #ff9800;
-}
-
-.streak-icon {
-    font-size: 1.2rem;
-    color: #ff9800;
-}
-
-.streak-count {
-    font-weight: 700;
-    color: #ff9800;
-}
-
-.gems-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(88, 204, 2, 0.1);
-    padding: 8px 12px;
-    border-radius: 20px;
-    border: 2px solid #58cc02;
-}
-
-.gems-icon {
-    font-size: 1.2rem;
-    color: #58cc02;
-}
-
-.gems-count {
-    font-weight: 700;
-    color: #58cc02;
-}
-
+/* Pantalla de Intro */
 .intro-container {
     height: 100vh;
     display: flex;
@@ -1056,7 +862,7 @@ body {
     font-size: 1.5rem;
     margin-bottom: 20px;
     color: #333;
-The code is modified to include bottom tab navigation, a redesigned home screen, and Duolingo-style profile menu.}
+}
 
 .question-image {
     margin: 20px 0;
@@ -2493,18 +2299,18 @@ input:checked + .slider:before {
         grid-template-columns: 1fr;
         grid-template-rows: 40vh 1fr;
     }
-
+    
     .mascot-display-large {
         transform: scale(1.8);
         margin: 20px 0;
     }
-
+    
     .customization-controls {
         border-radius: 25px 25px 0 0;
         margin-top: -25px;
         z-index: 5;
     }
-
+    
     .options-grid-modern {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -2516,7 +2322,7 @@ input:checked + .slider:before {
     #mascotCustomizationScreen .customization-container {
         display: none;
     }
-
+    
     /* Mostrar versión móvil */
     .customization-container-mobile {
         display: block;
@@ -2528,22 +2334,22 @@ input:checked + .slider:before {
         gap: 15px;
         padding: 0 10px;
     }
-
+    
     .answers-container {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-
+    
     .calculator-buttons {
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
     }
-
+    
     .game-controls {
         flex-direction: column;
         gap: 10px;
     }
-
+    
     .quick-actions {
         flex-direction: column;
         align-items: center;
