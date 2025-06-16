@@ -974,10 +974,9 @@ function showQuestion() {
             button.textContent = answer;
             button.style.animationDelay = `${index * 0.1}s`;
             button.disabled = false;
-            button.style.pointerEvents = 'auto';
             button.onclick = () => {
-                // Evitar múltiples clics
-                if (button.disabled || button.style.pointerEvents === 'none') return;
+                // Evitar múltiples clics - verificar solo disabled
+                if (button.disabled) return;
                 
                 playSound('click');
                 selectAnswer(answer);
@@ -998,7 +997,6 @@ function selectAnswer(selectedAnswer) {
     const buttons = document.querySelectorAll('.answer-btn');
     buttons.forEach(btn => {
         btn.disabled = true;
-        btn.style.pointerEvents = 'none';
     });
 
     // Actualizar estadísticas en tiempo real
