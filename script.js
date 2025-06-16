@@ -973,9 +973,11 @@ function showQuestion() {
             button.className = 'answer-btn';
             button.textContent = answer;
             button.style.animationDelay = `${index * 0.1}s`;
+            button.disabled = false;
+            button.style.pointerEvents = 'auto';
             button.onclick = () => {
                 // Evitar múltiples clics
-                if (button.disabled) return;
+                if (button.disabled || button.style.pointerEvents === 'none') return;
                 
                 playSound('click');
                 selectAnswer(answer);
@@ -991,6 +993,13 @@ function showQuestion() {
 function selectAnswer(selectedAnswer) {
     const question = gameState.questions[gameState.currentQuestionIndex];
     const isCorrect = selectedAnswer == question.correct;
+
+    // Deshabilitar todos los botones inmediatamente para evitar clics múltiples
+    const buttons = document.querySelectorAll('.answer-btn');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none';
+    });
 
     // Actualizar estadísticas en tiempo real
     gameState.user.totalQuestions++;
@@ -1017,14 +1026,13 @@ function selectAnswer(selectedAnswer) {
     // Actualizar UI en tiempo real
     updateRealTimeStats();
 
-    const buttons = document.querySelectorAll('.answer-btn');
+    // Mostrar colores de respuesta correcta/incorrecta
     buttons.forEach(btn => {
         if (btn.textContent == question.correct) {
             btn.classList.add('correct');
         } else if (btn.textContent == selectedAnswer && !isCorrect) {
             btn.classList.add('incorrect');
         }
-        btn.disabled = true;
     });
 
     if (isCorrect) {
@@ -1037,11 +1045,12 @@ function selectAnswer(selectedAnswer) {
         if (gameState.currentMode === 'survival' && gameState.user.lives <= 0) {
             setTimeout(() => {
                 endGame();
-            }, 2000);
+            }, 2500);
             return;
         }
     }
 
+    // Avanzar a la siguiente pregunta después de mostrar el resultado
     setTimeout(() => {
         nextQuestion();
     }, 2500);
