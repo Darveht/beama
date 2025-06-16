@@ -941,30 +941,51 @@ function startGame() {
 }
 
 function showQuestion() {
+    if (!gameState.questions || gameState.currentQuestionIndex >= gameState.questions.length) {
+        endGame();
+        return;
+    }
+
     const question = gameState.questions[gameState.currentQuestionIndex];
 
-    document.getElementById('questionNum').textContent = gameState.currentQuestionIndex + 1;
-    document.getElementById('totalQuestions').textContent = gameState.questions.length;
-    document.getElementById('questionText').textContent = question.question;
+    // Actualizar números de pregunta
+    const questionNumElement = document.getElementById('questionNum');
+    const totalQuestionsElement = document.getElementById('totalQuestions');
+    const questionTextElement = document.getElementById('questionText');
+    const progressFillElement = document.getElementById('progressFill');
+    const livesCountElement = document.getElementById('livesCount');
 
+    if (questionNumElement) questionNumElement.textContent = gameState.currentQuestionIndex + 1;
+    if (totalQuestionsElement) totalQuestionsElement.textContent = gameState.questions.length;
+    if (questionTextElement) questionTextElement.textContent = question.question;
+
+    // Actualizar barra de progreso
     const progress = ((gameState.currentQuestionIndex) / gameState.questions.length) * 100;
-    document.getElementById('progressFill').style.width = progress + '%';
+    if (progressFillElement) progressFillElement.style.width = progress + '%';
 
+    // Limpiar y crear botones de respuesta
     const container = document.getElementById('answersContainer');
-    container.innerHTML = '';
+    if (container) {
+        container.innerHTML = '';
 
-    question.answers.forEach(answer => {
-        const button = document.createElement('button');
-        button.className = 'answer-btn';
-        button.textContent = answer;
-        button.onclick = () => {
-            playSound('click');
-            selectAnswer(answer);
-        };
-        container.appendChild(button);
-    });
+        question.answers.forEach((answer, index) => {
+            const button = document.createElement('button');
+            button.className = 'answer-btn';
+            button.textContent = answer;
+            button.style.animationDelay = `${index * 0.1}s`;
+            button.onclick = () => {
+                // Evitar múltiples clics
+                if (button.disabled) return;
+                
+                playSound('click');
+                selectAnswer(answer);
+            };
+            container.appendChild(button);
+        });
+    }
 
-    document.getElementById('livesCount').textContent = gameState.user.lives;
+    // Actualizar vidas
+    if (livesCountElement) livesCountElement.textContent = gameState.user.lives;
 }
 
 function selectAnswer(selectedAnswer) {
@@ -1014,23 +1035,36 @@ function selectAnswer(selectedAnswer) {
         updateMascotMessage('No te preocupes, cada error es una oportunidad de aprender.');
 
         if (gameState.currentMode === 'survival' && gameState.user.lives <= 0) {
-            endGame();
+            setTimeout(() => {
+                endGame();
+            }, 2000);
             return;
         }
     }
 
     setTimeout(() => {
         nextQuestion();
-    }, 2000);
+    }, 2500);
 }
 
 function nextQuestion() {
     gameState.currentQuestionIndex++;
 
     if (gameState.currentQuestionIndex >= gameState.questions.length) {
-        endGame();
+        setTimeout(() => {
+            endGame();
+        }, 500);
     } else {
-        showQuestion();
+        // Limpiar respuestas anteriores
+        const container = document.getElementById('answersContainer');
+        if (container) {
+            container.innerHTML = '';
+        }
+        
+        // Mostrar la siguiente pregunta
+        setTimeout(() => {
+            showQuestion();
+        }, 300);
     }
 }
 
