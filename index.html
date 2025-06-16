@@ -12,23 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 </head>
 <body>
-    <!-- Pantalla de Intro -->
-    <div id="introScreen" class="screen active">
-        <div class="intro-container">
-            <div class="intro-stage">
-                <div class="bear-character" id="introBear">
-                    <div class="bear-eyes"></div>
-                    <div class="bear-nose"></div>
-                    <div class="bear-mouth"></div>
-                </div>
-                <div class="lightning-bolt" id="lightningBolt"></div>
-                <div class="intro-logo" id="introLogo">
-                    <div class="logo-text">BeMaa</div>
-                    <div class="logo-subtitle">Matemáticas Divertidas</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Pantalla de Autenticación -->
     <div id="authScreen" class="screen">
@@ -492,6 +476,9 @@
             <div class="mascot-preview-section">
                 <div class="background-preview" id="backgroundPreview"></div>
                 <div class="preview-header">
+                    <button class="back-btn" onclick="showHome()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
                     <h2 class="preview-title">Personalizar</h2>
                     <button class="ok-btn-modern" onclick="saveMascotCustomization()">
                         OK
