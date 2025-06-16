@@ -161,8 +161,9 @@ const appSettings = {
 
 // Efectos de sonido
 const soundEffects = {
-    correct: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMG'),
-    incorrect: new Audio('data:audio/wav;base64,UklGRv4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YdoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA'),
+    correct: new Audio('https://www.dropbox.com/scl/fi/l01oa0fzcw8bfcksfcjsy/ElevenLabs_2025-06-16T06_55_25_Sound-Effect.mp3?rlkey=yk4sp07wpvhqn48ndmqer6u01&st=ncyq9jp8&dl=1'),
+    incorrect: new Audio('https://www.dropbox.com/scl/fi/696bzht5p7v7v4ucs3gdg/ElevenLabs_2025-06-16T06_57_50_Sound-Effect.mp3?rlkey=kbu35al77j5js5s4fjuzaa66s&st=v68q0h16&dl=1'),
+    lessonComplete: new Audio('https://www.dropbox.com/scl/fi/y8fm2nyoukg2qapvqahs9/ElevenLabs_2025-06-16T06_59_53_Sound-Effect.mp3?rlkey=0hsh1tblg6larmab82jjekk5j&st=v0t5zxn6&dl=1'),
     click: new Audio('data:audio/wav;base64,UklGRs4BAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YaoBAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA')
 };
 
@@ -1008,6 +1009,7 @@ function endGame() {
     }
     if (currentLesson && currentLesson.progress === 100) {
         addAchievement('¡Lección completada! 🎯');
+        playSound('lessonComplete'); // Play the lesson complete sound
     }
 
     updateUserStats();
@@ -1811,10 +1813,10 @@ function applyAccessories(prefix) {
 function saveMascotCustomization() {
     gameState.user.mascotCustomization = { ...mascotCustomization };
     saveUserProgress();
-    
+
     // Volver al perfil
     showProfile();
-    
+
     updateMascotMessage('Tu mascota ha sido personalizada y se ve increible');
 }
 
@@ -2107,4 +2109,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 3600000);
 });
- 
