@@ -17,7 +17,7 @@ const database = firebase.database();
 
 // Estado del juego
 const gameState = {
-    currentScreen: 'intro',
+    currentScreen: 'auth',
     isAuthenticated: false,
     currentUser: null,
     user: {
@@ -123,6 +123,45 @@ const lessons = [
     }
 ];
 
+// Estado de personalización de mascota
+const mascotCustomization = {
+    bodyColor: '#D2691E',
+    eyeStyle: 'normal',
+    eyeColor: '#000000',
+    mouthStyle: 'happy',
+    noseStyle: 'normal',
+    noseColor: '#2c2c2c',
+    background: 'none',
+    accessories: {
+        hat: false,
+        glasses: false,
+        bowtie: false,
+        scarf: false,
+        earrings: false,
+        chain: false,
+        cap: false,
+        headband: false
+    },
+    patterns: {
+        spots: false,
+        stripes: false,
+        gradient: false
+    }
+};
+
+// Estado de configuraciones
+const appSettings = {
+    language: 'es',
+    soundEffects: true,
+    backgroundMusic: false,
+    volume: 50,
+    adaptiveDifficulty: true,
+    dailyReminders: false,
+    vibration: false,
+    shareProgress: false,
+    errorAnalysis: true
+};
+
 // Algoritmo de dificultad adaptativa
 function getAdaptiveDifficulty(lessonId) {
     const lesson = lessons.find(l => l.id === lessonId);
@@ -131,14 +170,12 @@ function getAdaptiveDifficulty(lessonId) {
 
     let difficulty = lesson.difficulty;
 
-    // Ajustar basado en rendimiento
     if (userAccuracy > 0.8) {
         difficulty += 1;
     } else if (userAccuracy < 0.5) {
         difficulty = Math.max(1, difficulty - 1);
     }
 
-    // Considerar áreas débiles
     if (gameState.user.weakAreas.includes(lessonId)) {
         difficulty = Math.max(1, difficulty - 1);
     }
@@ -146,7 +183,7 @@ function getAdaptiveDifficulty(lessonId) {
     return Math.min(5, Math.max(1, difficulty));
 }
 
-// Generador de preguntas inteligente
+// Generador de preguntas
 function generateQuestion(lessonId, difficulty) {
     const generators = {
         suma: generateSumaQuestion,
@@ -257,7 +294,7 @@ function generateFraccionesQuestion(difficulty) {
     const num1 = Math.floor(Math.random() * 10) + 1;
     const den1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
-    const den2 = den1; // Mismo denominador para simplificar
+    const den2 = den1;
 
     const resultNum = num1 + num2;
     const correct = `${resultNum}/${den1}`;
@@ -337,83 +374,6 @@ function generatePorcentajesQuestion(difficulty) {
     };
 }
 
-// Algoritmo de detección de errores
-function analyzeErrors(questionHistory) {
-    const errorPatterns = {};
-    const recentQuestions = questionHistory.slice(-10);
-
-    recentQuestions.forEach(q => {
-        if (!q.correct) {
-            const topic = q.topic;
-            if (!errorPatterns[topic]) {
-                errorPatterns[topic] = 0;
-            }
-            errorPatterns[topic]++;
-        }
-    });
-
-    // Identificar áreas débiles
-    const weakAreas = Object.keys(errorPatterns).filter(topic => 
-        errorPatterns[topic] >= 3
-    );
-
-    gameState.user.weakAreas = [...new Set([...gameState.user.weakAreas, ...weakAreas])];
-
-    return {
-        errorPatterns,
-        recommendations: generateRecommendations(errorPatterns)
-    };
-}
-
-function generateRecommendations(errorPatterns) {
-    const recommendations = [];
-
-    Object.keys(errorPatterns).forEach(topic => {
-        const errors = errorPatterns[topic];
-        if (errors >= 3) {
-            recommendations.push({
-                topic,
-                message: `Te recomendamos practicar más ${topic}`,
-                exercises: generateCorrectiveExercises(topic)
-            });
-        }
-    });
-
-    return recommendations;
-}
-
-function generateCorrectiveExercises(topic) {
-    // Generar ejercicios específicos para el área débil
-    const exercises = [];
-    for (let i = 0; i < 5; i++) {
-        exercises.push(generateQuestion(topic, 1)); // Dificultad reducida
-    }
-    return exercises;
-}
-
-// Sistema de recompensas
-function calculateRewards(score, accuracy, time, mode) {
-    let gems = Math.floor(score / 10);
-    let experience = score;
-
-    // Bonificaciones
-    if (accuracy >= 0.9) gems += 10; // Precisión alta
-    if (accuracy === 1.0) gems += 20; // Perfecto
-    if (time < 60) gems += 5; // Velocidad
-
-    // Multiplicadores por modo
-    const multipliers = {
-        normal: 1,
-        challenge: 1.5,
-        survival: 2
-    };
-
-    gems = Math.floor(gems * multipliers[mode]);
-    experience = Math.floor(experience * multipliers[mode]);
-
-    return { gems, experience };
-}
-
 // Funciones de autenticación
 function switchAuthTab(tab) {
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -456,7 +416,6 @@ async function registerUser() {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // Guardar información adicional en la base de datos
         await database.ref('users/' + user.uid).set({
             name: name,
             email: email,
@@ -494,23 +453,13 @@ async function registerUser() {
             }
         });
 
-        console.log('Registro exitoso:', user.uid);
         updateMascotMessage(`¡Cuenta creada exitosamente! Bienvenido ${name}! 🎉`);
 
-        // Limpiar formulario
         document.getElementById('registerName').value = '';
         document.getElementById('registerEmail').value = '';
         document.getElementById('registerPassword').value = '';
         document.getElementById('confirmPassword').value = '';
         document.getElementById('userAge').value = '';
-
-        // Dar tiempo para que se ejecute onAuthStateChanged
-        setTimeout(() => {
-            if (gameState.currentScreen === 'auth') {
-                console.log('Forzando cambio a home desde registerUser');
-                showHome();
-            }
-        }, 1000);
 
     } catch (error) {
         console.error('Error en registro:', error);
@@ -549,20 +498,10 @@ async function loginUser() {
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        console.log('Login exitoso:', user.uid);
         updateMascotMessage('¡Sesión iniciada correctamente!');
 
-        // Limpiar formulario
         document.getElementById('loginEmail').value = '';
         document.getElementById('loginPassword').value = '';
-
-        // Dar tiempo para que se ejecute onAuthStateChanged
-        setTimeout(() => {
-            if (gameState.currentScreen === 'auth') {
-                console.log('Forzando cambio a home desde loginUser');
-                showHome();
-            }
-        }, 1000);
 
     } catch (error) {
         console.error('Error en login:', error);
@@ -590,90 +529,8 @@ async function loginUser() {
 }
 
 async function loginWithGoogle() {
-    // Deshabilitar Google Sign-in temporalmente debido a problemas de dominio
     updateMascotMessage('Lo siento, el inicio de sesión con Google no está disponible en este momento. Por favor usa el registro manual con email y contraseña.');
     return;
-
-    /* Código comentado hasta que se configure el dominio autorizado
-    const provider = new firebase.auth.GoogleAuthProvider();
-
-    try {
-        const result = await auth.signInWithPopup(provider);
-        const user = result.user;
-
-        // Verificar si es un usuario nuevo
-        const userRef = database.ref('users/' + user.uid);
-        const snapshot = await userRef.once('value');
-
-        if (!snapshot.exists()) {
-            // Usuario nuevo, crear perfil
-            await userRef.set({
-                name: user.displayName,
-                email: user.email,
-                age: 'adult', // Por defecto
-                createdAt: firebase.database.ServerValue.TIMESTAMP,
-                level: 1,
-                streak: 0,
-                gems: 100,
-                lives: 5,
-                totalCorrect: 0,
-                totalQuestions: 0,
-                weakAreas: [],
-                strengths: [],
-                mascotCustomization: {
-                    bodyColor: '#8B4513',
-                    eyeStyle: 'normal',
-                    mouthStyle: 'happy',
-                    accessories: {
-                        hat: false,
-                        glasses: false,
-                        bowtie: false,
-                        scarf: false
-                    }
-                },
-                settings: {
-                    language: 'es',
-                    soundEffects: true,
-                    backgroundMusic: false,
-                    volume: 50,
-                    adaptiveDifficulty: true,
-                    dailyReminders: false,
-                    vibration: false,
-                    shareProgress: false,
-                    errorAnalysis: true
-                }
-            });
-        }
-
-        updateMascotMessage(`¡Hola ${user.displayName}! ¡Me alegra verte de nuevo! 🐻`);
-
-    } catch (error) {
-        console.error('Error en login con Google:', error);
-
-        // Manejar errores específicos
-        let errorMessage = 'Error al iniciar sesión con Google.';
-
-        switch (error.code) {
-            case 'auth/popup-closed-by-user':
-                errorMessage = 'Proceso de inicio de sesión cancelado.';
-                break;
-            case 'auth/popup-blocked':
-                errorMessage = 'Popup bloqueado. Permite popups para este sitio.';
-                break;
-            case 'auth/unauthorized-domain':
-                errorMessage = 'Este dominio no está autorizado para Google Sign-in. Usa el registro manual.';
-                break;
-            case 'auth/cancelled-popup-request':
-                errorMessage = 'Solicitud cancelada. Intenta de nuevo.';
-                break;
-            default:
-                errorMessage = error.message;
-        }
-
-        updateMascotMessage(`Error: ${errorMessage}`);
-        console.log('Código de error:', error.code);
-    }
-    */
 }
 
 async function logoutUser() {
@@ -686,27 +543,14 @@ async function logoutUser() {
     }
 }
 
-// Variable para controlar mensajes de bienvenida
 let hasShownWelcomeMessage = false;
 
-// Listener de cambios de autenticación
 auth.onAuthStateChanged(async (user) => {
-    console.log('Estado de autenticación cambió:', user ? 'Usuario conectado' : 'Usuario desconectado');
-
     if (user) {
         try {
             gameState.isAuthenticated = true;
             gameState.currentUser = user;
 
-            // Verificar que el usuario esté realmente autenticado
-            const token = await user.getIdToken(true);
-            if (!token) {
-                console.error('No se pudo obtener token de usuario');
-                await auth.signOut();
-                return;
-            }
-
-            // Cargar datos del usuario
             const userRef = database.ref('users/' + user.uid);
             const snapshot = await userRef.once('value');
             const userData = snapshot.val();
@@ -724,32 +568,9 @@ auth.onAuthStateChanged(async (user) => {
                     totalCorrect: userData.totalCorrect || 0,
                     totalQuestions: userData.totalQuestions || 0,
                     weakAreas: userData.weakAreas || [],
-                    strengths: userData.strengths || [],
-                    mascotCustomization: userData.mascotCustomization || {
-                        bodyColor: '#8B4513',
-                        eyeStyle: 'normal',
-                        mouthStyle: 'happy',
-                        accessories: {
-                            hat: false,
-                            glasses: false,
-                            bowtie: false,
-                            scarf: false
-                        }
-                    },
-                    settings: userData.settings || {
-                        language: 'es',
-                        soundEffects: true,
-                        backgroundMusic: false,
-                        volume: 50,
-                        adaptiveDifficulty: true,
-                        dailyReminders: false,
-                        vibration: false,
-                        shareProgress: false,
-                        errorAnalysis: true
-                    }
+                    strengths: userData.strengths || []
                 };
 
-                // Cargar configuraciones (sin aplicar personalización automáticamente)
                 if (userData.mascotCustomization) {
                     Object.assign(mascotCustomization, userData.mascotCustomization);
                 }
@@ -757,7 +578,6 @@ auth.onAuthStateChanged(async (user) => {
                     Object.assign(appSettings, userData.settings);
                 }
             } else {
-                // Si no hay datos de usuario en la base de datos, crear un perfil básico
                 gameState.user = {
                     uid: user.uid,
                     name: user.displayName || user.email.split('@')[0],
@@ -770,41 +590,15 @@ auth.onAuthStateChanged(async (user) => {
                     totalCorrect: 0,
                     totalQuestions: 0,
                     weakAreas: [],
-                    strengths: [],
-                    mascotCustomization: {
-                        bodyColor: '#D2691E',
-                        eyeStyle: 'normal',
-                        mouthStyle: 'happy',
-                        accessories: {
-                            hat: false,
-                            glasses: false,
-                            bowtie: false,
-                            scarf: false
-                        }
-                    },
-                    settings: {
-                        language: 'es',
-                        soundEffects: true,
-                        backgroundMusic: false,
-                        volume: 50,
-                        adaptiveDifficulty: true,
-                        dailyReminders: false,
-                        vibration: false,
-                        shareProgress: false,
-                        errorAnalysis: true
-                    }
+                    strengths: []
                 };
             }
 
-            updateUserStats();
-
-            // Forzar cambio a pantalla de inicio después de autenticación exitosa
-            console.log('Cambiando a pantalla de inicio...');
             showHome();
 
             if (!hasShownWelcomeMessage) {
                 setTimeout(() => {
-                    updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
+                    updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`);
                     hasShownWelcomeMessage = true;
                 }, 1000);
             }
@@ -820,33 +614,11 @@ auth.onAuthStateChanged(async (user) => {
         gameState.isAuthenticated = false;
         gameState.currentUser = null;
         hasShownWelcomeMessage = false;
-
-        // Solo mostrar auth si no estamos en intro
-        if (gameState.currentScreen !== 'intro') {
-            showAuthScreen();
-        }
+        showAuthScreen();
     }
 });
 
 // Funciones de navegación
-function showIntro() {
-    console.log('Mostrando intro');
-    hideAllScreens();
-    document.getElementById('introScreen').classList.add('active');
-    gameState.currentScreen = 'intro';
-
-    // Secuencia de animaciones
-    setTimeout(() => {
-        console.log('Intro terminado, verificando autenticación');
-        // Verificar si ya hay un usuario autenticado
-        if (gameState.isAuthenticated && gameState.currentUser) {
-            showHome();
-        } else {
-            showAuthScreen();
-        }
-    }, 4000); // Reducido a 4 segundos
-}
-
 function showAuthScreen() {
     hideAllScreens();
     document.getElementById('authScreen').classList.add('active');
@@ -855,26 +627,17 @@ function showAuthScreen() {
 
 function showHome() {
     if (!gameState.isAuthenticated) {
-        console.log('Usuario no autenticado, mostrando pantalla de auth');
         showAuthScreen();
         return;
     }
 
-    console.log('Mostrando pantalla de inicio');
     hideAllScreens();
     document.getElementById('homeScreen').classList.add('active');
     gameState.currentScreen = 'home';
-
-    // Solo actualizar estadísticas de usuario
     updateUserStats();
 
-    // Solo mostrar mensaje si no se ha mostrado antes o si es navegación manual
-    if (!hasShownWelcomeMessage && gameState.user && gameState.user.name) {
-        updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`, 'mascotSpeech');
-        hasShownWelcomeMessage = true;
-    } else if (gameState.user && gameState.user.name) {
-        // Mensaje más corto para navegación posterior
-        updateMascotMessage(`¡Hola ${gameState.user.name}! ¿Qué quieres hacer hoy?`, 'mascotSpeech');
+    if (gameState.user && gameState.user.name) {
+        updateMascotMessage(`¡Hola ${gameState.user.name}! ¿Qué quieres hacer hoy?`);
     }
 }
 
@@ -886,18 +649,47 @@ function showLessons() {
 }
 
 function showProfile() {
-    updateMascotMessage('¡Mira tu progreso! Vas muy bien.');
-    // Implementar pantalla de perfil
+    if (!gameState.isAuthenticated) {
+        showAuthScreen();
+        return;
+    }
+
+    hideAllScreens();
+    document.getElementById('profileScreen').classList.add('active');
+    gameState.currentScreen = 'profile';
+    updateProfileData();
+    updateMascotMessage('¡Este es tu perfil! Aquí puedes ver tu progreso y personalizar tu mascota.');
+}
+
+function showMascotCustomization() {
+    hideAllScreens();
+    document.getElementById('mascotCustomizationScreen').classList.add('active');
+    gameState.currentScreen = 'mascotCustomization';
+
+    loadMascotCustomization();
+
+    setTimeout(() => {
+        applyMascotCustomization('preview');
+        initializeDragFunctionality();
+    }, 150);
+
+    updateMascotMessage('Hagamos que tu avatar sea único. Puedes cambiar colores, ojos, boca y más.');
+}
+
+function showSettings() {
+    hideAllScreens();
+    document.getElementById('settingsScreen').classList.add('active');
+    gameState.currentScreen = 'settings';
+    loadSettings();
+    updateMascotMessage('Aquí puedes ajustar la aplicación a tu gusto.');
 }
 
 function showShop() {
     updateMascotMessage('¿Quieres comprar algo para tu mascota?');
-    // Implementar tienda
 }
 
 function showStats() {
     updateMascotMessage('Estas son tus estadísticas. ¡Sigue así!');
-    // Implementar estadísticas
 }
 
 function hideAllScreens() {
@@ -906,13 +698,12 @@ function hideAllScreens() {
     });
 }
 
-// Renderizado de lecciones estilo Duolingo
+// Renderizado de lecciones
 function renderLessons() {
     const grid = document.getElementById('lessonsGrid');
     grid.innerHTML = '';
 
     lessons.forEach((lesson, index) => {
-        // Determinar estado del nodo
         let nodeState = 'locked';
         if (index === 0 || lessons[index - 1].progress >= 50) {
             nodeState = 'available';
@@ -927,11 +718,10 @@ function renderLessons() {
             nodeState = 'perfect';
         }
 
-        // Tipos especiales de nodos
         let specialType = '';
-        if (index === 3 || index === 7) { // Nodos checkpoint
+        if (index === 3 || index === 7) {
             specialType = 'checkpoint';
-        } else if (index === lessons.length - 1) { // Nodo jefe final
+        } else if (index === lessons.length - 1) {
             specialType = 'boss';
         }
 
@@ -939,7 +729,6 @@ function renderLessons() {
         nodeElement.className = `lesson-node ${nodeState} ${specialType}`;
         nodeElement.onclick = () => selectLesson(lesson.id);
 
-        // Añadir delay de animación escalonado
         nodeElement.style.animationDelay = `${index * 0.1}s`;
 
         nodeElement.innerHTML = `
@@ -954,17 +743,12 @@ function selectLesson(lessonId) {
     const lesson = lessons.find(l => l.id === lessonId);
     const lessonIndex = lessons.findIndex(l => l.id === lessonId);
 
-    // Verificar si la lección está disponible
     if (lessonIndex > 0 && lessons[lessonIndex - 1].progress < 50) {
-        playErrorSound();
         updateMascotMessage('¡Oops! Primero debes completar la lección anterior para desbloquear esta.');
         return;
     }
 
-    playClickSound();
     gameState.currentLesson = lessonId;
-
-    // Mostrar modal de información de la lección
     showLessonModal(lesson);
 }
 
@@ -977,7 +761,7 @@ function showLessonModal(lesson) {
                     <button class="close-btn" onclick="closeLessonModal()">×</button>
                 </div>
                 <div class="lesson-modal-body">
-                    <div class="lesson-big-icon" style="font-size: 5rem;">${lesson.icon}</div>
+                    <div class="lesson-big-icon">${lesson.icon}</div>
                     <p class="lesson-description">${lesson.description}</p>
                     <div class="lesson-progress">
                         <div class="progress-bar">
@@ -1016,7 +800,6 @@ function closeLessonModal() {
 
 function startLessonFromModal() {
     closeLessonModal();
-    // Ir directamente al juego en modo normal
     gameState.currentMode = 'normal';
     startGame();
 }
@@ -1024,11 +807,9 @@ function startLessonFromModal() {
 function startMode(mode) {
     if (!gameState.currentLesson) {
         updateMascotMessage('¡Primero selecciona una lección!');
-        playErrorSound();
         return;
     }
 
-    playClickSound();
     gameState.currentMode = mode;
     startGame();
 }
@@ -1039,7 +820,6 @@ function startGame() {
     document.getElementById('gameScreen').classList.add('active');
     gameState.currentScreen = 'game';
 
-    // Generar preguntas
     const difficulty = getAdaptiveDifficulty(gameState.currentLesson);
     gameState.questions = [];
 
@@ -1055,11 +835,10 @@ function startGame() {
     gameState.score = 0;
     gameState.timeStart = Date.now();
 
-    // Mensaje inicial del juego
     const lessonName = lessons.find(l => l.id === gameState.currentLesson)?.title || 'matemáticas';
-    updateMascotMessage(`¡Perfecto! Vamos a practicar ${lessonName}. Lee bien cada pregunta y piensa antes de responder.`, 'mascotSpeechGame');
+    updateMascotMessage(`¡Perfecto! Vamos a practicar ${lessonName}. Lee bien cada pregunta y piensa antes de responder.`);
 
-    setTimeout(showQuestion, 2000); // Dar tiempo para que termine de hablar
+    setTimeout(showQuestion, 2000);
 }
 
 function showQuestion() {
@@ -1069,11 +848,9 @@ function showQuestion() {
     document.getElementById('totalQuestions').textContent = gameState.questions.length;
     document.getElementById('questionText').textContent = question.question;
 
-    // Actualizar barra de progreso
     const progress = ((gameState.currentQuestionIndex) / gameState.questions.length) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
 
-    // Mostrar respuestas
     const container = document.getElementById('answersContainer');
     container.innerHTML = '';
 
@@ -1085,7 +862,6 @@ function showQuestion() {
         container.appendChild(button);
     });
 
-    // Actualizar vidas
     document.getElementById('livesCount').textContent = gameState.user.lives;
 }
 
@@ -1093,14 +869,12 @@ function selectAnswer(selectedAnswer) {
     const question = gameState.questions[gameState.currentQuestionIndex];
     const isCorrect = selectedAnswer == question.correct;
 
-    // Actualizar estadísticas
     gameState.user.totalQuestions++;
     if (isCorrect) {
         gameState.user.totalCorrect++;
         gameState.score += 10;
     }
 
-    // Feedback visual
     const buttons = document.querySelectorAll('.answer-btn');
     buttons.forEach(btn => {
         if (btn.textContent == question.correct) {
@@ -1111,22 +885,10 @@ function selectAnswer(selectedAnswer) {
         btn.disabled = true;
     });
 
-    // Feedback de mascota
     if (isCorrect) {
-        updateMascotMessage('¡Increíble! ¡Eres genial! Esa respuesta está perfecta.', 'mascotSpeechGame');
-        const mascotGame = document.getElementById('bearGame');
-        if (mascotGame) mascotGame.classList.add('pulse');
-        playSuccessSound();
-
-        // Sonido adicional para gemas
-        setTimeout(() => {
-            playGemSound();
-        }, 300);
+        updateMascotMessage('¡Increíble! ¡Eres genial! Esa respuesta está perfecta.');
     } else {
-        updateMascotMessage('¡Tranquilo! Los osos también nos equivocamos. Vamos a intentarlo de nuevo.', 'mascotSpeechGame');
-        const mascotGame = document.getElementById('bearGame');
-        if (mascotGame) mascotGame.classList.add('shake');
-        playErrorSound();
+        updateMascotMessage('¡Tranquilo! Los osos también nos equivocamos. Vamos a intentarlo de nuevo.');
         gameState.user.lives--;
 
         if (gameState.currentMode === 'survival' && gameState.user.lives <= 0) {
@@ -1135,15 +897,6 @@ function selectAnswer(selectedAnswer) {
         }
     }
 
-    // Limpiar animaciones
-    setTimeout(() => {
-        const mascotGame = document.getElementById('bearGame');
-        if (mascotGame) {
-            mascotGame.classList.remove('pulse', 'shake');
-        }
-    }, 1000);
-
-    // Continuar al siguiente
     setTimeout(() => {
         nextQuestion();
     }, 2000);
@@ -1167,62 +920,46 @@ function endGame() {
     const accuracy = gameState.user.totalCorrect / gameState.user.totalQuestions;
     const rewards = calculateRewards(gameState.score, accuracy, totalTime, gameState.currentMode);
 
-    // Actualizar progreso de la lección actual
     const currentLesson = lessons.find(l => l.id === gameState.currentLesson);
     if (currentLesson) {
-        const progressIncrease = Math.round(accuracy * 20); // 20% máximo por sesión
+        const progressIncrease = Math.round(accuracy * 20);
         currentLesson.progress = Math.min(100, currentLesson.progress + progressIncrease);
 
-        // Guardar progreso en localStorage temporalmente
         localStorage.setItem('lessonsProgress', JSON.stringify(lessons.map(l => ({id: l.id, progress: l.progress}))));
     }
 
-    // Actualizar gemas
     gameState.user.gems += rewards.gems;
 
-    // Mostrar resultados
     document.getElementById('finalScore').textContent = gameState.score;
     document.getElementById('accuracy').textContent = Math.round(accuracy * 100) + '%';
     document.getElementById('gemsEarned').textContent = rewards.gems;
 
-    // Actualizar racha
     if (accuracy >= 0.8) {
         gameState.user.streak++;
     } else {
         gameState.user.streak = 0;
     }
 
-    // Mostrar logros
     const achievements = document.getElementById('achievements');
     achievements.innerHTML = '';
 
     if (accuracy === 1.0) {
         addAchievement('¡Perfecto! 🏆');
-        playLevelUpSound();
     }
     if (gameState.user.streak >= 3) {
         addAchievement('¡Racha de fuego! 🔥');
     }
     if (rewards.gems >= 50) {
         addAchievement('¡Rico en gemas! 💎');
-        setTimeout(() => {
-            playGemSound();
-        }, 500);
     }
     if (currentLesson && currentLesson.progress === 100) {
         addAchievement('¡Lección completada! 🎯');
-        playLevelUpSound();
     }
 
-    // Actualizar UI
     updateUserStats();
 
-    // Mensaje de mascota y sonido
     if (accuracy >= 0.8) {
         updateMascotMessage('¡Increíble trabajo! Estoy muy orgulloso 🎊');
-        setTimeout(() => {
-            playSuccessSound();
-        }, 200);
     } else {
         updateMascotMessage('¡Buen intento! La práctica hace al maestro 📚');
     }
@@ -1234,6 +971,26 @@ function addAchievement(text) {
     achievement.className = 'achievement';
     achievement.textContent = text;
     achievements.appendChild(achievement);
+}
+
+function calculateRewards(score, accuracy, time, mode) {
+    let gems = Math.floor(score / 10);
+    let experience = score;
+
+    if (accuracy >= 0.9) gems += 10;
+    if (accuracy === 1.0) gems += 20;
+    if (time < 60) gems += 5;
+
+    const multipliers = {
+        normal: 1,
+        challenge: 1.5,
+        survival: 2
+    };
+
+    gems = Math.floor(gems * multipliers[mode]);
+    experience = Math.floor(experience * multipliers[mode]);
+
+    return { gems, experience };
 }
 
 // Calculadora virtual
@@ -1329,7 +1086,6 @@ function updateCalculatorSteps() {
     });
 }
 
-// Funciones de ayuda
 function showHint() {
     const question = gameState.questions[gameState.currentQuestionIndex];
     updateMascotMessage(`💡 Pista: ${question.steps[0]}`);
@@ -1344,513 +1100,16 @@ function showExplanation() {
     updateMascotMessage(explanation);
 }
 
-// Utilidades
-function shuffleArray(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-}
-
-function updateMascotMessage(message, targetElement = 'mascotSpeech') {
-    // Actualizar texto en el elemento especificado
-    const speechElement = document.getElementById(targetElement);
-    if (speechElement) {
-        speechElement.textContent = message;
-    }
-
-    // También actualizar en otros elementos de speech si existen
-    const speechElements = ['mascotSpeech', 'mascotSpeechLessons', 'mascotSpeechGame'];
-    speechElements.forEach(id => {
-        const element = document.getElementById(id);
-        if (element && id !== targetElement) {
-            element.textContent = message;
-        }
-    });
-
-    // Solo animación visual sin voz
-    playMascotAnimation();
-}
-
-function playMascotAnimation() {
-    // Solo animación visual de la mascota
-    const bears = ['bearHome', 'bearLessons', 'bearGame', 'previewBear'];
-
-    bears.forEach(bearId => {
-        const bear = document.getElementById(bearId);
-        if (bear && isElementVisible(bear)) {
-            bear.classList.add('speaking');
-            setTimeout(() => {
-                bear.classList.remove('speaking');
-            }, 800);
-        }
-    });
-}
-
-function isElementVisible(element) {
-    if (!element) return false;
-    const rect = element.getBoundingClientRect();
-    return rect.width > 0 && rect.height > 0 && 
-           window.getComputedStyle(element).display !== 'none' &&
-           window.getComputedStyle(element).visibility !== 'hidden';
-}
-
-// Efectos de sonido estilo Duolingo
-function playSuccessSound() {
-    if (!appSettings.soundEffects) return;
-
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    // Sonido de éxito alegre y brillante
-    const notes = [
-        { freq: 523, time: 0, duration: 0.15 },    // C5
-        { freq: 659, time: 0.1, duration: 0.15 },  // E5
-        { freq: 784, time: 0.2, duration: 0.2 },   // G5
-        { freq: 1047, time: 0.35, duration: 0.25 } // C6
-    ];
-
-    notes.forEach(note => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        const filterNode = audioContext.createBiquadFilter();
-
-        oscillator.connect(filterNode);
-        filterNode.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.frequency.setValueAtTime(note.freq, audioContext.currentTime + note.time);
-        oscillator.type = 'triangle';
-
-        filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(2000, audioContext.currentTime + note.time);
-
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime + note.time);
-        gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + note.time + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.time + note.duration);
-
-        oscillator.start(audioContext.currentTime + note.time);
-        oscillator.stop(audioContext.currentTime + note.time + note.duration);
-    });
-}
-
-function playErrorSound() {
-    if (!appSettings.soundEffects) return;
-
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    const filterNode = audioContext.createBiquadFilter();
-
-    oscillator.connect(filterNode);
-    filterNode.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // Sonido de error descendente
-    oscillator.frequency.setValueAtTime(330, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.1);
-    oscillator.frequency.exponentialRampToValueAtTime(165, audioContext.currentTime + 0.3);
-    oscillator.type = 'sawtooth';
-
-    filterNode.type = 'lowpass';
-    filterNode.frequency.setValueAtTime(800, audioContext.currentTime);
-    filterNode.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
-
-    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.3);
-}
-
-function playClickSound() {
-    if (!appSettings.soundEffects) return;
-
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
-    oscillator.type = 'sine';
-
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.1);
-}
-
-function playHoverSound() {
-    if (!appSettings.soundEffects) return;
-
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(500, audioContext.currentTime + 0.08);
-    oscillator.type = 'sine';
-
-    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
-
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.08);
-}
-
-function playLevelUpSound() {
-    if (!appSettings.soundEffects) return;
-
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    // Secuencia ascendente de notas
-    const notes = [
-        { freq: 261, time: 0 },     // C4
-        { freq: 329, time: 0.1 },   // E4
-        { freq: 392, time: 0.2 },   // G4
-        { freq: 523, time: 0.3 },   // C5
-        { freq: 659, time: 0.4 },   // E5
-        { freq: 784, time: 0.5 },   // G5
-        { freq: 1047, time: 0.6 }   // C6
-    ];
-
-    notes.forEach(note => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.frequency.setValueAtTime(note.freq, audioContext.currentTime + note.time);
-        oscillator.type = 'triangle';
-
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime + note.time);
-        gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + note.time + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.time + 0.2);
-
-        oscillator.start(audioContext.currentTime + note.time);
-        oscillator.stop(audioContext.currentTime + note.time + 0.2);
-    });
-}
-
-function playGemSound() {
-    if (!appSettings.soundEffects) return;
-
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    const filterNode = audioContext.createBiquadFilter();
-
-    oscillator.connect(filterNode);
-    filterNode.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(1500, audioContext.currentTime + 0.1);
-    oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.2);
-    oscillator.type = 'sine';
-
-    filterNode.type = 'highpass';
-    filterNode.frequency.setValueAtTime(500, audioContext.currentTime);
-
-    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.2);
-}
-
-function updateUserStats() {
-    document.getElementById('streak').textContent = gameState.user.streak;
-    document.getElementById('gems').textContent = gameState.user.gems;
-    document.getElementById('lives').textContent = gameState.user.lives;
-
-    const userNameElement = document.getElementById('userName');
-    if (userNameElement && gameState.user.name) {
-        userNameElement.textContent = gameState.user.name;
-    }
-}
-
-// Funciones para guardar progreso
-async function saveUserProgress() {
-    if (gameState.isAuthenticated && gameState.currentUser) {
-        try {
-            const updateData = {
-                name: gameState.user.name,
-                email: gameState.user.email,
-                age: gameState.user.age,
-                level: gameState.user.level,
-                streak: gameState.user.streak,
-                gems: gameState.user.gems,
-                lives: gameState.user.lives,
-                totalCorrect: gameState.user.totalCorrect,
-                totalQuestions: gameState.user.totalQuestions,
-                weakAreas: gameState.user.weakAreas,
-                strengths: gameState.user.strengths,
-                lastPlayed: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            // Agregar personalización de mascota si existe
-            if (gameState.user.mascotCustomization) {
-                updateData.mascotCustomization = gameState.user.mascotCustomization;
-            }
-
-            // Agregar configuraciones si existen
-            if (gameState.user.settings) {
-                updateData.settings = gameState.user.settings;
-            }
-
-            await database.ref('users/' + gameState.currentUser.uid).update(updateData);
-        } catch (error) {
-            console.error('Error guardando progreso:', error);
-        }
-    }
-}
-
-// Guardar progreso automáticamente cada cierto tiempo
-setInterval(saveUserProgress, 30000); // Cada 30 segundos
-
-// Mantener sesión activa verificando token cada 10 minutos
-setInterval(async () => {
-    if (gameState.isAuthenticated && gameState.currentUser) {
-        try {
-            // Verificar que el token siga siendo válido
-            await gameState.currentUser.getIdToken(true);
-            console.log('Sesión verificada correctamente');
-        } catch (error) {
-            console.error('Error verificando sesión:', error);
-            // Si hay error, cerrar sesión
-            await auth.signOut();
-            updateMascotMessage('Tu sesión ha expirado. Por favor inicia sesión de nuevo.');
-        }
-    }
-}, 600000); // Cada 10 minutos
-
-// Detectar cuando la página pierde/gana foco para mantener sesión
-document.addEventListener('visibilitychange', async () => {
-    if (!document.hidden && gameState.isAuthenticated && gameState.currentUser) {
-        try {
-            // Verificar sesión cuando la página vuelve a estar activa
-            await gameState.currentUser.getIdToken(true);
-        } catch (error) {
-            console.error('Sesión perdida al volver a la página:', error);
-            await auth.signOut();
-            updateMascotMessage('Tu sesión se perdió. Inicia sesión de nuevo.');
-        }
-    }
-});
-
-// Inicialización
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar progreso de lecciones desde localStorage
-    const savedProgress = localStorage.getItem('lessonsProgress');
-    if (savedProgress) {
-        try {
-            const progressData = JSON.parse(savedProgress);
-            progressData.forEach(saved => {
-                const lesson = lessons.find(l => l.id === saved.id);
-                if (lesson) {
-                    lesson.progress = saved.progress;
-                }
-            });
-        } catch (e) {
-            console.log('Error cargando progreso de lecciones:', e);
-        }
-    }
-
-    showIntro();
-    updateUserStats();
-
-    // Agregar efectos de sonido a botones
-    addSoundEffectsToButtons();
-
-    // Cerrar modal al hacer clic fuera
-    window.onclick = function(event) {
-        const modal = document.getElementById('calculatorModal');
-        if (event.target === modal) {
-            closeCalculator();
-        }
-    };
-
-    // Restaurar vidas cada hora
-    setInterval(() => {
-        if (gameState.user.lives < 5) {
-            gameState.user.lives++;
-            updateUserStats();
-            updateMascotMessage('¡Recuperaste una vida! ❤️');
-            playGemSound();
-        }
-    }, 3600000); // 1 hora
-});
-
-// Función para agregar efectos de sonido a todos los botones
-function addSoundEffectsToButtons() {
-    // Agregar hover sound a todos los botones
-    document.addEventListener('mouseover', function(e) {
-        if (e.target.matches('button, .lesson-card, .answer-btn, .action-btn, .mode-btn, .color-option, .style-option, .option-card')) {
-            playHoverSound();
-        }
-    });
-
-    // Agregar click sound a todos los botones
-    document.addEventListener('click', function(e) {
-        if (e.target.matches('button, .lesson-card, .answer-btn, .action-btn, .mode-btn, .color-option, .style-option, .option-card')) {
-            playClickSound();
-        }
-    });
-}
-
-// Sistema de logros
-const achievements = {
-    firstWin: { name: 'Primer Triunfo', description: 'Responde tu primera pregunta correctamente', icon: '🏅' },
-    perfectScore: { name: 'Puntuación Perfecta', description: 'Obtén 100% de precisión', icon: '🏆' },
-    speedDemon: { name: 'Demonio de la Velocidad', description: 'Completa una lección en menos de 2 minutos', icon: '⚡' },
-    streakMaster: { name: 'Maestro de Rachas', description: 'Mantén una racha de 7 días', icon: '🔥' },
-    gemCollector: { name: 'Coleccionista de Gemas', description: 'Acumula 1000 gemas', icon: '💎' }
-};
-
-// Sistema de recomendaciones inteligente
-function getSmartRecommendations() {
-    const recommendations = [];
-
-    // Basado en áreas débiles
-    gameState.user.weakAreas.forEach(area => {
-        recommendations.push({
-            type: 'remedial',
-            lesson: area,
-            reason: 'Necesitas practicar más esta área',
-            priority: 'high'
-        });
-    });
-
-    // Basado en fortalezas
-    gameState.user.strengths.forEach(area => {
-        const nextLevel = lessons.find(l => l.id === area && l.difficulty < 5);
-        if (nextLevel) {
-            recommendations.push({
-                type: 'advancement',
-                lesson: area,
-                reason: 'Estás listo para el siguiente nivel',
-                priority: 'medium'
-            });
-        }
-    });
-
-    // Lecciones nuevas
-    const untriedLessons = lessons.filter(l => l.progress === 0);
-    if (untriedLessons.length > 0) {
-        recommendations.push({
-            type: 'exploration',
-            lesson: untriedLessons[0].id,
-            reason: 'Prueba algo nuevo',
-            priority: 'low'
-        });
-    }
-
-    return recommendations.sort((a, b) => {
-        const priorityOrder = { high: 3, medium: 2, low: 1 };
-        return priorityOrder[b.priority] - priorityOrder[a.priority];
-    });
-}
-
-// Estado de personalización de mascota
-const mascotCustomization = {
-    bodyColor: '#D2691E',
-    eyeStyle: 'normal',
-    eyeColor: '#000000',
-    mouthStyle: 'happy',
-    noseStyle: 'normal',
-    noseColor: '#2c2c2c',
-    background: 'none',
-    accessories: {
-        hat: false,
-        glasses: false,
-        bowtie: false,
-        scarf: false,
-        earrings: false,
-        chain: false,
-        cap: false,
-        headband: false
-    },
-    patterns: {
-        spots: false,
-        stripes: false,
-        gradient: false
-    }
-};
-
-// Estado de configuraciones
-const appSettings = {
-    language: 'es',
-    soundEffects: true,
-    backgroundMusic: false,
-    volume: 50,
-    adaptiveDifficulty: true,
-    dailyReminders: false,
-    vibration: false,
-    shareProgress: false,
-    errorAnalysis: true
-};
-
-// Funciones de navegación adicionales
-function showProfile() {
-    if (!gameState.isAuthenticated) {
-        showAuthScreen();
-        return;
-    }
-
-    hideAllScreens();
-    document.getElementById('profileScreen').classList.add('active');
-    gameState.currentScreen = 'profile';
-    updateProfileData();
-    updateMascotMessage('¡Este es tu perfil! Aquí puedes ver tu progreso y personalizar tu mascota.');
-}
-
-function showMascotCustomization() {
-    hideAllScreens();
-    document.getElementById('mascotCustomizationScreen').classList.add('active');
-    gameState.currentScreen = 'mascotCustomization';
-
-    // Cargar personalización y aplicar al preview
-    loadMascotCustomization();
-
-    // Pequeño delay para asegurar que el DOM esté listo
-    setTimeout(() => {
-        applyMascotCustomization('preview');
-        initializeDragFunctionality();
-    }, 150);
-
-    updateMascotMessage('Hagamos que tu avatar sea único. Puedes cambiar colores, ojos, boca y más.');
-}
-
-// Funcionalidad de arrastrar para la barra de personalización
-let isDragging = false;
-let startY = 0;
-let currentTransform = 0;
-
+// Funciones de personalización
 function initializeDragFunctionality() {
     const customizationControls = document.querySelector('.customization-controls');
     const dragHandle = document.querySelector('.drag-handle');
 
     if (!customizationControls || !dragHandle) return;
 
-    // Mouse events
-    dragHandle.addEventListener('mousedown', startDrag);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', endDrag);
-
-    // Touch events para móvil
-    dragHandle.addEventListener('touchstart', startDrag, { passive: false });
-    document.addEventListener('touchmove', drag, { passive: false });
-    document.addEventListener('touchend', endDrag);
+    let isDragging = false;
+    let startY = 0;
+    let currentTransform = 0;
 
     function startDrag(e) {
         isDragging = true;
@@ -1865,9 +1124,8 @@ function initializeDragFunctionality() {
         const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
         const deltaY = currentY - startY;
 
-        // Limitar el movimiento
-        const maxUp = -window.innerHeight * 0.2; // Máximo hacia arriba
-        const maxDown = window.innerHeight * 0.1; // Máximo hacia abajo
+        const maxUp = -window.innerHeight * 0.2;
+        const maxDown = window.innerHeight * 0.1;
 
         currentTransform = Math.min(maxDown, Math.max(maxUp, deltaY));
 
@@ -1881,41 +1139,40 @@ function initializeDragFunctionality() {
         isDragging = false;
         dragHandle.style.cursor = 'grab';
 
-        // Snap a posiciones específicas
         if (currentTransform > window.innerHeight * 0.05) {
-            // Minimizar
             customizationControls.style.transform = 'translateY(calc(55vh - 80px))';
             customizationControls.style.height = '80px';
         } else if (currentTransform < -window.innerHeight * 0.1) {
-            // Maximizar
             customizationControls.style.transform = 'translateY(-10vh)';
             customizationControls.style.height = '75vh';
         } else {
-            // Posición normal
             customizationControls.style.transform = 'translateY(0)';
             customizationControls.style.height = '55vh';
         }
 
         currentTransform = 0;
     }
+
+    dragHandle.addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', endDrag);
+
+    dragHandle.addEventListener('touchstart', startDrag, { passive: false });
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', endDrag);
 }
 
-// Funciones para la nueva interfaz de personalización
 function switchTab(tabName) {
-    // Remover active de todas las tabs
     document.querySelectorAll('.tab-modern').forEach(tab => {
         tab.classList.remove('active');
     });
 
-    // Remover active de todos los paneles
     document.querySelectorAll('.customization-panel-modern').forEach(panel => {
         panel.classList.remove('active');
     });
 
-    // Activar la tab seleccionada
     event.target.classList.add('active');
 
-    // Activar el panel correspondiente
     const panelMap = {
         'pelaje': 'pelajePanel',
         'ojos': 'ojosPanel',
@@ -1934,10 +1191,9 @@ function switchTab(tabName) {
 function changeBackground(backgroundType) {
     mascotCustomization.background = backgroundType;
 
-    const backgroundPreview = document.getElementById('backgroundPreview');
     const previewSection = document.querySelector('.mascot-preview-section');
 
-    if (backgroundPreview && previewSection) {
+    if (previewSection) {
         switch(backgroundType) {
             case 'forest':
                 previewSection.style.background = 'linear-gradient(135deg, #2d5016 0%, #3e7b20 100%)';
@@ -1960,13 +1216,12 @@ function changeBackground(backgroundType) {
             case 'winter':
                 previewSection.style.background = 'linear-gradient(135deg, #b0e0e6 0%, #ffffff 100%)';
                 break;
-            default: // 'none'
+            default:
                 previewSection.style.background = 'linear-gradient(135deg, #58cc02 0%, #89e219 100%)';
                 break;
         }
     }
 
-    // Actualizar selección visual
     document.querySelectorAll('#fondosPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
@@ -1990,7 +1245,6 @@ function changeBodyColor(color) {
     mascotCustomization.bodyColor = color;
     applyMascotCustomization('preview');
 
-    // Actualizar selección visual
     document.querySelectorAll('#pelajePanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
@@ -2003,7 +1257,6 @@ function changeEyeStyle(style) {
     mascotCustomization.eyeStyle = style;
     applyMascotCustomization('preview');
 
-    // Actualizar selección visual
     document.querySelectorAll('#ojosPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
@@ -2027,7 +1280,6 @@ function changeMouthStyle(style) {
     mascotCustomization.mouthStyle = style;
     applyMascotCustomization('preview');
 
-    // Actualizar selección visual
     document.querySelectorAll('#bocaPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
@@ -2049,7 +1301,6 @@ function changeNoseStyle(style) {
     mascotCustomization.noseStyle = style;
     applyMascotCustomization('preview');
 
-    // Actualizar selección visual
     document.querySelectorAll('#narizPanel .option-card').forEach(option => {
         option.classList.remove('selected');
     });
@@ -2070,7 +1321,6 @@ function toggleAccessory(accessory) {
     mascotCustomization.accessories[accessory] = !mascotCustomization.accessories[accessory];
     applyMascotCustomization('preview');
 
-    // Actualizar selección visual
     const button = event.target.closest('.option-card');
     button.classList.toggle('selected');
 
@@ -2089,51 +1339,441 @@ function toggleAccessory(accessory) {
 }
 
 function resetCustomization() {
-    // Resetear a valores por defecto
     mascotCustomization.bodyColor = '#D2691E';
     mascotCustomization.eyeStyle = 'normal';
     mascotCustomization.mouthStyle = 'happy';
     mascotCustomization.noseStyle = 'normal';
     mascotCustomization.background = 'none';
 
-    // Resetear accesorios
     Object.keys(mascotCustomization.accessories).forEach(accessory => {
         mascotCustomization.accessories[accessory] = false;
     });
 
-    // Resetear fondo
     const previewSection = document.querySelector('.mascot-preview-section');
     if (previewSection) {
         previewSection.style.background = 'linear-gradient(135deg, #58cc02 0%, #89e219 100%)';
     }
 
-    // Aplicar cambios
     applyMascotCustomization('preview');
 
-    // Actualizar selecciones visuales
     document.querySelectorAll('.option-card').forEach(card => {
         card.classList.remove('selected');
     });
 
-    // Marcar opciones por defecto como seleccionadas
     document.querySelector('[data-color="#D2691E"]')?.classList.add('selected');
-    document.querySelector('#ojosPanel .option-card')?.classList.add('selected');
-    document.querySelector('#bocaPanel .option-card')?.classList.add('selected');
-    document.querySelector('#narizPanel .option-card')?.classList.add('selected');
-    document.querySelector('#fondosPanel .option-card')?.classList.add('selected');
 
     updateMascotMessage('He vuelto a mi aspecto original');
 }
 
-function showSettings() {
-    hideAllScreens();
-    document.getElementById('settingsScreen').classList.add('active');
-    gameState.currentScreen = 'settings';
-    loadSettings();
-    updateMascotMessage('Aquí puedes ajustar la aplicación a tu gusto.');
+function loadMascotCustomization() {
+    if (gameState.currentScreen !== 'mascotCustomization') {
+        return;
+    }
+
+    if (gameState.user && gameState.user.mascotCustomization) {
+        Object.assign(mascotCustomization, gameState.user.mascotCustomization);
+    }
+
+    if (mascotCustomization.background && mascotCustomization.background !== 'none') {
+        const backgroundMap = {
+            'forest': 'linear-gradient(135deg, #2d5016 0%, #3e7b20 100%)',
+            'ocean': 'linear-gradient(135deg, #006994 0%, #0077be 100%)',
+            'desert': 'linear-gradient(135deg, #daa520 0%, #f4a460 100%)',
+            'mountain': 'linear-gradient(135deg, #708090 0%, #a9a9a9 100%)',
+            'space': 'linear-gradient(135deg, #191970 0%, #4b0082 100%)',
+            'sunset': 'linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%)',
+            'winter': 'linear-gradient(135deg, #b0e0e6 0%, #ffffff 100%)'
+        };
+
+        const previewSection = document.querySelector('.mascot-preview-section');
+        if (previewSection && backgroundMap[mascotCustomization.background]) {
+            previewSection.style.background = backgroundMap[mascotCustomization.background];
+        }
+    }
+
+    applyMascotCustomization('preview');
+
+    setTimeout(() => {
+        document.querySelectorAll('.option-card').forEach(card => {
+            const colorAttr = card.getAttribute('data-color');
+            if (colorAttr === mascotCustomization.bodyColor) {
+                card.classList.add('selected');
+            }
+        });
+
+        Object.keys(mascotCustomization.accessories).forEach(accessory => {
+            if (mascotCustomization.accessories[accessory]) {
+                const accessoryCard = document.querySelector(`[onclick="toggleAccessory('${accessory}')"]`);
+                if (accessoryCard) {
+                    accessoryCard.classList.add('selected');
+                }
+            }
+        });
+
+        if (mascotCustomization.background) {
+            const backgroundCard = document.querySelector(`[onclick="changeBackground('${mascotCustomization.background}')"]`);
+            if (backgroundCard) {
+                backgroundCard.classList.add('selected');
+            }
+        }
+    }, 100);
 }
 
-// Funciones de perfil
+function applyMascotCustomization(target = 'main') {
+    if (gameState.currentScreen !== 'mascotCustomization') {
+        return;
+    }
+
+    const prefixes = ['preview'];
+
+    prefixes.forEach(prefix => {
+        const head = document.getElementById(`${prefix}BearHead`);
+        const body = document.getElementById(`${prefix}BearBody`);
+        const ears = document.querySelectorAll(`#${prefix}BearEarLeft, #${prefix}BearEarRight`);
+
+        if (head) {
+            head.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 20)} 50%, ${darkenColor(mascotCustomization.bodyColor, 40)} 100%)`;
+        }
+        if (body) {
+            body.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 20)} 50%, ${darkenColor(mascotCustomization.bodyColor, 40)} 100%)`;
+        }
+        ears.forEach(ear => {
+            if (ear) ear.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 30)} 70%)`;
+        });
+
+        const eyes = document.querySelectorAll(`#${prefix}BearEyeLeft, #${prefix}BearEyeRight`);
+        eyes.forEach((eye, index) => {
+            if (!eye) return;
+
+            eye.style.transform = 'scale(1)';
+            eye.style.height = '28px';
+            eye.style.width = '28px';
+            eye.style.borderRadius = '50%';
+            eye.innerHTML = '';
+
+            const pupil = eye.querySelector('.pupil') || document.createElement('div');
+            pupil.className = 'pupil';
+
+            switch (mascotCustomization.eyeStyle) {
+                case 'large':
+                    eye.style.transform = 'scale(1.4)';
+                    pupil.style.background = `radial-gradient(circle at 30% 30%, ${mascotCustomization.eyeColor} 0%, #000 100%)`;
+                    break;
+                case 'sleepy':
+                    eye.style.height = '12px';
+                    eye.style.borderRadius = '50% 50% 50% 50% / 60% 60% 40% 40%';
+                    pupil.style.background = `${mascotCustomization.eyeColor}`;
+                    break;
+                case 'happy':
+                    eye.style.borderRadius = '50% 50% 50% 50% / 100% 100% 0% 0%';
+                    eye.style.height = '20px';
+                    pupil.style.background = `radial-gradient(circle at 30% 30%, ${mascotCustomization.eyeColor} 0%, #000 100%)`;
+                    break;
+                case 'star':
+                    eye.innerHTML = `<div style="color: ${mascotCustomization.eyeColor}; font-size: 20px;">⭐</div>`;
+                    eye.style.display = 'flex';
+                    eye.style.alignItems = 'center';
+                    eye.style.justifyContent = 'center';
+                    eye.style.background = 'radial-gradient(circle, #ffffff 0%, #f0f0f0 100%)';
+                    break;
+                case 'rainbow':
+                    eye.style.background = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)';
+                    pupil.style.background = '#fff';
+                    pupil.style.boxShadow = '0 0 10px #00d4ff';
+                    break;
+                case 'heart':
+                    eye.innerHTML = `<div style="color: ${mascotCustomization.eyeColor}; font-size: 18px;">💖</div>`;
+                    eye.style.display = 'flex';
+                    eye.style.alignItems = 'center';
+                    eye.style.justifyContent = 'center';
+                    eye.style.background = 'radial-gradient(circle, #ffffff 0%, #ffe0e6 100%)';
+                    break;
+                case 'cool':
+                    eye.style.background = 'linear-gradient(45deg, #1e3c72, #2a5298)';
+                    pupil.style.background = '#00d4ff';
+                    pupil.style.boxShadow = '0 0 10px #00d4ff';
+                    break;
+                default:
+                    pupil.style.background = `radial-gradient(circle at 30% 30%, ${mascotCustomization.eyeColor} 0%, #000 100%)`;
+            }
+
+            if (!eye.querySelector('.pupil') && ['star', 'rainbow', 'heart', 'cool'].includes(mascotCustomization.eyeStyle)) {
+
+            } else if (!eye.innerHTML.includes('div') || mascotCustomization.eyeStyle === 'normal') {
+                eye.innerHTML = '';
+                eye.appendChild(pupil);
+            }
+        });
+
+        const nose = document.getElementById(`${prefix}BearNose`);
+        if (nose) {
+            switch (mascotCustomization.noseStyle) {
+                case 'small':
+                    nose.style.width = '12px';
+                    nose.style.height = '10px';
+                    nose.style.background = `linear-gradient(145deg, ${mascotCustomization.noseColor} 0%, #000 100%)`;
+                    break;
+                case 'big':
+                    nose.style.width = '24px';
+                    nose.style.height = '20px';
+                    nose.style.background = `linear-gradient(145deg, ${mascotCustomization.noseColor} 0%, #000 100%)`;
+                    break;
+                case 'button':
+                    nose.style.borderRadius = '50%';
+                    nose.style.width = '16px';
+                    nose.style.height = '16px';
+                    nose.style.background = `radial-gradient(circle, ${mascotCustomization.noseColor} 0%, #000 70%)`;
+                    break;
+                case 'heart':
+                    nose.innerHTML = '<div style="color: #ff69b4; font-size: 14px;">💗</div>';
+                    nose.style.display = 'flex';
+                    nose.style.alignItems = 'center';
+                    nose.style.justifyContent = 'center';
+                    nose.style.background = 'transparent';
+                    break;
+                default:
+                    nose.style.width = '18px';
+                    nose.style.height = '15px';
+                    nose.style.borderRadius = '50% 50% 40% 40%';
+                    nose.style.background = `linear-gradient(145deg, ${mascotCustomization.noseColor} 0%, #000 100%)`;
+                    nose.innerHTML = '';
+            }
+        }
+
+        const mouth = document.getElementById(`${prefix}BearMouth`);
+        if (mouth) {
+            mouth.style.border = '4px solid #2c2c2c';
+            mouth.style.borderTop = 'none';
+
+            switch (mascotCustomization.mouthStyle) {
+                case 'surprised':
+                    mouth.style.borderRadius = '50%';
+                    mouth.style.width = '18px';
+                    mouth.style.height = '25px';
+                    mouth.style.border = '4px solid #2c2c2c';
+                    break;
+                case 'neutral':
+                    mouth.style.borderRadius = '0';
+                    mouth.style.width = '25px';
+                    mouth.style.height = '3px';
+                    mouth.style.border = '3px solid #2c2c2c';
+                    mouth.style.borderTop = 'none';
+                    break;
+                case 'playful':
+                    mouth.style.borderRadius = '0 50px 50px 0';
+                    mouth.style.width = '22px';
+                    mouth.style.height = '12px';
+                    break;
+                case 'laugh':
+                    mouth.style.borderRadius = '0 0 50px 50px';
+                    mouth.style.width = '40px';
+                    mouth.style.height = '20px';
+                    mouth.style.border = '4px solid #2c2c2c';
+                    mouth.style.borderTop = 'none';
+                    break;
+                case 'cute':
+                    mouth.innerHTML = '<div style="color: #ff69b4; font-size: 16px; margin-top: -8px;">💋</div>';
+                    mouth.style.border = 'none';
+                    mouth.style.display = 'flex';
+                    mouth.style.alignItems = 'center';
+                    mouth.style.justifyContent = 'center';
+                    break;
+                default:
+                    mouth.style.borderRadius = '0 0 35px 35px';
+                    mouth.style.width = '35px';
+                    mouth.style.height = '18px';
+                    mouth.style.border = '4px solid #2c2c2c';
+                    mouth.style.borderTop = 'none';
+                    mouth.innerHTML = '';
+            }
+        }
+
+        applyAccessories(prefix);
+    });
+}
+
+function darkenColor(color, percent) {
+    const num = parseInt(color.replace("#",""), 16),
+          amt = Math.round(2.55 * percent),
+          R = (num >> 16) - amt,
+          G = (num >> 8 & 0x00FF) - amt,
+          B = (num & 0x0000FF) - amt;
+    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                  (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                  (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+}
+
+function applyAccessories(prefix) {
+    const existingAccessories = document.querySelectorAll(`[id*="${prefix}Accessory"]`);
+    existingAccessories.forEach(acc => acc.remove());
+
+    const bearHead = document.getElementById(`${prefix}BearHead`) || 
+                     document.querySelector(`#bear${prefix} .bear-head`);
+    const bearBody = document.getElementById(`${prefix}BearBody`) || 
+                     document.querySelector(`#bear${prefix} .bear-body`);
+
+    if (!bearHead) return;
+
+    if (mascotCustomization.accessories.glasses) {
+        const glasses = document.createElement('div');
+        glasses.id = `${prefix}AccessoryGlasses`;
+        glasses.style.position = 'absolute';
+        glasses.style.top = '35px';
+        glasses.style.left = '25px';
+        glasses.style.width = '70px';
+        glasses.style.height = '25px';
+        glasses.style.border = '3px solid #333';
+        glasses.style.borderRadius = '50%';
+        glasses.style.background = 'rgba(0,100,200,0.3)';
+        glasses.style.zIndex = '10';
+        glasses.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
+
+        glasses.innerHTML = `
+            <div style="position: absolute; top: 8px; left: 32px; width: 6px; height: 3px; background: #333; border-radius: 2px;"></div>
+            <div style="position: absolute; top: -3px; left: 45px; width: 20px; height: 20px; border: 3px solid #333; border-radius: 50%; background: rgba(0,100,200,0.3);"></div>
+        `;
+        bearHead.appendChild(glasses);
+    }
+
+    if (mascotCustomization.accessories.hat) {
+        const hat = document.createElement('div');
+        hat.id = `${prefix}AccessoryHat`;
+        hat.style.position = 'absolute';
+        hat.style.top = '-25px';
+        hat.style.left = '15px';
+        hat.style.width = '80px';
+        hat.style.height = '40px';
+        hat.style.background = 'linear-gradient(145deg, #8B4513, #654321)';
+        hat.style.borderRadius = '50% 50% 10% 10%';
+        hat.style.border = '2px solid #333';
+        hat.style.zIndex = '5';
+        hat.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+        bearHead.appendChild(hat);
+    }
+
+    if (mascotCustomization.accessories.cap) {
+        const cap = document.createElement('div');
+        cap.id = `${prefix}AccessoryCap`;
+        cap.style.position = 'absolute';
+        cap.style.top = '-20px';
+        cap.style.left = '10px';
+        cap.style.width = '90px';
+        cap.style.height = '35px';
+        cap.style.background = 'linear-gradient(145deg, #ff4444, #cc0000)';
+        cap.style.borderRadius = '45px 45px 5px 5px';
+        cap.style.border = '2px solid #333';
+        cap.style.zIndex = '5';
+        cap.innerHTML = `
+            <div style="position: absolute; top: 25px; left: -10px; width: 40px; height: 8px; background: #cc0000; border-radius: 20px; transform: rotate(-10deg);"></div>
+        `;
+        bearHead.appendChild(cap);
+    }
+
+    if (mascotCustomization.accessories.headband) {
+        const headband = document.createElement('div');
+        headband.id = `${prefix}AccessoryHeadband`;
+        headband.style.position = 'absolute';
+        headband.style.top = '10px';
+        headband.style.left = '10px';
+        headband.style.width = '90px';
+        headband.style.height = '12px';
+        headband.style.background = 'linear-gradient(45deg, #ff69b4, #ff1493)';
+        headband.style.borderRadius = '10px';
+        headband.style.border = '1px solid #333';
+        headband.style.zIndex = '8';
+        headband.innerHTML = `
+            <div style="position: absolute; top: -8px; left: 35px; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 15px solid #ff69b4;"></div>
+        `;
+        bearHead.appendChild(headband);
+    }
+
+    if (mascotCustomization.accessories.earrings) {
+        const leftEarring = document.createElement('div');
+        leftEarring.id = `${prefix}AccessoryEarringLeft`;
+        leftEarring.style.position = 'absolute';
+        leftEarring.style.top = '15px';
+        leftEarring.style.left = '0px';
+        leftEarring.style.width = '8px';
+        leftEarring.style.height = '8px';
+        leftEarring.style.background = 'radial-gradient(circle, #ffd700, #ffb700)';
+        leftEarring.style.borderRadius = '50%';
+        leftEarring.style.border = '1px solid #333';
+        leftEarring.style.zIndex = '10';
+        leftEarring.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+
+        const rightEarring = leftEarring.cloneNode(true);
+        rightEarring.id = `${prefix}AccessoryEarringRight`;
+        rightEarring.style.left = '102px';
+
+        bearHead.appendChild(leftEarring);
+        bearHead.appendChild(rightEarring);
+    }
+
+    if (mascotCustomization.accessories.bowtie && bearBody) {
+        const bowtie = document.createElement('div');
+        bowtie.id = `${prefix}AccessoryBowtie`;
+        bowtie.style.position = 'absolute';
+        bowtie.style.top = '10px';
+        bowtie.style.left = '45px';
+        bowtie.style.width = '30px';
+        bowtie.style.height = '15px';
+        bowtie.style.background = 'linear-gradient(45deg, #ff0000, #cc0000)';
+        bowtie.style.borderRadius = '50% 50% 50% 50% / 60% 60% 40% 40%';
+        bowtie.style.border = '2px solid #333';
+        bowtie.style.zIndex = '10';
+        bowtie.innerHTML = `
+            <div style="position: absolute; top: 3px; left: 12px; width: 6px; height: 9px; background: #990000; border-radius: 2px;"></div>
+        `;
+        bearBody.appendChild(bowtie);
+    }
+
+    if (mascotCustomization.accessories.chain && bearBody) {
+        const chain = document.createElement('div');
+        chain.id = `${prefix}AccessoryChain`;
+        chain.style.position = 'absolute';
+        chain.style.top = '20px';
+        chain.style.left = '20px';
+        chain.style.width = '80px';
+        chain.style.height = '4px';
+        chain.style.background = 'linear-gradient(90deg, #ffd700, #ffb700, #ffd700)';
+        chain.style.borderRadius = '2px';
+        chain.style.border = '1px solid #333';
+        chain.style.zIndex = '10';
+        chain.innerHTML = `
+            <div style="position: absolute; top: -6px; left: 35px; width: 10px; height: 10px; background: #ffd700; border-radius: 50%; border: 1px solid #333;"></div>
+        `;
+        bearBody.appendChild(chain);
+    }
+
+    if (mascotCustomization.accessories.scarf && bearBody) {
+        const scarf = document.createElement('div');
+        scarf.id = `${prefix}AccessoryScarf`;
+        scarf.style.position = 'absolute';
+        scarf.style.top = '5px';
+        scarf.style.left = '10px';
+        scarf.style.width = '100px';
+        scarf.style.height = '20px';
+        scarf.style.background = 'repeating-linear-gradient(45deg, #ff6b6b, #ff6b6b 10px, #4ecdc4 10px, #4ecdc4 20px)';
+        scarf.style.borderRadius = '10px';
+        scarf.style.border = '1px solid #333';
+        scarf.style.zIndex = '9';
+        scarf.style.transform = 'rotate(-5deg)';
+        bearBody.appendChild(scarf);
+    }
+}
+
+function saveMascotCustomization() {
+    if (gameState.currentScreen !== 'mascotCustomization') {
+        return;
+    }
+
+    gameState.user.mascotCustomization = { ...mascotCustomization };
+    saveUserProgress();
+    showHome();
+    updateMascotMessage('Tu mascota ha sido personalizada y se ve increible');
+}
+
+// Funciones de perfil y configuraciones
 function updateProfileData() {
     if (!gameState.user) return;
 
@@ -2190,510 +1830,6 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-// Funciones de personalización de mascota
-function loadMascotCustomization() {
-    // SOLO cargar si estamos en la pantalla de personalización
-    if (gameState.currentScreen !== 'mascotCustomization') {
-        return;
-    }
-
-    if (gameState.user && gameState.user.mascotCustomization) {
-        Object.assign(mascotCustomization, gameState.user.mascotCustomization);
-    }
-
-    // Cargar fondo si existe
-    if (mascotCustomization.background && mascotCustomization.background !== 'none') {
-        const backgroundMap = {
-            'forest': 'linear-gradient(135deg, #2d5016 0%, #3e7b20 100%)',
-            'ocean': 'linear-gradient(135deg, #006994 0%, #0077be 100%)',
-            'desert': 'linear-gradient(135deg, #daa520 0%, #f4a460 100%)',
-            'mountain': 'linear-gradient(135deg, #708090 0%, #a9a9a9 100%)',
-            'space': 'linear-gradient(135deg, #191970 0%, #4b0082 100%)',
-            'sunset': 'linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%)',
-            'winter': 'linear-gradient(135deg, #b0e0e6 0%, #ffffff 100%)'
-        };
-
-        const previewSection = document.querySelector('.mascot-preview-section');
-        if (previewSection && backgroundMap[mascotCustomization.background]) {
-            previewSection.style.background = backgroundMap[mascotCustomization.background];
-        }
-    }
-
-    applyMascotCustomization('preview');
-
-    // Marcar las opciones seleccionadas en la UI
-    setTimeout(() => {
-        // Marcar color seleccionado
-        document.querySelectorAll('.option-card').forEach(card => {
-            const colorAttr = card.getAttribute('data-color');
-            if (colorAttr === mascotCustomization.bodyColor) {
-                card.classList.add('selected');
-            }
-        });
-
-        // Marcar accesorios activos
-        Object.keys(mascotCustomization.accessories).forEach(accessory => {
-            if (mascotCustomization.accessories[accessory]) {
-                const accessoryCard = document.querySelector(`[onclick="toggleAccessory('${accessory}')"]`);
-                if (accessoryCard) {
-                    accessoryCard.classList.add('selected');
-                }
-            }
-        });
-
-        // Marcar fondo seleccionado
-        if (mascotCustomization.background) {
-            const backgroundCard = document.querySelector(`[onclick="changeBackground('${mascotCustomization.background}')"]`);
-            if (backgroundCard) {
-                backgroundCard.classList.add('selected');
-            }
-        }
-    }, 100);
-}
-
-// Las funciones de personalización móvil ya manejan todo
-
-function applyMascotCustomization(target = 'main') {
-    // SOLO aplicar personalización en la pantalla de personalización
-    if (gameState.currentScreen !== 'mascotCustomization') {
-        return;
-    }
-
-    // SOLO trabajar con elementos preview
-    const prefixes = ['preview'];
-
-    prefixes.forEach(prefix => {
-        // Aplicar color del cuerpo
-        const head = document.getElementById(`${prefix}BearHead`);
-        const body = document.getElementById(`${prefix}BearBody`);
-        const ears = document.querySelectorAll(`#${prefix}BearEarLeft, #${prefix}BearEarRight`);
-
-        if (head) {
-            head.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 20)} 50%, ${darkenColor(mascotCustomization.bodyColor, 40)} 100%)`;
-        }
-        if (body) {
-            body.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 20)} 50%, ${darkenColor(mascotCustomization.bodyColor, 40)} 100%)`;
-        }
-        ears.forEach(ear => {
-            if (ear) ear.style.background = `linear-gradient(145deg, ${mascotCustomization.bodyColor} 0%, ${darkenColor(mascotCustomization.bodyColor, 30)} 70%)`;
-        });
-
-        // Aplicar estilo de ojos más avanzado
-        const eyes = document.querySelectorAll(`#${prefix}BearEyeLeft, #${prefix}BearEyeRight`);
-        eyes.forEach((eye, index) => {
-            if (!eye) return;
-
-            // Resetear estilos
-            eye.style.transform = 'scale(1)';
-            eye.style.height = '28px';
-            eye.style.width = '28px';
-            eye.style.borderRadius = '50%';
-            eye.innerHTML = '';
-
-            const pupil = eye.querySelector('.pupil') || document.createElement('div');
-            pupil.className = 'pupil';
-
-            switch (mascotCustomization.eyeStyle) {
-                case 'large':
-                    eye.style.transform = 'scale(1.4)';
-                    pupil.style.background = `radial-gradient(circle at 30% 30%, ${mascotCustomization.eyeColor} 0%, #000 100%)`;
-                    break;
-                case 'sleepy':
-                    eye.style.height = '12px';
-                    eye.style.borderRadius = '50% 50% 50% 50% / 60% 60% 40% 40%';
-                    pupil.style.background = `${mascotCustomization.eyeColor}`;
-                    break;
-                case 'happy':
-                    eye.style.borderRadius = '50% 50% 50% 50% / 100% 100% 0% 0%';
-                    eye.style.height = '20px';
-                    pupil.style.background = `radial-gradient(circle at 30% 30%, ${mascotCustomization.eyeColor} 0%, #000 100%)`;
-                    break;
-                case 'star':
-                    eye.innerHTML = `<div style="color: ${mascotCustomization.eyeColor}; font-size: 20px;">⭐</div>`;
-                    eye.style.display = 'flex';
-                    eye.style.alignItems = 'center';
-                    eye.style.justifyContent = 'center';
-                    eye.style.background = 'radial-gradient(circle, #ffffff 0%, #f0f0f0 100%)';
-                    break;
-                case 'rainbow':
-                    eye.style.background = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)';
-                    pupil.style.background = '#fff';
-                    pupil.style.boxShadow = '0 0 10px #00d4ff';
-                    break;
-                case 'heart':
-                    eye.innerHTML = `<div style="color: ${mascotCustomization.eyeColor}; font-size: 18px;">💖</div>`;
-                    eye.style.display = 'flex';
-                    eye.style.alignItems = 'center';
-                    eye.style.justifyContent = 'center';
-                    eye.style.background = 'radial-gradient(circle, #ffffff 0%, #ffe0e6 100%)';
-                    break;
-                case 'cool':
-                    eye.style.background = 'linear-gradient(45deg, #1e3c72, #2a5298)';
-                    pupil.style.background = '#00d4ff';
-                    pupil.style.boxShadow = '0 0 10px #00d4ff';
-                    break;
-                default:
-                    pupil.style.background = `radial-gradient(circle at 30% 30%, ${mascotCustomization.eyeColor} 0%, #000 100%)`;
-            }
-
-            if (!eye.querySelector('.pupil') && ['star', 'rainbow', 'heart', 'cool'].includes(mascotCustomization.eyeStyle)) {
-                // Para estos estilos especiales no necesitamos pupila tradicional
-            } else if (!eye.innerHTML.includes('div') || mascotCustomization.eyeStyle === 'normal') {
-                eye.innerHTML = '';
-                eye.appendChild(pupil);
-            }
-        });
-
-        // Aplicar estilo de nariz
-        const nose = document.getElementById(`${prefix}BearNose`);
-        if (nose) {
-            switch (mascotCustomization.noseStyle) {
-                case 'small':
-                    nose.style.width = '12px';
-                    nose.style.height = '10px';
-                    nose.style.background = `linear-gradient(145deg, ${mascotCustomization.noseColor} 0%, #000 100%)`;
-                    break;
-                case 'big':
-                    nose.style.width = '24px';
-                    nose.style.height = '20px';
-                    nose.style.background = `linear-gradient(145deg, ${mascotCustomization.noseColor} 0%, #000 100%)`;
-                    break;
-                case 'button':
-                    nose.style.borderRadius = '50%';
-                    nose.style.width = '16px';
-                    nose.style.height = '16px';
-                    nose.style.background = `radial-gradient(circle, ${mascotCustomization.noseColor} 0%, #000 70%)`;
-                    break;
-                case 'heart':
-                    nose.innerHTML = '<div style="color: #ff69b4; font-size: 14px;">💗</div>';
-                    nose.style.display = 'flex';
-                    nose.style.alignItems = 'center';
-                    nose.style.justifyContent = 'center';
-                    nose.style.background = 'transparent';
-                    break;
-                default:
-                    nose.style.width = '18px';
-                    nose.style.height = '15px';
-                    nose.style.borderRadius = '50% 50% 40% 40%';
-                    nose.style.background = `linear-gradient(145deg, ${mascotCustomization.noseColor} 0%, #000 100%)`;
-                    nose.innerHTML = '';
-            }
-        }
-
-        // Aplicar estilo de boca avanzado
-        const mouth = document.getElementById(`${prefix}BearMouth`);
-        if (mouth) {
-            mouth.style.border = '4px solid #2c2c2c';
-            mouth.style.borderTop = 'none';
-
-            switch (mascotCustomization.mouthStyle) {
-                case 'surprised':
-                    mouth.style.borderRadius = '50%';
-                    mouth.style.width = '18px';
-                    mouth.style.height = '25px';
-                    mouth.style.border = '4px solid #2c2c2c';
-                    break;
-                case 'neutral':
-                    mouth.style.borderRadius = '0';
-                    mouth.style.width = '25px';
-                    mouth.style.height = '3px';
-                    mouth.style.border = '3px solid #2c2c2c';
-                    mouth.style.borderTop = 'none';
-                    break;
-                case 'playful':
-                    mouth.style.borderRadius = '0 50px 50px 0';
-                    mouth.style.width = '22px';
-                    mouth.style.height = '12px';
-                    break;
-                case 'laugh':
-                    mouth.style.borderRadius = '0 0 50px 50px';
-                    mouth.style.width = '40px';
-                    mouth.style.height = '20px';
-                    mouth.style.border = '4px solid #2c2c2c';
-                    mouth.style.borderTop = 'none';
-                    break;
-                case 'cute':
-                    mouth.innerHTML = '<div style="color: #ff69b4; font-size: 16px; margin-top: -8px;">💋</div>';
-                    mouth.style.border = 'none';
-                    mouth.style.display = 'flex';
-                    mouth.style.alignItems = 'center';
-                    mouth.style.justifyContent = 'center';
-                    break;
-                default: // happy
-                    mouth.style.borderRadius = '0 0 35px 35px';
-                    mouth.style.width = '35px';
-                    mouth.style.height = '18px';
-                    mouth.style.border = '4px solid #2c2c2c';
-                    mouth.style.borderTop = 'none';
-                    mouth.innerHTML = '';
-            }
-        }
-
-        // Aplicar accesorios
-        applyAccessories(prefix);
-
-        // Aplicar patrones
-        applyPatterns(prefix);
-    });
-}
-
-function darkenColor(color, percent) {
-    const num = parseInt(color.replace("#",""), 16),
-          amt = Math.round(2.55 * percent),
-          R = (num >> 16) - amt,
-          G = (num >> 8 & 0x00FF) - amt,
-          B = (num & 0x0000FF) - amt;
-    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-                  (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-                  (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
-}
-
-function applyAccessories(prefix) {
-    // Limpiar accesorios existentes
-    const existingAccessories = document.querySelectorAll(`[id*="${prefix}Accessory"]`);
-    existingAccessories.forEach(acc => acc.remove());
-
-    const bearHead = document.getElementById(`${prefix}BearHead`) || 
-                     document.querySelector(`#bear${prefix} .bear-head`);
-    const bearBody = document.getElementById(`${prefix}BearBody`) || 
-                     document.querySelector(`#bear${prefix} .bear-body`);
-
-    if (!bearHead) return;
-
-    // Lentes
-    if (mascotCustomization.accessories.glasses) {
-        const glasses = document.createElement('div');
-        glasses.id = `${prefix}AccessoryGlasses`;
-        glasses.style.position = 'absolute';
-        glasses.style.top = '35px';
-        glasses.style.left = '25px';
-        glasses.style.width = '70px';
-        glasses.style.height = '25px';
-        glasses.style.border = '3px solid #333';
-        glasses.style.borderRadius = '50%';
-        glasses.style.background = 'rgba(0,100,200,0.3)';
-        glasses.style.zIndex = '10';
-        glasses.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
-
-        // Agregar puente de lentes
-        glasses.innerHTML = `
-            <div style="position: absolute; top: 8px; left: 32px; width: 6px; height: 3px; background: #333; border-radius: 2px;"></div>
-            <div style="position: absolute; top: -3px; left: 45px; width: 20px; height: 20px; border: 3px solid #333; border-radius: 50%; background: rgba(0,100,200,0.3);"></div>
-        `;
-        bearHead.appendChild(glasses);
-    }
-
-    // Sombrero
-    if (mascotCustomization.accessories.hat) {
-        const hat = document.createElement('div');
-        hat.id = `${prefix}AccessoryHat`;
-        hat.style.position = 'absolute';
-        hat.style.top = '-25px';
-        hat.style.left = '15px';
-        hat.style.width = '80px';
-        hat.style.height = '40px';
-        hat.style.background = 'linear-gradient(145deg, #8B4513, #654321)';
-        hat.style.borderRadius = '50% 50% 10% 10%';
-        hat.style.border = '2px solid #333';
-        hat.style.zIndex = '5';
-        hat.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-        bearHead.appendChild(hat);
-    }
-
-    // Gorra
-    if (mascotCustomization.accessories.cap) {
-        const cap = document.createElement('div');
-        cap.id = `${prefix}AccessoryCap`;
-        cap.style.position = 'absolute';
-        cap.style.top = '-20px';
-        cap.style.left = '10px';
-        cap.style.width = '90px';
-        cap.style.height = '35px';
-        cap.style.background = 'linear-gradient(145deg, #ff4444, #cc0000)';
-        cap.style.borderRadius = '45px 45px 5px 5px';
-        cap.style.border = '2px solid #333';
-        cap.style.zIndex = '5';
-        cap.innerHTML = `
-            <div style="position: absolute; top: 25px; left: -10px; width: 40px; height: 8px; background: #cc0000; border-radius: 20px; transform: rotate(-10deg);"></div>
-        `;
-        bearHead.appendChild(cap);
-    }
-
-    // Diadema
-    if (mascotCustomization.accessories.headband) {
-        const headband = document.createElement('div');
-        ```tool_code
-headband.id = `${prefix}AccessoryHeadband`;
-        headband.style.position = 'absolute';
-        headband.style.top = '10px';
-        headband.style.left = '10px';
-        headband.style.width = '90px';
-        headband.style.height = '12px';
-        headband.style.background = 'linear-gradient(45deg, #ff69b4, #ff1493)';
-        headband.style.borderRadius = '10px';
-        headband.style.border = '1px solid #333';
-        headband.style.zIndex = '8';
-        headband.innerHTML = `
-            <div style="position: absolute; top: -8px; left: 35px; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 15px solid #ff69b4;"></div>
-        `;
-        bearHead.appendChild(headband);
-    }
-
-    // Aretes
-    if (mascotCustomization.accessories.earrings) {
-        const leftEarring = document.createElement('div');
-        leftEarring.id = `${prefix}AccessoryEarringLeft`;
-        leftEarring.style.position = 'absolute';
-        leftEarring.style.top = '15px';
-        leftEarring.style.left = '0px';
-        leftEarring.style.width = '8px';
-        leftEarring.style.height = '8px';
-        leftEarring.style.background = 'radial-gradient(circle, #ffd700, #ffb700)';
-        leftEarring.style.borderRadius = '50%';
-        leftEarring.style.border = '1px solid #333';
-        leftEarring.style.zIndex = '10';
-        leftEarring.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-
-        const rightEarring = leftEarring.cloneNode(true);
-        rightEarring.id = `${prefix}AccessoryEarringRight`;
-        rightEarring.style.left = '102px';
-
-        bearHead.appendChild(leftEarring);
-        bearHead.appendChild(rightEarring);
-    }
-
-    // Corbatín
-    if (mascotCustomization.accessories.bowtie && bearBody) {
-        const bowtie = document.createElement('div');
-        bowtie.id = `${prefix}AccessoryBowtie`;
-        bowtie.style.position = 'absolute';
-        bowtie.style.top = '10px';
-        bowtie.style.left = '45px';
-        bowtie.style.width = '30px';
-        bowtie.style.height = '15px';
-        bowtie.style.background = 'linear-gradient(45deg, #ff0000, #cc0000)';
-        bowtie.style.borderRadius = '50% 50% 50% 50% / 60% 60% 40% 40%';
-        bowtie.style.border = '2px solid #333';
-        bowtie.style.zIndex = '10';
-        bowtie.innerHTML = `
-            <div style="position: absolute; top: 3px; left: 12px; width: 6px; height: 9px; background: #990000; border-radius: 2px;"></div>
-        `;
-        bearBody.appendChild(bowtie);
-    }
-
-    // Cadena
-    if (mascotCustomization.accessories.chain && bearBody) {
-        const chain = document.createElement('div');
-        chain.id = `${prefix}AccessoryChain`;
-        chain.style.position = 'absolute';
-        chain.style.top = '20px';
-        chain.style.left = '20px';
-        chain.style.width = '80px';
-        chain.style.height = '4px';
-        chain.style.background = 'linear-gradient(90deg, #ffd700, #ffb700, #ffd700)';
-        chain.style.borderRadius = '2px';
-        chain.style.border = '1px solid #333';
-        chain.style.zIndex = '10';
-        chain.innerHTML = `
-            <div style="position: absolute; top: -6px; left: 35px; width: 10px; height: 10px; background: #ffd700; border-radius: 50%; border: 1px solid #333;"></div>
-        `;
-        bearBody.appendChild(chain);
-    }
-
-    // Bufanda
-    if (mascotCustomization.accessories.scarf && bearBody) {
-        const scarf = document.createElement('div');
-        scarf.id = `${prefix}AccessoryScarf`;
-        scarf.style.position = 'absolute';
-        scarf.style.top = '5px';
-        scarf.style.left = '10px';
-        scarf.style.width = '100px';
-        scarf.style.height = '20px';
-        scarf.style.background = 'repeating-linear-gradient(45deg, #ff6b6b, #ff6b6b 10px, #4ecdc4 10px, #4ecdc4 20px)';
-        scarf.style.borderRadius = '10px';
-        scarf.style.border = '1px solid #333';
-        scarf.style.zIndex = '9';
-        scarf.style.transform = 'rotate(-5deg)';
-        bearBody.appendChild(scarf);
-    }
-}
-
-function applyPatterns(prefix) {
-    const bearHead = document.getElementById(`${prefix}BearHead`) || 
-                     document.querySelector(`#bear${prefix} .bear-head`);
-    const bearBody = document.getElementById(`${prefix}BearBody`) || 
-                     document.querySelector(`#bear${prefix} .bear-body`);
-
-    if (!bearHead || !bearBody) return;
-
-    // Limpiar patrones existentes
-    const existingPatterns = document.querySelectorAll(`[id*="${prefix}Pattern"]`);
-    existingPatterns.forEach(pattern => pattern.remove());
-
-    // Manchas
-    if (mascotCustomization.patterns.spots) {
-        [bearHead, bearBody].forEach((part, index) => {
-            const spots = document.createElement('div');
-            spots.id = `${prefix}PatternSpots${index}`;
-            spots.style.position = 'absolute';
-            spots.style.top = '0';
-            spots.style.left = '0';
-            spots.style.width = '100%';
-            spots.style.height = '100%';
-            spots.style.borderRadius = part === bearHead ? '50%' : '60px 60px 35px 35px';
-            spots.style.background = `
-                radial-gradient(circle at 30% 30%, ${darkenColor(mascotCustomization.bodyColor, 30)} 8px, transparent 8px),
-                radial-gradient(circle at 70% 60%, ${darkenColor(mascotCustomization.bodyColor, 30)} 6px, transparent 6px),
-                radial-gradient(circle at 50% 80%, ${darkenColor(mascotCustomization.bodyColor, 30)} 7px, transparent 7px)
-            `;
-            spots.style.zIndex = '2';
-            part.appendChild(spots);
-        });
-    }
-
-    // Rayas
-    if (mascotCustomization.patterns.stripes) {
-        [bearHead, bearBody].forEach((part, index) => {
-            const stripes = document.createElement('div');
-            stripes.id = `${prefix}PatternStripes${index}`;
-            stripes.style.position = 'absolute';
-            stripes.style.top = '0';
-            stripes.style.left = '0';
-            stripes.style.width = '100%';
-            stripes.style.height = '100%';
-            stripes.style.borderRadius = part === bearHead ? '50%' : '60px 60px 35px 35px';
-            stripes.style.background = `repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                ${darkenColor(mascotCustomization.bodyColor, 25)} 10px,
-                ${darkenColor(mascotCustomization.bodyColor, 25)} 15px
-            )`;
-            stripes.style.zIndex = '2';
-            part.appendChild(stripes);
-        });
-    }
-}
-
-function saveMascotCustomization() {
-    // Solo guardar si estamos en la pantalla de personalización
-    if (gameState.currentScreen !== 'mascotCustomization') {
-        console.log('Intento de guardar personalización fuera de pantalla correcta');
-        return;
-    }
-
-    gameState.user.mascotCustomization = { ...mascotCustomization };
-    saveUserProgress();
-    showProfile();
-    updateMascotMessage('Tu mascota ha sido personalizada y se ve increible');
-}
-
-function updateMascotDisplay() {
-    // Función eliminada completamente para evitar interferencias
-    return;
-}
-
-// Funciones de configuraciones
 function loadSettings() {
     if (gameState.user && gameState.user.settings) {
         Object.assign(appSettings, gameState.user.settings);
@@ -2715,8 +1851,6 @@ function changeLanguage() {
     const language = document.getElementById('languageSelect').value;
     appSettings.language = language;
     saveSettings();
-
-    // Aquí implementarías la lógica de cambio de idioma
     updateMascotMessage(language === 'es' ? '¡Idioma cambiado a español!' : 'Language changed to ' + language + '!');
 }
 
@@ -2826,3 +1960,137 @@ async function deleteAccount() {
         }
     }
 }
+
+// Utilidades
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function updateMascotMessage(message, targetElement = 'mascotSpeech') {
+    const speechElement = document.getElementById(targetElement);
+    if (speechElement) {
+        speechElement.textContent = message;
+    }
+
+    const speechElements = ['mascotSpeech', 'mascotSpeechLessons', 'mascotSpeechGame'];
+    speechElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element && id !== targetElement) {
+            element.textContent = message;
+        }
+    });
+
+    playMascotAnimation();
+}
+
+function playMascotAnimation() {
+    const bears = ['bearHome', 'bearLessons', 'bearGame', 'previewBear'];
+
+    bears.forEach(bearId => {
+        const bear = document.getElementById(bearId);
+        if (bear && isElementVisible(bear)) {
+            bear.classList.add('speaking');
+            setTimeout(() => {
+                bear.classList.remove('speaking');
+            }, 800);
+        }
+    });
+}
+
+function isElementVisible(element) {
+    if (!element) return false;
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0 && 
+           window.getComputedStyle(element).display !== 'none' &&
+           window.getComputedStyle(element).visibility !== 'hidden';
+}
+
+function updateUserStats() {
+    document.getElementById('streak').textContent = gameState.user.streak;
+    document.getElementById('gems').textContent = gameState.user.gems;
+    document.getElementById('lives').textContent = gameState.user.lives;
+
+    const userNameElement = document.getElementById('userName');
+    if (userNameElement && gameState.user.name) {
+        userNameElement.textContent = gameState.user.name;
+    }
+}
+
+async function saveUserProgress() {
+    if (gameState.isAuthenticated && gameState.currentUser) {
+        try {
+            const updateData = {
+                name: gameState.user.name,
+                email: gameState.user.email,
+                age: gameState.user.age,
+                level: gameState.user.level,
+                streak: gameState.user.streak,
+                gems: gameState.user.gems,
+                lives: gameState.user.lives,
+                totalCorrect: gameState.user.totalCorrect,
+                totalQuestions: gameState.user.totalQuestions,
+                weakAreas: gameState.user.weakAreas,
+                strengths: gameState.user.strengths,
+                lastPlayed: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            if (gameState.user.mascotCustomization) {
+                updateData.mascotCustomization = gameState.user.mascotCustomization;
+            }
+
+            if (gameState.user.settings) {
+                updateData.settings = gameState.user.settings;
+            }
+
+            await database.ref('users/' + gameState.currentUser.uid).update(updateData);
+        } catch (error) {
+            console.error('Error guardando progreso:', error);
+        }
+    }
+}
+
+setInterval(saveUserProgress, 30000);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedProgress = localStorage.getItem('lessonsProgress');
+    if (savedProgress) {
+        try {
+            const progressData = JSON.parse(savedProgress);
+            progressData.forEach(saved => {
+                const lesson = lessons.find(l => l.id === saved.id);
+                if (lesson) {
+                    lesson.progress = saved.progress;
+                }
+            });
+        } catch (e) {
+            console.log('Error cargando progreso de lecciones:', e);
+        }
+    }
+
+    if (gameState.isAuthenticated && gameState.currentUser) {
+        showHome();
+    } else {
+        showAuthScreen();
+    }
+    updateUserStats();
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('calculatorModal');
+        if (event.target === modal) {
+            closeCalculator();
+        }
+    };
+
+    setInterval(() => {
+        if (gameState.user.lives < 5) {
+            gameState.user.lives++;
+            updateUserStats();
+            updateMascotMessage('¡Recuperaste una vida! ❤️');
+        }
+    }, 3600000);
+});
