@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,8 +13,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 </head>
 <body>
-    
-
     <!-- Pantalla de Autenticación -->
     <div id="authScreen" class="screen">
         <div class="auth-container">
@@ -91,37 +90,40 @@
         </div>
     </div>
 
-    <!-- Pantalla de inicio -->
+    <!-- Pantalla Principal - Estilo Duolingo -->
     <div id="homeScreen" class="screen">
-        <div class="header">
-            <div class="logo">
-                <i class="fas fa-calculator"></i>
-                <h1>BeMaa</h1>
-            </div>
-            <div class="user-info">
-                <span id="userName">Usuario</span>
-                <button class="logout-btn" onclick="logoutUser()">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-            <div class="user-stats">
-                <div class="stat">
+        <!-- Barra Superior -->
+        <div class="duolingo-header">
+            <div class="header-left">
+                <div class="streak-counter">
                     <i class="fas fa-fire"></i>
                     <span id="streak">0</span>
                 </div>
-                <div class="stat">
+            </div>
+            <div class="header-center">
+                <div class="progress-section">
+                    <div class="user-level">Nivel <span id="userLevel">1</span></div>
+                    <div class="progress-bar-header">
+                        <div class="progress-fill-header" style="width: 30%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="gems-counter">
                     <i class="fas fa-gem"></i>
                     <span id="gems">100</span>
                 </div>
-                <div class="stat">
+                <div class="lives-counter">
                     <i class="fas fa-heart"></i>
                     <span id="lives">5</span>
                 </div>
             </div>
         </div>
 
-        <div class="mascot-container">
-            <div class="mascot" id="mascot">
+        <!-- Contenido Principal -->
+        <div class="duolingo-content">
+            <!-- Mascota y Mensaje -->
+            <div class="mascot-section">
                 <div class="mascot-3d mascot-3d-inline" id="mascot3dHome">
                     <div class="bear-3d" id="bearHome">
                         <div class="bear-head">
@@ -153,62 +155,37 @@
                 </div>
                 <div class="mascot-speech" id="mascotSpeech">¡Hola! Soy BeMaa, ¿listo para una aventura matemática?</div>
             </div>
-        </div>
 
-        <div class="main-content">
-            <button class="start-btn" onclick="showLessons()">
-                <i class="fas fa-play"></i>
-                Comenzar
-            </button>
-
-            <div class="quick-actions">
-                <button class="action-btn" onclick="showProfile()">
-                    <i class="fas fa-user"></i>
-                    Perfil
-                </button>
-                <button class="action-btn" onclick="showShop()">
-                    <i class="fas fa-store"></i>
-                    Tienda
-                </button>
-                <button class="action-btn" onclick="showStats()">
-                    <i class="fas fa-chart-bar"></i>
-                    Estadísticas
-                </button>
+            <!-- Lecciones Integradas -->
+            <div class="lessons-path">
+                <h2 class="section-title">Tu camino de aprendizaje</h2>
+                <div class="lessons-grid" id="lessonsGrid">
+                    <!-- Lecciones generadas dinámicamente -->
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Pantalla de lecciones -->
-    <div id="lessonsScreen" class="screen">
-        <div class="header">
-            <button class="back-btn" onclick="showHome()">
-                <i class="fas fa-arrow-left"></i>
+        <!-- Barra de Navegación Inferior -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="showHome()">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
             </button>
-            <h2>Selecciona un tema</h2>
-        </div>
-
-        <div class="lessons-intro">
-            <h2>Selecciona una lección para comenzar</h2>
-            <p>Elige el tema que quieres practicar y mejora tus habilidades matemáticas</p>
-        </div>
-
-        <div class="lessons-grid" id="lessonsGrid">
-            <!-- Lecciones generadas dinámicamente -->
-        </div>
-
-        <div class="game-modes">
-            <h3>Modos de juego</h3>
-            <button class="mode-btn" onclick="startMode('normal')">
-                <i class="fas fa-graduation-cap"></i>
-                Modo Normal
+            <button class="nav-item" onclick="showLeaderboard()">
+                <i class="fas fa-trophy"></i>
+                <span>Ranking</span>
             </button>
-            <button class="mode-btn" onclick="startMode('challenge')">
-                <i class="fas fa-stopwatch"></i>
-                Modo Desafío
+            <button class="nav-item" onclick="showShop()">
+                <i class="fas fa-store"></i>
+                <span>Tienda</span>
             </button>
-            <button class="mode-btn" onclick="startMode('survival')">
-                <i class="fas fa-heart-broken"></i>
-                Modo Supervivencia
+            <button class="nav-item" onclick="showProfile()">
+                <i class="fas fa-user"></i>
+                <span>Perfil</span>
+            </button>
+            <button class="nav-item" onclick="showSettings()">
+                <i class="fas fa-cog"></i>
+                <span>Ajustes</span>
             </button>
         </div>
     </div>
@@ -216,8 +193,8 @@
     <!-- Pantalla de juego -->
     <div id="gameScreen" class="screen">
         <div class="game-header">
-            <button class="back-btn" onclick="showLessons()">
-                <i class="fas fa-arrow-left"></i>
+            <button class="back-btn" onclick="showHome()">
+                <i class="fas fa-times"></i>
             </button>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -349,7 +326,7 @@
             </div>
 
             <div class="result-actions">
-                <button class="action-btn" onclick="showLessons()">
+                <button class="action-btn" onclick="startGame()">
                     <i class="fas fa-repeat"></i>
                     Repetir
                 </button>
@@ -467,6 +444,30 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Barra de Navegación Inferior -->
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="showHome()">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </button>
+            <button class="nav-item" onclick="showLeaderboard()">
+                <i class="fas fa-trophy"></i>
+                <span>Ranking</span>
+            </button>
+            <button class="nav-item" onclick="showShop()">
+                <i class="fas fa-store"></i>
+                <span>Tienda</span>
+            </button>
+            <button class="nav-item active" onclick="showProfile()">
+                <i class="fas fa-user"></i>
+                <span>Perfil</span>
+            </button>
+            <button class="nav-item" onclick="showSettings()">
+                <i class="fas fa-cog"></i>
+                <span>Ajustes</span>
+            </button>
+        </div>
     </div>
 
     <!-- Pantalla de Personalización de Avatar -->
@@ -476,7 +477,7 @@
             <div class="mascot-preview-section">
                 <div class="background-preview" id="backgroundPreview"></div>
                 <div class="preview-header">
-                    <button class="back-btn" onclick="showHome()">
+                    <button class="back-btn" onclick="showProfile()">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                     <h2 class="preview-title">Personalizar</h2>
@@ -780,7 +781,7 @@
     <!-- Pantalla de Configuraciones -->
     <div id="settingsScreen" class="screen">
         <div class="header">
-            <button class="back-btn" onclick="showProfile()">
+            <button class="back-btn" onclick="showHome()">
                 <i class="fas fa-arrow-left"></i>
             </button>
             <h2>Configuraciones</h2>
@@ -909,6 +910,30 @@
                     </button>
                 </div>
             </div>
+        </div>
+        
+        <!-- Barra de Navegación Inferior -->
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="showHome()">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </button>
+            <button class="nav-item" onclick="showLeaderboard()">
+                <i class="fas fa-trophy"></i>
+                <span>Ranking</span>
+            </button>
+            <button class="nav-item" onclick="showShop()">
+                <i class="fas fa-store"></i>
+                <span>Tienda</span>
+            </button>
+            <button class="nav-item" onclick="showProfile()">
+                <i class="fas fa-user"></i>
+                <span>Perfil</span>
+            </button>
+            <button class="nav-item active" onclick="showSettings()">
+                <i class="fas fa-cog"></i>
+                <span>Ajustes</span>
+            </button>
         </div>
     </div>
 
