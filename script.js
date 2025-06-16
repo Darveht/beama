@@ -123,6 +123,8 @@ const lessons = [
     }
 ];
 
+
+
 // Estado de personalización de mascota
 const mascotCustomization = {
     bodyColor: '#D2691E',
@@ -631,6 +633,12 @@ function showHome() {
         return;
     }
 
+    // Limpiar cualquier estado de personalización activo
+    const customizationScreen = document.getElementById('mascotCustomizationScreen');
+    if (customizationScreen) {
+        customizationScreen.classList.remove('active');
+    }
+
     hideAllScreens();
     document.getElementById('homeScreen').classList.add('active');
     gameState.currentScreen = 'home';
@@ -662,8 +670,18 @@ function showProfile() {
 }
 
 function showMascotCustomization() {
+    // Solo permitir acceso desde el perfil
+    if (gameState.currentScreen !== 'profile') {
+        updateMascotMessage('Para personalizar tu avatar, ve primero a tu perfil.');
+        return;
+    }
+
     hideAllScreens();
-    document.getElementById('mascotCustomizationScreen').classList.add('active');
+    const customizationScreen = document.getElementById('mascotCustomizationScreen');
+    if (customizationScreen) {
+        customizationScreen.classList.add('active');
+        customizationScreen.style.display = 'block';
+    }
     gameState.currentScreen = 'mascotCustomization';
 
     loadMascotCustomization();
@@ -1366,10 +1384,6 @@ function resetCustomization() {
 }
 
 function loadMascotCustomization() {
-    if (gameState.currentScreen !== 'mascotCustomization') {
-        return;
-    }
-
     if (gameState.user && gameState.user.mascotCustomization) {
         Object.assign(mascotCustomization, gameState.user.mascotCustomization);
     }
@@ -1420,10 +1434,6 @@ function loadMascotCustomization() {
 }
 
 function applyMascotCustomization(target = 'main') {
-    if (gameState.currentScreen !== 'mascotCustomization') {
-        return;
-    }
-
     const prefixes = ['preview'];
 
     prefixes.forEach(prefix => {
@@ -1763,13 +1773,12 @@ function applyAccessories(prefix) {
 }
 
 function saveMascotCustomization() {
-    if (gameState.currentScreen !== 'mascotCustomization') {
-        return;
-    }
-
     gameState.user.mascotCustomization = { ...mascotCustomization };
     saveUserProgress();
-    showHome();
+    
+    // Volver al perfil
+    showProfile();
+    
     updateMascotMessage('Tu mascota ha sido personalizada y se ve increible');
 }
 
