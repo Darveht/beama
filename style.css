@@ -517,6 +517,11 @@ body {
     z-index: 2;
     margin: 25px 0;
     animation: bounceIn 0.6s ease-out;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .lesson-node:nth-child(even) {
@@ -652,6 +657,7 @@ body {
     justify-content: center;
     z-index: 2000;
     animation: fadeIn 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .lesson-modal-content {
@@ -2441,118 +2447,235 @@ input:checked + .slider:before {
     .lessons-intro {
         padding: 20px 15px;
         margin-bottom: 20px;
+        border-radius: 15px;
     }
 
     .lessons-intro h2 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+        line-height: 1.3;
     }
 
     .lessons-intro p {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.4;
     }
 
-    /* Ajustes del mapa de lecciones para móvil */
+    /* Mejoras del mapa de lecciones para móvil */
     .lessons-grid {
-        padding: 15px 10px;
-        max-width: 320px;
+        padding: 20px 15px;
+        max-width: 100%;
+        margin: 0 auto;
+        min-height: auto;
     }
-
-    /* Línea verde eliminada en móvil */
 
     .lesson-node {
-        width: 70px;
-        height: 70px;
+        width: 65px;
+        height: 65px;
         border-width: 3px;
-        margin: 20px 0;
+        margin: 15px 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
     }
 
     .lesson-node:nth-child(even) {
-        margin-left: 80px;
+        margin-left: 60px;
+        animation-delay: 0.1s;
     }
 
     .lesson-node:nth-child(odd) {
-        margin-right: 80px;
+        margin-right: 60px;
+        animation-delay: 0.2s;
+    }
+
+    .lesson-node:hover:not(.locked) {
+        transform: scale(1.08);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
     }
 
     .lesson-node.checkpoint {
-        width: 85px;
-        height: 85px;
+        width: 80px;
+        height: 80px;
         border-width: 4px;
+        margin: 20px auto;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
     .lesson-node.boss {
-        width: 100px;
-        height: 100px;
+        width: 90px;
+        height: 90px;
         border-width: 5px;
+        margin: 25px auto;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
     .lesson-icon {
-        font-size: 1.8rem;
-        margin-bottom: 3px;
+        font-size: 1.6rem;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 30px;
+    }
+
+    .lesson-icon img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
     }
 
     .lesson-node.checkpoint .lesson-icon {
-        font-size: 2.2rem;
+        font-size: 2rem;
+        min-height: 35px;
+    }
+
+    .lesson-node.checkpoint .lesson-icon img {
+        width: 35px;
+        height: 35px;
     }
 
     .lesson-node.boss .lesson-icon {
-        font-size: 2.8rem;
+        font-size: 2.4rem;
+        min-height: 40px;
     }
 
-    /* Modal móvil */
+    .lesson-node.boss .lesson-icon img {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Modal mejorado para móvil */
+    .lesson-modal-overlay {
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .lesson-modal-content {
-        width: 95%;
-        margin: 10px;
+        width: calc(100vw - 20px);
+        max-width: 400px;
+        margin: 0;
+        border-radius: 20px;
+        max-height: 85vh;
+        overflow-y: auto;
     }
 
     .lesson-modal-header {
-        padding: 20px 20px 10px;
+        padding: 25px 20px 15px;
+        border-bottom: 1px solid #f0f0f0;
     }
 
     .lesson-modal-header h2 {
+        font-size: 1.4rem;
+        margin: 0;
+        color: #333;
+    }
+
+    .lesson-modal-header .close-btn {
+        width: 35px;
+        height: 35px;
         font-size: 1.5rem;
     }
 
     .lesson-modal-body {
-        padding: 20px;
+        padding: 25px 20px;
     }
 
     .lesson-big-icon {
-        font-size: 4rem;
-        margin-bottom: 15px;
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        min-height: 60px;
+    }
+
+    .lesson-big-icon img {
+        width: 60px;
+        height: 60px;
     }
 
     .lesson-description {
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin-bottom: 20px;
+        line-height: 1.5;
+        color: #666;
+    }
+
+    .lesson-progress {
+        margin-bottom: 25px;
+    }
+
+    .lesson-progress .progress-bar {
+        height: 10px;
+        border-radius: 5px;
+        margin-bottom: 8px;
+    }
+
+    .progress-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #4CAF50;
     }
 
     .lesson-modal-actions {
-        padding: 15px 20px 25px;
+        padding: 20px;
+        background: #fafafa;
+        border-radius: 0 0 20px 20px;
     }
 
     .start-lesson-btn {
-        padding: 15px 30px;
+        padding: 16px 25px;
         font-size: 1.1rem;
+        border-radius: 15px;
+        width: 100%;
+        font-weight: 700;
     }
 
+    /* Íconos de logros mejorados */
     .lesson-node.completed .lesson-icon::after,
     .lesson-node.perfect .lesson-icon::after {
-        font-size: 12px;
-        width: 16px;
-        height: 16px;
-        top: -8px;
-        right: -8px;
-        border-width: 1px;
+        font-size: 10px;
+        width: 18px;
+        height: 18px;
+        top: -9px;
+        right: -9px;
+        border-width: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .lesson-icon {
-        font-size: 3rem;
-        margin-bottom: 15px;
+    /* Modos de juego mejorados para móvil */
+    .game-modes {
+        padding: 20px 15px;
+        margin-top: 15px;
+        border-radius: 15px;
     }
 
-    .lesson-title {
-        font-size: 1.2rem;
+    .game-modes h3 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+    }
+
+    .mode-btn {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 10px auto;
+        padding: 16px 25px;
+        font-size: 1rem;
+        border-radius: 15px;
+        text-align: center;
+    }
+
+    .mode-btn:hover {
+        transform: translateY(-2px);
     }
 
 /* Estilos de modos de juego eliminados */
@@ -3321,3 +3444,4 @@ input:checked + .slider:before {
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
+-
