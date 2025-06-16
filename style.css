@@ -45,6 +45,160 @@ body {
     z-index: 1000;
 }
 
+/* Barra Superior Estilo Duolingo */
+.duolingo-header {
+    background: linear-gradient(135deg, #58cc02 0%, #46a500 100%);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    color: white;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 200px;
+    margin: 0 15px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.streak-counter, .gems-counter, .lives-counter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.streak-counter i {
+    color: #ff6b6b;
+}
+
+.gems-counter i {
+    color: #ffd700;
+}
+
+.lives-counter i {
+    color: #ff69b4;
+}
+
+.user-level {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.progress-bar-header {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill-header {
+    height: 100%;
+    background: white;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Contenido Principal Duolingo */
+.duolingo-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 100px; /* Espacio para la barra inferior */
+}
+
+.mascot-section {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.lessons-path {
+    padding: 20px;
+    background: #f8f9fa;
+    min-height: calc(100vh - 200px);
+}
+
+/* Barra de Navegación Inferior */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 5px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #95a5a6;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 8px;
+    min-width: 60px;
+}
+
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+.nav-item.active {
+    color: #58cc02;
+    background: rgba(88, 204, 2, 0.1);
+}
+
+.nav-item:hover:not(.active) {
+    color: #7f8c8d;
+    background: rgba(0, 0, 0, 0.05);
+}
+
 .header h1, .header h2 {
     font-size: 24px;
     font-weight: 700;
