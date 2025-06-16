@@ -161,11 +161,30 @@ const appSettings = {
 
 // Efectos de sonido
 const soundEffects = {
-    correct: new Audio('https://www.dropbox.com/scl/fi/l01oa0fzcw8bfcksfcjsy/ElevenLabs_2025-06-16T06_55_25_Sound-Effect.mp3?rlkey=yk4sp07wpvhqn48ndmqer6u01&st=ncyq9jp8&dl=1'),
-    incorrect: new Audio('https://www.dropbox.com/scl/fi/696bzht5p7v7v4ucs3gdg/ElevenLabs_2025-06-16T06_57_50_Sound-Effect.mp3?rlkey=kbu35al77j5js5s4fjuzaa66s&st=v68q0h16&dl=1'),
-    lessonComplete: new Audio('https://www.dropbox.com/scl/fi/y8fm2nyoukg2qapvqahs9/ElevenLabs_2025-06-16T06_59_53_Sound-Effect.mp3?rlkey=0hsh1tblg6larmab82jjekk5j&st=v0t5zxn6&dl=1'),
+    correct: null,
+    incorrect: null,
+    lessonComplete: null,
     click: new Audio('data:audio/wav;base64,UklGRs4BAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YaoBAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA')
 };
+
+// Cargar sonidos personalizados
+function loadCustomSounds() {
+    try {
+        soundEffects.correct = new Audio('https://dl.dropboxusercontent.com/scl/fi/l01oa0fzcw8bfcksfcjsy/ElevenLabs_2025-06-16T06_55_25_Sound-Effect.mp3?rlkey=yk4sp07wpvhqn48ndmqer6u01');
+        soundEffects.incorrect = new Audio('https://dl.dropboxusercontent.com/scl/fi/696bzht5p7v7v4ucs3gdg/ElevenLabs_2025-06-16T06_57_50_Sound-Effect.mp3?rlkey=kbu35al77j5js5s4fjuzaa66s');
+        soundEffects.lessonComplete = new Audio('https://dl.dropboxusercontent.com/scl/fi/y8fm2nyoukg2qapvqahs9/ElevenLabs_2025-06-16T06_59_53_Sound-Effect.mp3?rlkey=0hsh1tblg6larmab82jjekk5j');
+        
+        // Precargar los sonidos
+        Object.values(soundEffects).forEach(audio => {
+            if (audio) {
+                audio.preload = 'auto';
+                audio.onerror = () => console.log('Error cargando sonido personalizado');
+            }
+        });
+    } catch (error) {
+        console.log('Error inicializando sonidos personalizados:', error);
+    }
+}
 
 // Función para reproducir sonidos
 function playSound(soundName) {
@@ -423,7 +442,12 @@ async function registerUser() {
         return;
     }
 
+    const registerButton = event.target;
+    const originalText = registerButton.innerHTML;
+
     try {
+        registerButton.disabled = true;
+        registerButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando cuenta...';
         updateMascotMessage('Creando tu cuenta...');
 
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -488,11 +512,17 @@ async function registerUser() {
             case 'auth/weak-password':
                 errorMessage = 'La contraseña es muy débil. Usa al menos 6 caracteres.';
                 break;
+            case 'auth/network-request-failed':
+                errorMessage = 'Error de conexión. Verifica tu internet e intenta de nuevo.';
+                break;
             default:
-                errorMessage = 'Error al crear la cuenta: ' + error.message;
+                errorMessage = 'Error al crear la cuenta. Intenta de nuevo.';
         }
 
         updateMascotMessage(errorMessage);
+    } finally {
+        registerButton.disabled = false;
+        registerButton.innerHTML = originalText;
     }
 }
 
@@ -505,7 +535,12 @@ async function loginUser() {
         return;
     }
 
+    const loginButton = event.target;
+    const originalText = loginButton.innerHTML;
+    
     try {
+        loginButton.disabled = true;
+        loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
         updateMascotMessage('Iniciando sesión...');
 
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
@@ -533,11 +568,20 @@ async function loginUser() {
             case 'auth/user-disabled':
                 errorMessage = 'Esta cuenta ha sido deshabilitada.';
                 break;
+            case 'auth/too-many-requests':
+                errorMessage = 'Demasiados intentos fallidos. Espera un momento e intenta de nuevo.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = 'Error de conexión. Verifica tu internet e intenta de nuevo.';
+                break;
             default:
-                errorMessage = 'Error al iniciar sesión: ' + error.message;
+                errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
         }
 
         updateMascotMessage(errorMessage);
+    } finally {
+        loginButton.disabled = false;
+        loginButton.innerHTML = originalText;
     }
 }
 
@@ -2072,6 +2116,9 @@ async function saveUserProgress() {
 setInterval(saveUserProgress, 30000);
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar sonidos personalizados
+    loadCustomSounds();
+    
     const savedProgress = localStorage.getItem('lessonsProgress');
     if (savedProgress) {
         try {
@@ -2086,6 +2133,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Error cargando progreso de lecciones:', e);
         }
     }
+
+    // Mensaje de bienvenida inicial
+    updateMascotMessage('¡Hola! Soy BeMaa, tu compañero matemático. ¿Estás listo para una aventura de aprendizaje?');
 
     if (gameState.isAuthenticated && gameState.currentUser) {
         showHome();
