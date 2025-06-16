@@ -402,12 +402,40 @@ body {
 .auth-logo {
     text-align: center;
     margin-bottom: 40px;
+    position: relative;
 }
 
 .auth-mascot {
     font-size: 80px;
     margin-bottom: 20px;
     animation: bounce 2s infinite;
+}
+
+.mascot-speech {
+    background: white;
+    color: #2c3e50;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 auto 20px auto;
+    max-width: 280px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: fadeIn 1s ease-in;
+}
+
+.mascot-speech::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
 }
 
 .auth-logo h1 {
