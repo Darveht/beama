@@ -643,6 +643,8 @@ function showHome() {
     document.getElementById('homeScreen').classList.add('active');
     gameState.currentScreen = 'home';
     updateUserStats();
+    updateNavigation('home');
+    renderLessons(); // Renderizar lecciones en la pantalla principal
 
     if (gameState.user && gameState.user.name) {
         updateMascotMessage(`¡Hola ${gameState.user.name}! ¿Qué quieres hacer hoy?`);
@@ -650,10 +652,8 @@ function showHome() {
 }
 
 function showLessons() {
-    hideAllScreens();
-    document.getElementById('lessonsScreen').classList.add('active');
-    gameState.currentScreen = 'lessons';
-    renderLessons();
+    // Las lecciones ahora están integradas en la pantalla principal
+    showHome();
 }
 
 function showProfile() {
@@ -665,6 +665,7 @@ function showProfile() {
     hideAllScreens();
     document.getElementById('profileScreen').classList.add('active');
     gameState.currentScreen = 'profile';
+    updateNavigation('profile');
     updateProfileData();
     updateMascotMessage('¡Este es tu perfil! Aquí puedes ver tu progreso y personalizar tu mascota.');
 }
@@ -698,8 +699,34 @@ function showSettings() {
     hideAllScreens();
     document.getElementById('settingsScreen').classList.add('active');
     gameState.currentScreen = 'settings';
+    updateNavigation('settings');
     loadSettings();
     updateMascotMessage('Aquí puedes ajustar la aplicación a tu gusto.');
+}
+
+function showLeaderboard() {
+    updateMascotMessage('¡Pronto podrás competir con otros estudiantes en el ranking!');
+}
+
+function updateNavigation(activeScreen) {
+    // Actualizar estado activo de la navegación inferior
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Mapear pantallas a elementos de navegación
+    const navMap = {
+        'home': 0,
+        'leaderboard': 1,
+        'shop': 2,
+        'profile': 3,
+        'settings': 4
+    };
+
+    const navItems = document.querySelectorAll('.nav-item');
+    if (navMap[activeScreen] !== undefined && navItems[navMap[activeScreen]]) {
+        navItems[navMap[activeScreen]].classList.add('active');
+    }
 }
 
 function showShop() {
@@ -2103,3 +2130,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 3600000);
 });
+ 
