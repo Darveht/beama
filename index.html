@@ -17,9 +17,9 @@
         <div class="auth-container">
             <div class="auth-logo">
                 <div class="mascot-face auth-mascot">🐻</div>
-                <div class="mascot-speech" id="mascotSpeech">¡Hola! Soy BeMaa, tu compañero matemático. ¿Estás listo para una aventura de aprendizaje?</div>
+                <div class="mascot-speech" id="mascotSpeech">¡Hola! Soy BeMaa, tu asistente de matemáticas. ¿Estás listo para aprender de forma divertida?</div>
                 <h1>BeMaa</h1>
-                <p>Tu compañero matemático</p>
+                <p>Tu asistente de matemáticas</p>
             </div>
 
             <div class="auth-tabs">
@@ -102,9 +102,9 @@
             </div>
             <div class="header-center">
                 <div class="progress-section">
-                    <div class="user-level">Nivel <span id="userLevel">1</span></div>
+                    <div class="user-level">Precisión: <span id="realTimePrecision">0%</span></div>
                     <div class="progress-bar-header">
-                        <div class="progress-fill-header" style="width: 30%"></div>
+                        <div class="progress-fill-header" id="levelProgress" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
@@ -376,67 +376,92 @@
             </div>
 
             <div class="profile-section">
-                <h3><i class="fas fa-chart-line"></i> Estadísticas</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">🔥</div>
-                        <div class="stat-number" id="profileStreak">0</div>
-                        <div class="stat-label">Racha</div>
+                <h3><i class="fas fa-chart-line"></i> Tu Progreso</h3>
+                <div class="progress-overview">
+                    <div class="main-stat">
+                        <div class="stat-circle">
+                            <div class="stat-value" id="profileAccuracy">0%</div>
+                            <div class="stat-subtitle">Precisión matemática</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">💎</div>
-                        <div class="stat-number" id="profileGems">0</div>
-                        <div class="stat-label">Gemas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🏆</div>
-                        <div class="stat-number" id="profileLevel">1</div>
-                        <div class="stat-label">Nivel</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">✅</div>
-                        <div class="stat-number" id="profileAccuracy">0%</div>
-                        <div class="stat-label">Precisión</div>
+                    <div class="secondary-stats">
+                        <div class="stat-row">
+                            <div class="stat-item-profile">
+                                <i class="fas fa-fire"></i>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="profileStreak">0</span>
+                                    <span class="stat-label">días seguidos</span>
+                                </div>
+                            </div>
+                            <div class="stat-item-profile">
+                                <i class="fas fa-gem"></i>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="profileGems">0</span>
+                                    <span class="stat-label">gemas ganadas</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-item-profile">
+                                <i class="fas fa-trophy"></i>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="profileLevel">1</span>
+                                    <span class="stat-label">nivel actual</span>
+                                </div>
+                            </div>
+                            <div class="stat-item-profile">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="questionsCount">0</span>
+                                    <span class="stat-label">preguntas resueltas</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="profile-section">
-                <h3><i class="fas fa-paw"></i> Mi Mascota</h3>
-                <div class="mascot-preview">
-                    <div class="mascot-3d" id="mascot3d">
-                        <div class="bear-3d">
-                            <div class="bear-head" id="bearHead">
-                                <div class="bear-ears">
-                                    <div class="bear-ear left" id="bearEarLeft"></div>
-                                    <div class="bear-ear right" id="bearEarRight"></div>
-                                </div>
-                                <div class="bear-face">
-                                    <div class="bear-eyes">
-                                        <div class="bear-eye left" id="bearEyeLeft">
-                                            <div class="pupil"></div>
-                                        </div>
-                                        <div class="bear-eye right" id="bearEyeRight">
-                                            <div class="pupil"></div>
-                                        </div>
+                <h3><i class="fas fa-user-circle"></i> Avatar Personal</h3>
+                <div class="avatar-section">
+                    <div class="avatar-preview">
+                        <div class="mascot-3d" id="mascot3d">
+                            <div class="bear-3d">
+                                <div class="bear-head" id="bearHead">
+                                    <div class="bear-ears">
+                                        <div class="bear-ear left" id="bearEarLeft"></div>
+                                        <div class="bear-ear right" id="bearEarRight"></div>
                                     </div>
-                                    <div class="bear-nose" id="bearNose"></div>
-                                    <div class="bear-mouth" id="bearMouth"></div>
+                                    <div class="bear-face">
+                                        <div class="bear-eyes">
+                                            <div class="bear-eye left" id="bearEyeLeft">
+                                                <div class="pupil"></div>
+                                            </div>
+                                            <div class="bear-eye right" id="bearEyeRight">
+                                                <div class="pupil"></div>
+                                            </div>
+                                        </div>
+                                        <div class="bear-nose" id="bearNose"></div>
+                                        <div class="bear-mouth" id="bearMouth"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="bear-body" id="bearBody">
-                                <div class="bear-arms">
-                                    <div class="bear-arm left"></div>
-                                    <div class="bear-arm right"></div>
+                                <div class="bear-body" id="bearBody">
+                                    <div class="bear-arms">
+                                        <div class="bear-arm left"></div>
+                                        <div class="bear-arm right"></div>
+                                    </div>
+                                    <div class="bear-belly" id="bearBelly"></div>
                                 </div>
-                                <div class="bear-belly" id="bearBelly"></div>
                             </div>
                         </div>
                     </div>
-                    <button class="customize-btn" onclick="showMascotCustomization()" id="customizeButton">
-                        <i class="fas fa-paint-brush"></i>
-                        Personalizar Avatar
-                    </button>
+                    <div class="avatar-info">
+                        <p class="avatar-description">Tu compañero de matemáticas personal</p>
+                        <button class="customize-btn" onclick="showMascotCustomization()" id="customizeButton">
+                            <i class="fas fa-edit"></i>
+                            Personalizar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
