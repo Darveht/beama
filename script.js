@@ -656,9 +656,7 @@ function showHome() {
     updateNavigation('home');
     renderLessons(); // Renderizar lecciones en la pantalla principal
 
-    if (gameState.user && gameState.user.name) {
-        updateMascotMessage(`¡Hola ${gameState.user.name}! ¿Qué quieres hacer hoy?`);
-    }
+    // La mascota ahora solo aparece dentro de las lecciones
 }
 
 function showLessons() {
@@ -2023,6 +2021,12 @@ function updateUserStats() {
     document.getElementById('streak').textContent = gameState.user.streak;
     document.getElementById('gems').textContent = gameState.user.gems;
     document.getElementById('lives').textContent = gameState.user.lives;
+
+    // Actualizar stats en el panel lateral
+    const streakDisplay = document.getElementById('streakDisplay');
+    const gemsDisplay = document.getElementById('gemsDisplay');
+    if (streakDisplay) streakDisplay.textContent = gameState.user.streak;
+    if (gemsDisplay) gemsDisplay.textContent = gameState.user.gems;
 
     const userNameElement = document.getElementById('userName');
     if (userNameElement && gameState.user.name) {
