@@ -32,7 +32,15 @@ const gameState = {
         totalCorrect: 0,
         totalQuestions: 0,
         weakAreas: [],
-        strengths: []
+        strengths: [],
+        mathPrecision: 0,
+        sessionStats: {
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            wrongAnswers: 0,
+            currentStreak: 0,
+            bestStreak: 0
+        }
     },
     currentLesson: null,
     currentMode: 'normal',
@@ -173,7 +181,7 @@ function loadCustomSounds() {
         soundEffects.correct = new Audio('https://dl.dropboxusercontent.com/scl/fi/l01oa0fzcw8bfcksfcjsy/ElevenLabs_2025-06-16T06_55_25_Sound-Effect.mp3?rlkey=yk4sp07wpvhqn48ndmqer6u01');
         soundEffects.incorrect = new Audio('https://dl.dropboxusercontent.com/scl/fi/696bzht5p7v7v4ucs3gdg/ElevenLabs_2025-06-16T06_57_50_Sound-Effect.mp3?rlkey=kbu35al77j5js5s4fjuzaa66s');
         soundEffects.lessonComplete = new Audio('https://dl.dropboxusercontent.com/scl/fi/y8fm2nyoukg2qapvqahs9/ElevenLabs_2025-06-16T06_59_53_Sound-Effect.mp3?rlkey=0hsh1tblg6larmab82jjekk5j');
-        
+
         // Precargar los sonidos
         Object.values(soundEffects).forEach(audio => {
             if (audio) {
@@ -428,17 +436,14 @@ async function registerUser() {
     const age = document.getElementById('userAge').value;
 
     if (!name || !email || !password || !age) {
-        updateMascotMessage('Por favor completa todos los campos para crear tu cuenta.');
         return;
     }
 
     if (password !== confirmPassword) {
-        updateMascotMessage('Las contraseñas no coinciden. Verifica que sean iguales.');
         return;
     }
 
     if (password.length < 6) {
-        updateMascotMessage('La contraseña debe tener al menos 6 caracteres para ser segura.');
         return;
     }
 
@@ -537,7 +542,7 @@ async function loginUser() {
 
     const loginButton = event.target;
     const originalText = loginButton.innerHTML;
-    
+
     try {
         loginButton.disabled = true;
         loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
@@ -655,7 +660,7 @@ auth.onAuthStateChanged(async (user) => {
 
             if (!hasShownWelcomeMessage) {
                 setTimeout(() => {
-                    updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero matemático. ¿Listo para la aventura?`);
+                    updateMascotMessage(`¡Hola ${gameState.user.name}! Soy BeMaa, tu compañero de aprendizaje matemático. ¿Listo para empezar?`);
                     hasShownWelcomeMessage = true;
                 }, 1000);
             }
@@ -966,11 +971,30 @@ function selectAnswer(selectedAnswer) {
     const question = gameState.questions[gameState.currentQuestionIndex];
     const isCorrect = selectedAnswer == question.correct;
 
+    // Actualizar estadísticas en tiempo real
     gameState.user.totalQuestions++;
+    gameState.user.sessionStats.questionsAnswered++;
+    
     if (isCorrect) {
         gameState.user.totalCorrect++;
+        gameState.user.sessionStats.correctAnswers++;
+        gameState.user.sessionStats.currentStreak++;
         gameState.score += 10;
+        
+        if (gameState.user.sessionStats.currentStreak > gameState.user.sessionStats.bestStreak) {
+            gameState.user.sessionStats.bestStreak = gameState.user.sessionStats.currentStreak;
+        }
+    } else {
+        gameState.user.sessionStats.wrongAnswers++;
+        gameState.user.sessionStats.currentStreak = 0;
+        gameState.user.lives--;
     }
+
+    // Calcular precisión matemática en tiempo real
+    gameState.user.mathPrecision = Math.round((gameState.user.totalCorrect / gameState.user.totalQuestions) * 100);
+    
+    // Actualizar UI en tiempo real
+    updateRealTimeStats();
 
     const buttons = document.querySelectorAll('.answer-btn');
     buttons.forEach(btn => {
@@ -984,11 +1008,10 @@ function selectAnswer(selectedAnswer) {
 
     if (isCorrect) {
         playSound('correct');
-        updateMascotMessage('¡Increíble! ¡Eres genial! Esa respuesta está perfecta.');
+        updateMascotMessage('¡Correcto! Tu precisión matemática está mejorando.');
     } else {
         playSound('incorrect');
-        updateMascotMessage('¡Tranquilo! Los osos también nos equivocamos. Vamos a intentarlo de nuevo.');
-        gameState.user.lives--;
+        updateMascotMessage('No te preocupes, cada error es una oportunidad de aprender.');
 
         if (gameState.currentMode === 'survival' && gameState.user.lives <= 0) {
             endGame();
@@ -2080,6 +2103,32 @@ function updateUserStats() {
     }
 }
 
+function updateRealTimeStats() {
+    // Actualizar estadísticas en tiempo real
+    const precisionElement = document.getElementById('realTimePrecision');
+    const currentStreakElement = document.getElementById('currentStreak');
+    const questionsCountElement = document.getElementById('questionsCount');
+    
+    if (precisionElement) {
+        precisionElement.textContent = gameState.user.mathPrecision + '%';
+    }
+    
+    if (currentStreakElement) {
+        currentStreakElement.textContent = gameState.user.sessionStats.currentStreak;
+    }
+    
+    if (questionsCountElement) {
+        questionsCountElement.textContent = gameState.user.sessionStats.questionsAnswered;
+    }
+    
+    // Actualizar barra de progreso de nivel
+    const levelProgress = document.getElementById('levelProgress');
+    if (levelProgress) {
+        const progress = (gameState.user.mathPrecision / 100) * 100;
+        levelProgress.style.width = progress + '%';
+    }
+}
+
 async function saveUserProgress() {
     if (gameState.isAuthenticated && gameState.currentUser) {
         try {
@@ -2118,7 +2167,7 @@ setInterval(saveUserProgress, 30000);
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar sonidos personalizados
     loadCustomSounds();
-    
+
     const savedProgress = localStorage.getItem('lessonsProgress');
     if (savedProgress) {
         try {
