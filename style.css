@@ -130,27 +130,111 @@ body {
     flex: 1;
     overflow-y: auto;
     padding-bottom: 100px; /* Espacio para la barra inferior */
+    background: #f8f9fa;
 }
 
-.mascot-section {
+/* Layout principal tipo Duolingo */
+.main-layout {
+    display: flex;
+    min-height: calc(100vh - 200px);
+    gap: 20px;
     padding: 20px;
-    text-align: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+}
+
+/* Panel de lecciones (izquierda) */
+.lessons-panel {
+    flex: 0 0 60%;
+    max-width: 600px;
 }
 
 .section-title {
     font-size: 24px;
     font-weight: 700;
     color: #2c3e50;
-    margin: 20px 0;
+    margin: 0 0 30px 0;
+    text-align: left;
+}
+
+/* Panel de información (derecha) */
+.info-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 350px;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-.lessons-path {
+.welcome-card h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+}
+
+.welcome-card p {
+    color: #6c757d;
+    font-size: 16px;
+    margin: 0 0 25px 0;
+}
+
+.progress-summary {
     padding: 20px;
-    background: #f8f9fa;
-    min-height: calc(100vh - 200px);
+    background: linear-gradient(135deg, #58cc02 0%, #89e219 100%);
+    border-radius: 15px;
+    color: white;
+}
+
+.daily-goal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.quick-stats {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-item i {
+    font-size: 24px;
+    color: #58cc02;
+    width: 30px;
+}
+
+.stat-number {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    color: #6c757d;
 }
 
 /* Barra de Navegación Inferior */
@@ -842,11 +926,10 @@ body {
 
 .lessons-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 25px;
+    padding: 0;
+    max-width: 100%;
 }
 
 .lesson-node {
@@ -2108,9 +2191,29 @@ input:checked + .slider:before {
 }
 
 /* RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+    .main-layout {
+        flex-direction: column;
+    }
+    
+    .lessons-panel {
+        flex: none;
+        max-width: none;
+    }
+    
+    .info-panel {
+        max-width: none;
+    }
+}
+
 @media (max-width: 768px) {
     .header {
         padding: 12px 15px;
+    }
+    
+    .main-layout {
+        padding: 15px;
+        gap: 15px;
     }
     
     .header h1, .header h2 {
