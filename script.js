@@ -155,14 +155,24 @@ const mascotCustomization = {
 const appSettings = {
     language: 'es',
     soundEffects: true,
-    backgroundMusic: false,
-    volume: 50,
     adaptiveDifficulty: true,
-    dailyReminders: false,
-    vibration: false,
-    shareProgress: false,
     errorAnalysis: true
 };
+
+// Efectos de sonido
+const soundEffects = {
+    correct: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMGJHfH8N2QQAoUXrTp66hVFApGn+D2uWkgCjiH0fPTgjMG'),
+    incorrect: new Audio('data:audio/wav;base64,UklGRv4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YdoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA'),
+    click: new Audio('data:audio/wav;base64,UklGRs4BAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YaoBAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA')
+};
+
+// Función para reproducir sonidos
+function playSound(soundName) {
+    if (appSettings.soundEffects && soundEffects[soundName]) {
+        soundEffects[soundName].currentTime = 0;
+        soundEffects[soundName].play().catch(e => console.log('Error reproduciendo sonido:', e));
+    }
+}
 
 // Algoritmo de dificultad adaptativa
 function getAdaptiveDifficulty(lessonId) {
@@ -718,19 +728,14 @@ function updateNavigation(activeScreen) {
     const navMap = {
         'home': 0,
         'leaderboard': 1,
-        'shop': 2,
-        'profile': 3,
-        'settings': 4
+        'profile': 2,
+        'settings': 3
     };
 
     const navItems = document.querySelectorAll('.nav-item');
     if (navMap[activeScreen] !== undefined && navItems[navMap[activeScreen]]) {
         navItems[navMap[activeScreen]].classList.add('active');
     }
-}
-
-function showShop() {
-    updateMascotMessage('¿Quieres comprar algo para tu mascota?');
 }
 
 function showStats() {
@@ -785,6 +790,7 @@ function renderLessons() {
 }
 
 function selectLesson(lessonId) {
+    playSound('click');
     const lesson = lessons.find(l => l.id === lessonId);
     const lessonIndex = lessons.findIndex(l => l.id === lessonId);
 
@@ -903,7 +909,10 @@ function showQuestion() {
         const button = document.createElement('button');
         button.className = 'answer-btn';
         button.textContent = answer;
-        button.onclick = () => selectAnswer(answer);
+        button.onclick = () => {
+            playSound('click');
+            selectAnswer(answer);
+        };
         container.appendChild(button);
     });
 
@@ -931,8 +940,10 @@ function selectAnswer(selectedAnswer) {
     });
 
     if (isCorrect) {
+        playSound('correct');
         updateMascotMessage('¡Increíble! ¡Eres genial! Esa respuesta está perfecta.');
     } else {
+        playSound('incorrect');
         updateMascotMessage('¡Tranquilo! Los osos también nos equivocamos. Vamos a intentarlo de nuevo.');
         gameState.user.lives--;
 
@@ -1873,13 +1884,7 @@ function loadSettings() {
 
     document.getElementById('languageSelect').value = appSettings.language;
     document.getElementById('soundEffects').checked = appSettings.soundEffects;
-    document.getElementById('backgroundMusic').checked = appSettings.backgroundMusic;
-    document.getElementById('volumeSlider').value = appSettings.volume;
-    document.getElementById('volumeValue').textContent = appSettings.volume + '%';
     document.getElementById('adaptiveDifficulty').checked = appSettings.adaptiveDifficulty;
-    document.getElementById('dailyReminders').checked = appSettings.dailyReminders;
-    document.getElementById('vibration').checked = appSettings.vibration;
-    document.getElementById('shareProgress').checked = appSettings.shareProgress;
     document.getElementById('errorAnalysis').checked = appSettings.errorAnalysis;
 }
 
@@ -1893,55 +1898,23 @@ function changeLanguage() {
 function toggleSoundEffects() {
     appSettings.soundEffects = document.getElementById('soundEffects').checked;
     saveSettings();
+    playSound('click');
     updateMascotMessage(appSettings.soundEffects ? '¡Efectos de sonido activados!' : 'Efectos de sonido desactivados');
-}
-
-function toggleBackgroundMusic() {
-    appSettings.backgroundMusic = document.getElementById('backgroundMusic').checked;
-    saveSettings();
-    updateMascotMessage(appSettings.backgroundMusic ? '¡Música de fondo activada!' : 'Música de fondo desactivada');
-}
-
-function changeVolume() {
-    const volume = document.getElementById('volumeSlider').value;
-    appSettings.volume = volume;
-    document.getElementById('volumeValue').textContent = volume + '%';
-    saveSettings();
 }
 
 function toggleAdaptiveDifficulty() {
     appSettings.adaptiveDifficulty = document.getElementById('adaptiveDifficulty').checked;
     saveSettings();
+    playSound('click');
     updateMascotMessage(appSettings.adaptiveDifficulty ? 
         'Dificultad automática activada. Ajustaré los problemas a tu nivel.' : 
         'Dificultad automática desactivada.');
 }
 
-function toggleDailyReminders() {
-    appSettings.dailyReminders = document.getElementById('dailyReminders').checked;
-    saveSettings();
-    updateMascotMessage(appSettings.dailyReminders ? 
-        'Te recordaré practicar matemáticas cada día.' : 
-        'Recordatorios diarios desactivados.');
-}
-
-function toggleVibration() {
-    appSettings.vibration = document.getElementById('vibration').checked;
-    saveSettings();
-    updateMascotMessage('Configuración de vibración actualizada.');
-}
-
-function toggleShareProgress() {
-    appSettings.shareProgress = document.getElementById('shareProgress').checked;
-    saveSettings();
-    updateMascotMessage(appSettings.shareProgress ? 
-        'Tu progreso podrá ser compartido.' : 
-        'Tu progreso se mantendrá privado.');
-}
-
 function toggleErrorAnalysis() {
     appSettings.errorAnalysis = document.getElementById('errorAnalysis').checked;
     saveSettings();
+    playSound('click');
     updateMascotMessage(appSettings.errorAnalysis ? 
         'Analizaré tus errores para ayudarte mejor.' : 
         'Análisis de errores desactivado.');
