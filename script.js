@@ -975,13 +975,17 @@ function showQuestion() {
             button.style.animationDelay = `${index * 0.1}s`;
             button.disabled = false;
             
-            // Onclick simple sin verificaciones complejas
-            button.onclick = function() {
+            // Asegurar que cada botón tenga su propio manejador de click
+            button.addEventListener('click', function() {
                 if (this.disabled) return;
+                
+                // Deshabilitar inmediatamente TODOS los botones
+                const allButtons = container.querySelectorAll('.answer-btn');
+                allButtons.forEach(btn => btn.disabled = true);
                 
                 playSound('click');
                 selectAnswer(answer);
-            };
+            });
             
             container.appendChild(button);
         });
@@ -1057,30 +1061,17 @@ function selectAnswer(selectedAnswer) {
 
     // Avanzar a la siguiente pregunta después de mostrar el resultado
     setTimeout(() => {
-        nextQuestion();
+        gameState.currentQuestionIndex++;
+        
+        if (gameState.currentQuestionIndex >= gameState.questions.length) {
+            endGame();
+        } else {
+            showQuestion();
+        }
     }, 2500);
 }
 
-function nextQuestion() {
-    gameState.currentQuestionIndex++;
 
-    if (gameState.currentQuestionIndex >= gameState.questions.length) {
-        setTimeout(() => {
-            endGame();
-        }, 500);
-    } else {
-        // Limpiar respuestas anteriores
-        const container = document.getElementById('answersContainer');
-        if (container) {
-            container.innerHTML = '';
-        }
-        
-        // Mostrar la siguiente pregunta
-        setTimeout(() => {
-            showQuestion();
-        }, 300);
-    }
-}
 
 function endGame() {
     hideAllScreens();
