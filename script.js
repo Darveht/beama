@@ -974,13 +974,26 @@ function showQuestion() {
             button.textContent = answer;
             button.style.animationDelay = `${index * 0.1}s`;
             button.disabled = false;
-            button.onclick = () => {
-                // Evitar múltiples clics - verificar solo disabled
-                if (button.disabled) return;
+            
+            // Usar addEventListener en lugar de onclick para mejor manejo
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Verificar si ya se procesó una respuesta
+                const allButtons = container.querySelectorAll('.answer-btn');
+                const hasProcessed = Array.from(allButtons).some(btn => 
+                    btn.classList.contains('correct') || btn.classList.contains('incorrect')
+                );
+                
+                if (hasProcessed || this.disabled) {
+                    return;
+                }
                 
                 playSound('click');
                 selectAnswer(answer);
-            };
+            });
+            
             container.appendChild(button);
         });
     }
@@ -992,11 +1005,22 @@ function showQuestion() {
 function selectAnswer(selectedAnswer) {
     const question = gameState.questions[gameState.currentQuestionIndex];
     const isCorrect = selectedAnswer == question.correct;
+    const container = document.getElementById('answersContainer');
+    
+    if (!container) return;
+    
+    // Verificar si ya se procesó una respuesta para esta pregunta
+    const buttons = container.querySelectorAll('.answer-btn');
+    const hasProcessed = Array.from(buttons).some(btn => 
+        btn.classList.contains('correct') || btn.classList.contains('incorrect')
+    );
+    
+    if (hasProcessed) return;
 
-    // Deshabilitar todos los botones inmediatamente para evitar clics múltiples
-    const buttons = document.querySelectorAll('.answer-btn');
+    // Deshabilitar todos los botones para evitar clics múltiples
     buttons.forEach(btn => {
         btn.disabled = true;
+        btn.style.pointerEvents = 'none';
     });
 
     // Actualizar estadísticas en tiempo real
@@ -1062,7 +1086,7 @@ function nextQuestion() {
             endGame();
         }, 500);
     } else {
-        // Limpiar respuestas anteriores
+        // Limpiar respuestas anteriores y resetear estado
         const container = document.getElementById('answersContainer');
         if (container) {
             container.innerHTML = '';
