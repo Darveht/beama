@@ -974,21 +974,10 @@ function showQuestion() {
             button.textContent = answer;
             button.style.animationDelay = `${index * 0.1}s`;
             button.disabled = false;
-            button.dataset.answer = answer; // Agregar data attribute para identificar
             
-            // Usar onclick simple y directo
+            // Onclick simple sin verificaciones complejas
             button.onclick = function() {
-                // Verificar si este botón ya fue procesado
-                if (this.disabled || this.classList.contains('processed')) {
-                    return;
-                }
-                
-                // Marcar todos los botones como procesados inmediatamente
-                const allButtons = container.querySelectorAll('.answer-btn');
-                allButtons.forEach(btn => {
-                    btn.classList.add('processed');
-                    btn.disabled = true;
-                });
+                if (this.disabled) return;
                 
                 playSound('click');
                 selectAnswer(answer);
@@ -1010,6 +999,12 @@ function selectAnswer(selectedAnswer) {
     if (!container) return;
     
     const buttons = container.querySelectorAll('.answer-btn');
+
+    // Deshabilitar todos los botones inmediatamente
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none';
+    });
 
     // Actualizar estadísticas en tiempo real
     gameState.user.totalQuestions++;
@@ -1074,11 +1069,10 @@ function nextQuestion() {
             endGame();
         }, 500);
     } else {
-        // Limpiar respuestas anteriores y resetear estado completamente
+        // Limpiar respuestas anteriores
         const container = document.getElementById('answersContainer');
         if (container) {
             container.innerHTML = '';
-            container.classList.remove('answered'); // Remover cualquier clase de estado
         }
         
         // Mostrar la siguiente pregunta
