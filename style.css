@@ -1254,12 +1254,26 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .answer-btn:hover:not(:disabled) {
     background: rgba(29, 155, 240, 0.1);
     border-color: #1d9bf0;
     transform: translateY(-2px);
+}
+
+.answer-btn:disabled {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.answer-btn:active {
+    transform: scale(0.98);
 }
 
 .answer-btn.correct {
