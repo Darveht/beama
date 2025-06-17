@@ -974,25 +974,25 @@ function showQuestion() {
             button.textContent = answer;
             button.style.animationDelay = `${index * 0.1}s`;
             button.disabled = false;
+            button.dataset.answer = answer; // Agregar data attribute para identificar
             
-            // Usar addEventListener en lugar de onclick para mejor manejo
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                
-                // Verificar si ya se procesó una respuesta
-                const allButtons = container.querySelectorAll('.answer-btn');
-                const hasProcessed = Array.from(allButtons).some(btn => 
-                    btn.classList.contains('correct') || btn.classList.contains('incorrect')
-                );
-                
-                if (hasProcessed || this.disabled) {
+            // Usar onclick simple y directo
+            button.onclick = function() {
+                // Verificar si este botón ya fue procesado
+                if (this.disabled || this.classList.contains('processed')) {
                     return;
                 }
                 
+                // Marcar todos los botones como procesados inmediatamente
+                const allButtons = container.querySelectorAll('.answer-btn');
+                allButtons.forEach(btn => {
+                    btn.classList.add('processed');
+                    btn.disabled = true;
+                });
+                
                 playSound('click');
                 selectAnswer(answer);
-            });
+            };
             
             container.appendChild(button);
         });
@@ -1009,19 +1009,7 @@ function selectAnswer(selectedAnswer) {
     
     if (!container) return;
     
-    // Verificar si ya se procesó una respuesta para esta pregunta
     const buttons = container.querySelectorAll('.answer-btn');
-    const hasProcessed = Array.from(buttons).some(btn => 
-        btn.classList.contains('correct') || btn.classList.contains('incorrect')
-    );
-    
-    if (hasProcessed) return;
-
-    // Deshabilitar todos los botones para evitar clics múltiples
-    buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.style.pointerEvents = 'none';
-    });
 
     // Actualizar estadísticas en tiempo real
     gameState.user.totalQuestions++;
@@ -1086,10 +1074,11 @@ function nextQuestion() {
             endGame();
         }, 500);
     } else {
-        // Limpiar respuestas anteriores y resetear estado
+        // Limpiar respuestas anteriores y resetear estado completamente
         const container = document.getElementById('answersContainer');
         if (container) {
             container.innerHTML = '';
+            container.classList.remove('answered'); // Remover cualquier clase de estado
         }
         
         // Mostrar la siguiente pregunta
