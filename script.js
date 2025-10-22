@@ -428,7 +428,9 @@ function switchAuthTab(tab) {
     }
 }
 
-async function registerUser() {
+async function registerUser(event) {
+    if (event) event.preventDefault();
+    
     const name = document.getElementById('registerName').value.trim();
     const email = document.getElementById('registerEmail').value.trim();
     const password = document.getElementById('registerPassword').value;
@@ -436,18 +438,21 @@ async function registerUser() {
     const age = document.getElementById('userAge').value;
 
     if (!name || !email || !password || !age) {
+        updateMascotMessage('Por favor completa todos los campos.');
         return;
     }
 
     if (password !== confirmPassword) {
+        updateMascotMessage('Las contraseñas no coinciden.');
         return;
     }
 
     if (password.length < 6) {
+        updateMascotMessage('La contraseña debe tener al menos 6 caracteres.');
         return;
     }
 
-    const registerButton = event.target;
+    const registerButton = document.querySelector('#registerForm .auth-btn');
     const originalText = registerButton.innerHTML;
 
     try {
@@ -531,7 +536,9 @@ async function registerUser() {
     }
 }
 
-async function loginUser() {
+async function loginUser(event) {
+    if (event) event.preventDefault();
+    
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
@@ -540,7 +547,7 @@ async function loginUser() {
         return;
     }
 
-    const loginButton = event.target;
+    const loginButton = document.querySelector('#loginForm .auth-btn');
     const originalText = loginButton.innerHTML;
 
     try {
@@ -578,6 +585,9 @@ async function loginUser() {
                 break;
             case 'auth/network-request-failed':
                 errorMessage = 'Error de conexión. Verifica tu internet e intenta de nuevo.';
+                break;
+            case 'auth/invalid-credential':
+                errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña.';
                 break;
             default:
                 errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
