@@ -984,6 +984,10 @@ function showQuestion() {
             button.textContent = answer;
             button.style.animationDelay = `${index * 0.1}s`;
             button.disabled = false;
+            button.style.pointerEvents = 'auto'; // Reiniciar eventos del puntero
+            
+            // Limpiar clases de estado previo
+            button.classList.remove('correct', 'incorrect');
             
             // Asegurar que cada botón tenga su propio manejador de click
             button.addEventListener('click', function() {
@@ -991,7 +995,10 @@ function showQuestion() {
                 
                 // Deshabilitar inmediatamente TODOS los botones
                 const allButtons = container.querySelectorAll('.answer-btn');
-                allButtons.forEach(btn => btn.disabled = true);
+                allButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.pointerEvents = 'none';
+                });
                 
                 playSound('click');
                 selectAnswer(answer);
@@ -1076,7 +1083,16 @@ function selectAnswer(selectedAnswer) {
         if (gameState.currentQuestionIndex >= gameState.questions.length) {
             endGame();
         } else {
-            showQuestion();
+            // Limpiar contenedor antes de mostrar la siguiente pregunta
+            const container = document.getElementById('answersContainer');
+            if (container) {
+                container.innerHTML = '';
+            }
+            
+            // Pequeño delay para transición visual
+            setTimeout(() => {
+                showQuestion();
+            }, 200);
         }
     }, 2500);
 }
